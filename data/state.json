@@ -1,0 +1,8 @@
+﻿{
+  "site_name": "약사공론 매물 대시보드",
+  "source": "kpanews",
+  "last_id": 10076,
+  "scan_window": 120,
+  "stop_after_miss": 25,
+  "updated_at": null
+}
