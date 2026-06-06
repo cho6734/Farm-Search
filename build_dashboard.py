@@ -1,4 +1,4 @@
-ï»¿import json, html, time, pathlib, requests
+import json, html, time, pathlib, requests
 from datetime import datetime, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parent
@@ -7,10 +7,10 @@ DOCS_PATH = ROOT / "docs" / "index.html"
 DETAIL_URL = "https://svc.kpanews.co.kr/jobs/estate/detail?idx={idx}"
 
 def load_state():
-    return json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    return json.loads(STATE_PATH.read_text(encoding="utf-8-sig"))
 
 def save_state(state):
-    STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+    STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8-sig")
 
 def fetch_item(idx):
     url = DETAIL_URL.format(idx=idx)
@@ -77,12 +77,12 @@ def render(items, state):
         cards.append(f"""
         <article class="card" data-title="{html.escape(x['title'])}" data-tags="{html.escape(tags)}" data-idx="{x['idx']}">
           <div class="top">
-            <h3>{html.escape(x['title'] or '(ì œëª©ì—†ìŒ)')}</h3>
+            <h3>{html.escape(x['title'] or '(Á¦¸ñ¾øÀ½)')}</h3>
             <span class="idx">#{x['idx']}</span>
           </div>
           <p>{html.escape(' / '.join([v for v in [x['region'], x['location']] if v]))}</p>
-          <p>ë³´ì¦ê¸ˆ: {html.escape(x['price'])} / ì›”ì„¸: {html.escape(x['rent'])}</p>
-          <p>ì—°ë½ì²˜: {html.escape(x['phone'])}</p>
+          <p>º¸Áõ±İ: {html.escape(x['price'])} / ¿ù¼¼: {html.escape(x['rent'])}</p>
+          <p>¿¬¶ôÃ³: {html.escape(x['phone'])}</p>
           <p class="memo">{html.escape(x['memo'][:200])}</p>
         </article>
         """)
@@ -92,7 +92,7 @@ def render(items, state):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ì•½ì‚¬ê³µë¡  ë§¤ë¬¼ ëŒ€ì‹œë³´ë“œ</title>
+<title>¾à»ç°ø·Ğ ¸Å¹° ´ë½Ãº¸µå</title>
 <style>
 body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:0;background:#f7f7f7;color:#111}}
 .wrap{{max-width:1100px;margin:0 auto;padding:20px}}
@@ -109,18 +109,18 @@ h1,h3,p{{margin:0}} h3{{font-size:18px}} .idx{{font-size:12px;color:#666}} .memo
 <body>
 <div class="wrap">
 <header>
-  <h1>ì•½ì‚¬ê³µë¡  ë§¤ë¬¼ ëŒ€ì‹œë³´ë“œ</h1>
-  <div class="meta">ë§ˆì§€ë§‰ í™•ì¸ ID: {state["last_id"]} Â· ê°±ì‹ : {html.escape(state["updated_at"] or "-")}</div>
+  <h1>¾à»ç°ø·Ğ ¸Å¹° ´ë½Ãº¸µå</h1>
+  <div class="meta">¸¶Áö¸· È®ÀÎ ID: {state["last_id"]} ¡¤ °»½Å: {html.escape(state["updated_at"] or "-")}</div>
   <div class="controls">
-    <input id="q" placeholder="ê²€ìƒ‰ì–´ ì…ë ¥">
+    <input id="q" placeholder="°Ë»ö¾î ÀÔ·Â">
     <select id="sort">
-      <option value="desc">ìµœì‹ ìˆœ</option>
-      <option value="asc">ì˜¤ë˜ëœìˆœ</option>
+      <option value="desc">ÃÖ½Å¼ø</option>
+      <option value="asc">¿À·¡µÈ¼ø</option>
     </select>
   </div>
 </header>
 <section id="list" class="list">
-{''.join(cards) if cards else '<p>í˜„ì¬ ìˆ˜ì§‘ëœ ì‹ ê·œ ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.</p>'}
+{''.join(cards) if cards else '<p>ÇöÀç ¼öÁıµÈ ½Å±Ô µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.</p>'}
 </section>
 </div>
 <script>
@@ -140,7 +140,7 @@ sort.addEventListener('change', apply);
 </script>
 </body>
 </html>"""
-    DOCS_PATH.write_text(html_doc, encoding="utf-8")
+    DOCS_PATH.write_text(html_doc, encoding="utf-8-sig")
 
 def main():
     state = load_state()
@@ -150,3 +150,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
