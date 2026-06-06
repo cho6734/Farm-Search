@@ -4,14 +4,39 @@ from datetime import datetime, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parent
 STATE_PATH = ROOT / "data" / "state.json"
+ITEMS_PATH = ROOT / "data" / "items.json"
 DOCS_PATH = ROOT / "docs" / "index.html"
 DETAIL_URL = "https://svc.kpanews.co.kr/jobs/estate/detail?idx={idx}"
 
-def load_state():
-    return json.loads(STATE_PATH.read_text(encoding="utf-8-sig"))
+INITIAL_SCAN_START = 9792
+INITIAL_SCAN_END = 10076
 
-def save_state(state):
-    STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+def load_json(path, default):
+    if not path.exists():
+        return default
+    try:
+        return json.loads(path.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return default
+
+def save_json(path, data):
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+def load_state():
+    state = load_json(STATE_PATH, {})
+    if not state:
+        state = {
+            "site_name": "약사공론 매물 대시보드",
+            "source": "kpanews",
+            "last_id": INITIAL_SCAN_END,
+            "scan_window": 120,
+            "stop_after_miss": 25,
+            "updated_at": None,
+            "bootstrapped": False
+        }
+    if "bootstrapped" not in state:
+        state["bootstrapped"] = False
+    return state
 
 def fetch_item(idx):
     url = DETAIL_URL.format(idx=idx)
@@ -46,14 +71,26 @@ def norm(item, idx):
         "rent": str(pick(item, "rent", "monthly_rent", "monthPrice")),
         "phone": str(pick(item, "phone", "tel", "mobile")),
         "memo": str(pick(item, "memo", "content", "desc", "description")),
-        "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        "collected_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     }
 
-def scan(state):
+def bootstrap_if_needed(state, items_map):
+    if state.get("bootstrapped"):
+        return state, items_map
+    for idx in range(INITIAL_SCAN_START, INITIAL_SCAN_END + 1):
+        if str(idx) in items_map:
+            continue
+        item = fetch_item(idx)
+        if item is None:
+            continue
+        items_map[str(idx)] = norm(item, idx)
+    state["bootstrapped"] = True
+    return state, items_map
+
+def incremental_scan(state, items_map):
     start = int(state["last_id"]) + 1
     end = start + int(state["scan_window"]) - 1
     miss = 0
-    found = []
 
     for idx in range(start, end + 1):
         item = fetch_item(idx)
@@ -63,11 +100,11 @@ def scan(state):
                 break
             continue
         miss = 0
-        found.append(norm(item, idx))
+        items_map[str(idx)] = norm(item, idx)
         state["last_id"] = idx
 
     state["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    return found, state
+    return state, items_map
 
 def render(items, state):
     cards = []
@@ -122,7 +159,7 @@ h3{{font-size:18px}}
 <div class="wrap">
 <header>
   <h1>약사공론 매물 대시보드</h1>
-  <div class="meta">마지막 확인 ID: {last_id} · 갱신: {updated_at}</div>
+  <div class="meta">총 {count}건 · 마지막 확인 ID: {last_id} · 갱신: {updated_at}</div>
   <div class="controls">
     <input id="q" placeholder="검색어 입력">
     <select id="sort">
@@ -157,18 +194,23 @@ sort.addEventListener('change', apply);
 </body>
 </html>
 """.format(
+        count=len(items),
         last_id=state["last_id"],
         updated_at=html.escape(state["updated_at"] or "-"),
-        cards_html="".join(cards) if cards else "<p>현재 수집된 신규 데이터가 없습니다.</p>"
+        cards_html="".join(cards) if cards else "<p>현재 수집된 데이터가 없습니다.</p>"
     )
 
     DOCS_PATH.write_text(html_doc, encoding="utf-8")
 
 def main():
     state = load_state()
-    items, state = scan(state)
+    items_map = load_json(ITEMS_PATH, {})
+    state, items_map = bootstrap_if_needed(state, items_map)
+    state, items_map = incremental_scan(state, items_map)
+    items = list(items_map.values())
+    save_json(ITEMS_PATH, items_map)
+    save_json(STATE_PATH, state)
     render(items, state)
-    save_state(state)
 
 if __name__ == "__main__":
     main()
