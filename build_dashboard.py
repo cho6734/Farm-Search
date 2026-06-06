@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import json, html, pathlib, requests
 from datetime import datetime, timezone
 
@@ -149,6 +149,7 @@ def main():
     items, state = scan(state)
     render(items, state)
     save_state(state)
+# -*- coding: utf-8 -*-
 
 if __name__ == "__main__":
     main()
