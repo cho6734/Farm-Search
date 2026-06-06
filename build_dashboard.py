@@ -103,19 +103,19 @@ def render(items, state):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>약사공론 매물 대시보드</title>
 <style>
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:0;background:#f7f7f7;color:#111}
-.wrap{max-width:1100px;margin:0 auto;padding:20px}
-header{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-input,select{padding:10px 12px;border:1px solid #ccc;border-radius:10px}
-.controls{display:grid;grid-template-columns:1fr 180px;gap:10px}
-.meta{font-size:14px;color:#555}
-.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.card{background:#fff;border:1px solid #e5e5e5;border-radius:14px;padding:14px}
-.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-h1,h3,p{margin:0}
-h3{font-size:18px}
-.idx{font-size:12px;color:#666}
-.memo{color:#444}
+body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:0;background:#f7f7f7;color:#111}}
+.wrap{{max-width:1100px;margin:0 auto;padding:20px}}
+header{{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}}
+input,select{{padding:10px 12px;border:1px solid #ccc;border-radius:10px}}
+.controls{{display:grid;grid-template-columns:1fr 180px;gap:10px}}
+.meta{{font-size:14px;color:#555}}
+.list{{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}}
+.card{{background:#fff;border:1px solid #e5e5e5;border-radius:14px;padding:14px}}
+.top{{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}}
+h1,h3,p{{margin:0}}
+h3{{font-size:18px}}
+.idx{{font-size:12px;color:#666}}
+.memo{{color:#444}}
 </style>
 </head>
 <body>
@@ -140,16 +140,16 @@ const q = document.getElementById('q');
 const sort = document.getElementById('sort');
 const list = document.getElementById('list');
 
-function apply() {
+function apply() {{
   const cards = [...list.querySelectorAll('.card')];
   const term = (q.value || '').toLowerCase().trim();
-  cards.forEach(c => {
+  cards.forEach(c => {{
     const hay = (c.dataset.title + ' ' + c.dataset.tags).toLowerCase();
     c.style.display = (!term || hay.includes(term)) ? '' : 'none';
-  });
+  }});
   cards.sort((a, b) => sort.value === 'desc' ? (+b.dataset.idx) - (+a.dataset.idx) : (+a.dataset.idx) - (+b.dataset.idx));
   cards.forEach(c => list.appendChild(c));
-}
+}}
 
 q.addEventListener('input', apply);
 sort.addEventListener('change', apply);
