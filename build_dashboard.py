@@ -127,16 +127,16 @@ h3{{font-size:18px}}
 </div>
 <script>
 const q=document.getElementById('q'), sort=document.getElementById('sort'), list=document.getElementById('list');
-function apply(){{
+function apply(){
   const cards=[...list.querySelectorAll('.card')];
   const term=(q.value||'').toLowerCase().trim();
-  cards.forEach(c=>{{
+  cards.forEach(c=>{
     const hay=(c.dataset.title+' '+c.dataset.tags).toLowerCase();
     c.style.display=!term || hay.includes(term) ? '' : 'none';
-  }});
+  });
   cards.sort((a,b)=>sort.value==='desc' ? (+b.dataset.idx)-(+a.dataset.idx) : (+a.dataset.idx)-(+b.dataset.idx));
   cards.forEach(c=>list.appendChild(c));
-}}
+}
 q.addEventListener('input', apply);
 sort.addEventListener('change', apply);
 </script>
