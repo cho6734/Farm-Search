@@ -1,4 +1,5 @@
-import json, html, time, pathlib, requests
+ï»¿# -*- coding: utf-8 -*-
+import json, html, pathlib, requests
 from datetime import datetime, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parent
@@ -10,44 +11,42 @@ def load_state():
     return json.loads(STATE_PATH.read_text(encoding="utf-8-sig"))
 
 def save_state(state):
-    STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8-sig")
+    STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
 
 def fetch_item(idx):
     url = DETAIL_URL.format(idx=idx)
     try:
-        r = requests.get(url, timeout=15, headers={"User-Agent":"Mozilla/5.0"})
+        r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
         if r.status_code != 200:
             return None
         data = r.json()
-        if not data:
+        if not data or not isinstance(data, dict):
             return None
-        if isinstance(data, dict):
-            text = json.dumps(data, ensure_ascii=False)
-            if "idx" not in text and "title" not in text and "subject" not in text:
-                return None
-            return data
+        text = json.dumps(data, ensure_ascii=False)
+        if "idx" not in text and "title" not in text and "subject" not in text:
+            return None
+        return data
     except Exception:
         return None
-    return None
+
+def pick(item, *keys):
+    for k in keys:
+        v = item.get(k)
+        if v not in (None, "", []):
+            return v
+    return ""
 
 def norm(item, idx):
-    def pick(*keys):
-        for k in keys:
-            v = item.get(k)
-            if v not in (None, "", []):
-                return v
-        return ""
     return {
         "idx": idx,
-        "title": str(pick("title","subject","sj")),
-        "region": str(pick("region","area","sido","addr1")),
-        "location": str(pick("location","addr","address","addr2")),
-        "price": str(pick("price","deposit","amount")),
-        "rent": str(pick("rent","monthly_rent","monthPrice")),
-        "phone": str(pick("phone","tel","mobile")),
-        "memo": str(pick("memo","content","desc","description")),
-        "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-        "url": f"https://www.kpanews.co.kr/"
+        "title": str(pick(item, "title", "subject", "sj")),
+        "region": str(pick(item, "region", "area", "sido", "addr1")),
+        "location": str(pick(item, "location", "addr", "address", "addr2")),
+        "price": str(pick(item, "price", "deposit", "amount")),
+        "rent": str(pick(item, "rent", "monthly_rent", "monthPrice")),
+        "phone": str(pick(item, "phone", "tel", "mobile")),
+        "memo": str(pick(item, "memo", "content", "desc", "description")),
+        "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     }
 
 def scan(state):
@@ -77,12 +76,12 @@ def render(items, state):
         cards.append(f"""
         <article class="card" data-title="{html.escape(x['title'])}" data-tags="{html.escape(tags)}" data-idx="{x['idx']}">
           <div class="top">
-            <h3>{html.escape(x['title'] or '(Á¦¸ñ¾øÀ½)')}</h3>
+            <h3>{html.escape(x['title'] or '(ì œëª©ì—†ìŒ)')}</h3>
             <span class="idx">#{x['idx']}</span>
           </div>
           <p>{html.escape(' / '.join([v for v in [x['region'], x['location']] if v]))}</p>
-          <p>º¸Áõ±İ: {html.escape(x['price'])} / ¿ù¼¼: {html.escape(x['rent'])}</p>
-          <p>¿¬¶ôÃ³: {html.escape(x['phone'])}</p>
+          <p>ë³´ì¦ê¸ˆ: {html.escape(x['price'])} / ì›”ì„¸: {html.escape(x['rent'])}</p>
+          <p>ì—°ë½ì²˜: {html.escape(x['phone'])}</p>
           <p class="memo">{html.escape(x['memo'][:200])}</p>
         </article>
         """)
@@ -92,7 +91,7 @@ def render(items, state):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>¾à»ç°ø·Ğ ¸Å¹° ´ë½Ãº¸µå</title>
+<title>ì•½ì‚¬ê³µë¡  ë§¤ë¬¼ ëŒ€ì‹œë³´ë“œ</title>
 <style>
 body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:0;background:#f7f7f7;color:#111}}
 .wrap{{max-width:1100px;margin:0 auto;padding:20px}}
@@ -103,24 +102,27 @@ input,select{{padding:10px 12px;border:1px solid #ccc;border-radius:10px}}
 .list{{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}}
 .card{{background:#fff;border:1px solid #e5e5e5;border-radius:14px;padding:14px}}
 .top{{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}}
-h1,h3,p{{margin:0}} h3{{font-size:18px}} .idx{{font-size:12px;color:#666}} .memo{{color:#444}}
+h1,h3,p{{margin:0}}
+h3{{font-size:18px}}
+.idx{{font-size:12px;color:#666}}
+.memo{{color:#444}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>¾à»ç°ø·Ğ ¸Å¹° ´ë½Ãº¸µå</h1>
-  <div class="meta">¸¶Áö¸· È®ÀÎ ID: {state["last_id"]} ¡¤ °»½Å: {html.escape(state["updated_at"] or "-")}</div>
+  <h1>ì•½ì‚¬ê³µë¡  ë§¤ë¬¼ ëŒ€ì‹œë³´ë“œ</h1>
+  <div class="meta">ë§ˆì§€ë§‰ í™•ì¸ ID: {state["last_id"]} Â· ê°±ì‹ : {html.escape(state["updated_at"] or "-")}</div>
   <div class="controls">
-    <input id="q" placeholder="°Ë»ö¾î ÀÔ·Â">
+    <input id="q" placeholder="ê²€ìƒ‰ì–´ ì…ë ¥">
     <select id="sort">
-      <option value="desc">ÃÖ½Å¼ø</option>
-      <option value="asc">¿À·¡µÈ¼ø</option>
+      <option value="desc">ìµœì‹ ìˆœ</option>
+      <option value="asc">ì˜¤ë˜ëœìˆœ</option>
     </select>
   </div>
 </header>
 <section id="list" class="list">
-{''.join(cards) if cards else '<p>ÇöÀç ¼öÁıµÈ ½Å±Ô µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.</p>'}
+{''.join(cards) if cards else '<p>í˜„ì¬ ìˆ˜ì§‘ëœ ì‹ ê·œ ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.</p>'}
 </section>
 </div>
 <script>
@@ -140,7 +142,7 @@ sort.addEventListener('change', apply);
 </script>
 </body>
 </html>"""
-    DOCS_PATH.write_text(html_doc, encoding="utf-8-sig")
+    DOCS_PATH.write_text(html_doc, encoding="utf-8")
 
 def main():
     state = load_state()
@@ -150,4 +152,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
