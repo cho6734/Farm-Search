@@ -941,7 +941,7 @@ const q = document.getElementById('q');
 const selRegion = document.getElementById('sel-region');
 let activeTag = '', sortDir = 'desc';
 function txt(v) { return (v == null ? '' : String(v)); }
-function setDetail(item) {
+function setDetail(item) { window._kpaCurrentItem = item;
   document.getElementById('detail-empty').style.display = 'none';
   document.getElementById('detail-content').style.display = 'block';
   document.getElementById('d-title').textContent = txt(item.title) || '제목없음';
@@ -964,7 +964,7 @@ function setDetail(item) {
   txt(item.tags).split(',').map(s => s.trim()).filter(Boolean).forEach(v => {
     const s = document.createElement('span'); s.className = 'badge tag'; s.textContent = v; badges.appendChild(s);
   });
-  document.getElementById('d-origin').onclick = function(e){ e.preventDefault(); openKpaModal(item); }; document.getElementById('d-origin').href = '#';
+  document.getElementById('d-origin').onclick = function(e){ e.preventDefault(); openKpaModal(window._kpaCurrentItem); }; document.getElementById('d-origin').href = '#';
 }
 function applyFilters() {
   const term = txt(q.value).toLowerCase().trim();
@@ -1017,7 +1017,7 @@ applyFilters();
 
 // modal
 var _currentIdx = null;
-function openKpaModal(item) {
+function openKpaModal(window._kpaCurrentItem) {
   _currentIdx = item.idx;
   document.getElementById('kpaModalTitle').textContent = item.title || '(제목없음)';
   var memo = (item.memo || '').replace(/\\n/g, '\n');
