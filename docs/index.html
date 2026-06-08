@@ -70,11 +70,11 @@ html,body{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#09183
 .modal-body .minfo .mk{font-size:12px;color:#aebce6;margin-bottom:4px}
 .modal-body .minfo .mv{font-size:14px;color:#eef3ff}
 .modal-body .mmemo{background:#08112f;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;font-size:13px;color:#aebce6;white-space:pre-line;line-height:1.7;margin-bottom:14px}
-.modal-foot{padding:14px 24px 22px;display:flex;gap:10px;justify-content:flex-end}
+.modal-foot{padding:14px 24px 22px;display:flex;gap:10px;justify-content:center}
 .modal-btn{padding:10px 22px;border-radius:999px;border:none;cursor:pointer;font-size:14px;font-weight:600}
 .modal-btn.primary{background:#1d468b;color:#eef3ff}
 .modal-btn.primary:hover{background:#2557b0}
-.modal-btn.secondary{background:rgba(255,255,255,.08);color:#aebce6;border:1px solid rgba(255,255,255,.2)}
+.modal-btn.secondary{background:rgba(255,255,255,.08);color:#eef3ff;border:1px solid rgba(255,255,255,.2);min-width:140px}
 .modal-btn.secondary:hover{background:rgba(255,255,255,.14)}
 </style>
 </head>
@@ -1042,9 +1042,7 @@ function closeKpaModal() {
 document.getElementById('kpaModalClose').addEventListener('click', closeKpaModal);
 document.getElementById('kpaModalClose2').addEventListener('click', closeKpaModal);
 document.getElementById('kpaModal').addEventListener('click', function(e){ if(e.target===this) closeKpaModal(); });
-document.getElementById('kpaModalOrigin').addEventListener('click', function(){
-  if(_currentIdx) window.open('https://www.kpanews.co.kr/jobs/estate/detail?idx='+_currentIdx,'_blank','noopener');
-});
+
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeKpaModal(); });
 </script>
 <div id="kpaModal" class="modal-overlay">
@@ -1056,7 +1054,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeKpaM
     <div class="modal-body" id="kpaModalBody"></div>
     <div class="modal-foot">
       <button class="modal-btn secondary" id="kpaModalClose2">닫기</button>
-      <button class="modal-btn primary" id="kpaModalOrigin">약사공론 원문</button>
+      
     </div>
   </div>
 </div>
