@@ -56,6 +56,26 @@ html,body{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#09183
   .grid4{grid-template-columns:1fr 1fr}
   .hero-main h1{font-size:36px}
 }
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;visibility:hidden;opacity:0;transition:visibility .25s,opacity .25s}
+.modal-overlay.active{visibility:visible;opacity:1}
+.modal-box{background:#0d1b4b;border:1px solid rgba(105,163,255,.4);border-radius:24px;width:90%;max-width:640px;max-height:85vh;overflow-y:auto;transform:scale(.95);transition:transform .25s cubic-bezier(.2,.9,.4,1.1)}
+.modal-overlay.active .modal-box{transform:scale(1)}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;padding:22px 24px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+.modal-head h3{margin:0;font-size:18px;line-height:1.4;color:#eef3ff;flex:1;margin-right:12px}
+.modal-x{background:none;border:none;color:#aebce6;font-size:22px;cursor:pointer;padding:0 4px;line-height:1}
+.modal-x:hover{color:#fff}
+.modal-body{padding:20px 24px}
+.modal-body .mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.modal-body .minfo{background:#08112f;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px}
+.modal-body .minfo .mk{font-size:12px;color:#aebce6;margin-bottom:4px}
+.modal-body .minfo .mv{font-size:14px;color:#eef3ff}
+.modal-body .mmemo{background:#08112f;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;font-size:13px;color:#aebce6;white-space:pre-line;line-height:1.7;margin-bottom:14px}
+.modal-foot{padding:14px 24px 22px;display:flex;gap:10px;justify-content:flex-end}
+.modal-btn{padding:10px 22px;border-radius:999px;border:none;cursor:pointer;font-size:14px;font-weight:600}
+.modal-btn.primary{background:#1d468b;color:#eef3ff}
+.modal-btn.primary:hover{background:#2557b0}
+.modal-btn.secondary{background:rgba(255,255,255,.08);color:#aebce6;border:1px solid rgba(255,255,255,.2)}
+.modal-btn.secondary:hover{background:rgba(255,255,255,.14)}
 </style>
 </head>
 <body>
@@ -994,6 +1014,51 @@ document.querySelectorAll('.sort-btn').forEach(b => b.addEventListener('click', 
   applyFilters();
 }));
 applyFilters();
+
+// modal
+var _currentIdx = null;
+function openKpaModal(item) {
+  _currentIdx = item.idx;
+  document.getElementById('kpaModalTitle').textContent = item.title || '(제목없음)';
+  var memo = (item.memo || '').replace(/\\n/g, '\n');
+  document.getElementById('kpaModalBody').innerHTML =
+    '<div class="mrow">' +
+    '<div class="minfo"><div class="mk">지역</div><div class="mv">' + (item.region||'-') + '</div></div>' +
+    '<div class="minfo"><div class="mk">가격</div><div class="mv">' + (item.price||'-') + '</div></div>' +
+    '<div class="minfo"><div class="mk">연락처</div><div class="mv">' + (item.phone||'-') + '</div></div>' +
+    '<div class="minfo"><div class="mk">면적</div><div class="mv">' + (item.area_label||'-') + '</div></div>' +
+    '<div class="minfo"><div class="mk">준공</div><div class="mv">' + (item.built||'-') + '</div></div>' +
+    '<div class="minfo"><div class="mk">입주</div><div class="mv">' + (item.move_date||'-') + '</div></div>' +
+    '</div>' +
+    '<div class="minfo" style="margin-bottom:12px"><div class="mk">주소</div><div class="mv">' + (item.location||'-') + '</div></div>' +
+    '<div class="mmemo">' + (memo||'상세 내용 없음') + '</div>';
+  document.getElementById('kpaModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeKpaModal() {
+  document.getElementById('kpaModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.getElementById('kpaModalClose').addEventListener('click', closeKpaModal);
+document.getElementById('kpaModalClose2').addEventListener('click', closeKpaModal);
+document.getElementById('kpaModal').addEventListener('click', function(e){ if(e.target===this) closeKpaModal(); });
+document.getElementById('kpaModalOrigin').addEventListener('click', function(){
+  if(_currentIdx) window.open('https://www.kpanews.co.kr/jobs/estate/detail?idx='+_currentIdx,'_blank','noopener');
+});
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeKpaModal(); });
 </script>
+<div id="kpaModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="kpaModalTitle">상세 정보</h3>
+      <button class="modal-x" id="kpaModalClose">&#215;</button>
+    </div>
+    <div class="modal-body" id="kpaModalBody"></div>
+    <div class="modal-foot">
+      <button class="modal-btn secondary" id="kpaModalClose2">닫기</button>
+      <button class="modal-btn primary" id="kpaModalOrigin">약사공론 원문</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
