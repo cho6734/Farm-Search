@@ -941,7 +941,7 @@ const q = document.getElementById('q');
 const selRegion = document.getElementById('sel-region');
 let activeTag = '', sortDir = 'desc';
 function txt(v) { return (v == null ? '' : String(v)); }
-function setDetail(item) { window._kpaCurrentItem = item; window._kpaCurrentItem = item;
+function setDetail(item) { window._kpaCurrentItem = item;
   document.getElementById('detail-empty').style.display = 'none';
   document.getElementById('detail-content').style.display = 'block';
   document.getElementById('d-title').textContent = txt(item.title) || '제목없음';
@@ -1017,7 +1017,7 @@ applyFilters();
 
 // modal
 var _currentIdx = null;
-function openKpaModal(window._kpaCurrentItem) {
+function openKpaModal(item) {
   _currentIdx = item.idx;
   document.getElementById('kpaModalTitle').textContent = item.title || '(제목없음)';
   var memo = (item.memo || '').replace(/\\n/g, '\n');
