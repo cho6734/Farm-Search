@@ -964,7 +964,7 @@ function setDetail(item) {
   txt(item.tags).split(',').map(s => s.trim()).filter(Boolean).forEach(v => {
     const s = document.createElement('span'); s.className = 'badge tag'; s.textContent = v; badges.appendChild(s);
   });
-  document.getElementById('d-origin').href = `https://svc.kpanews.co.kr/jobs/estate/detail?idx=${item.idx}`;
+  document.getElementById('d-origin').onclick = function(e){ e.preventDefault(); openKpaModal(item); }; document.getElementById('d-origin').href = '#';
 }
 function applyFilters() {
   const term = txt(q.value).toLowerCase().trim();
