@@ -997,6 +997,15 @@ document.querySelectorAll('.sort-btn').forEach(b => b.addEventListener('click', 
   applyFilters();
 }));
 applyFilters();
-</script>
+
+(function(){
+  var m=document.getElementById('kpaModal');
+  var x=document.getElementById('kpaModalClose');
+  var c=document.getElementById('kpaModalClose2');
+  if(x) x.onclick=closeKpaModal;
+  if(c) c.onclick=closeKpaModal;
+  if(m) m.onclick=function(e){ if(e.target===m) closeKpaModal(); };
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeKpaModal(); });
+})();</script>
 </body>
 </html>
