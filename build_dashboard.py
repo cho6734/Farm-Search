@@ -265,11 +265,22 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
           <div id="d-sub" class="item-meta" style="margin-bottom:10px"></div>
           <div class="badges" id="d-badges"></div>
           <div class="grid4">
+            <div class="info"><div class="k">매물구분</div><div class="v" id="d-gubun"></div></div>
+            <div class="info"><div class="k">상권</div><div class="v" id="d-trade"></div></div>
+            <div class="info"><div class="k">면적</div><div class="v" id="d-area"></div></div>
+            <div class="info"><div class="k">준공년월</div><div class="v" id="d-built"></div></div>
+            <div class="info"><div class="k">입주가능일</div><div class="v" id="d-move"></div></div>
+            <div class="info"><div class="k">형태분류</div><div class="v" id="d-category"></div></div>
+            <div class="info"><div class="k">처방조제건수</div><div class="v" id="d-sale-count"></div></div>
+            <div class="info"><div class="k">1일매출</div><div class="v" id="d-sale-amount"></div></div>
+            <div class="info"><div class="k">특이사항</div><div class="v" id="d-special"></div></div>
             <div class="info"><div class="k">📞 연락처</div><div class="v" id="d-phone"></div></div>
             <div class="info"><div class="k">👤 담당자</div><div class="v" id="d-owner"></div></div>
-            <div class="info"><div class="k">🏗️ 준공</div><div class="v" id="d-built"></div></div>
             <div class="info"><div class="k">📍 지역</div><div class="v" id="d-region"></div></div>
           </div>
+          <div class="memo" id="d-memo"></div>
+        </div>
+      </div>
           <div class="memo" id="d-memo"></div>
         </div>
       </div>
@@ -292,6 +303,14 @@ function setDetail(item) {{
   document.getElementById('d-owner').textContent = txt(item.owner) || '-';
   document.getElementById('d-built').textContent = txt(item.built) || '-';
   document.getElementById('d-region').textContent = txt(item.region) || '-';
+  document.getElementById('d-gubun').textContent = txt(item.gubun_type) || '-';
+  document.getElementById('d-trade').textContent = txt(item.trade_area) || '-';
+  document.getElementById('d-area').textContent = txt(item.area_label) || '-';
+  document.getElementById('d-move').textContent = txt(item.move_date) || '-';
+  document.getElementById('d-category').textContent = txt(item.trade_area) || '-';
+  document.getElementById('d-sale-count').textContent = txt(item.sale_count) || '-';
+  document.getElementById('d-sale-amount').textContent = txt(item.sale_amount) || '-';
+  document.getElementById('d-special').textContent = txt(item.special_flag) || '-';
   document.getElementById('d-memo').textContent = txt(item.memo);
   const img = document.getElementById('d-img');
   if (item.thumb_url) {{
