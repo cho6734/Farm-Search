@@ -87,6 +87,9 @@ def login():
 
     try:
         r = requests.post(LOGIN_API, json={"email": email, "password": pw_b64}, timeout=10)
+        # 400 에러 시 서버 응답 본문 먼저 로그 출력
+        if r.status_code != 200:
+            log.error(f"팜올 로그인 실패 응답: {r.status_code} / 본문: {r.text[:500]}")
         r.raise_for_status()
         j = r.json()
         if j.get("meta", {}).get("success"):
