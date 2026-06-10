@@ -73,6 +73,7 @@ def enrich(item, d):
     item["sale_amount"]  = d.get("sale_amount") or item.get("sale_amount","")
     item["special_flag"] = d.get("special_flag") or item.get("special_flag","")
     item["tags"]         = ", ".join(d.get("tag_list") or []) or item.get("tags","")
+    item["trade_area"]   = d.get("trade_flag_label") or d.get("category_label") or item.get("trade_area","")
     item["status"]       = "active"
     parts = []
     if item["location"]:     parts.append(f"주소: {item['location']}")
