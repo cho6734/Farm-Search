@@ -99,11 +99,18 @@ def login():
         raw_pem = pk_r.json()["data"]["public_key"]
         log.info("팜올 공개키 조회 성공")
 
-        # 2단계: RSA PKCS#1 v1.5로 비밀번호 암호화
-        from cryptography.hazmat.primitives import serialization
+        # 2단계: RSA OAEP (SHA-1) 로 비밀번호 암호화 - node-forge 기본값
+        from cryptography.hazmat.primitives import serialization, hashes
         from cryptography.hazmat.primitives.asymmetric import padding as asym_padding
         pub_key = serialization.load_pem_public_key(fix_pem(raw_pem).encode())
-        encrypted = pub_key.encrypt(password.encode("utf-8"), asym_padding.PKCS1v15())
+        encrypted = pub_key.encrypt(
+            password.encode("utf-8"),
+            asym_padding.OAEP(
+                mgf=asym_padding.MGF1(algorithm=hashes.SHA1()),
+                algorithm=hashes.SHA1(),
+                label=None
+            )
+        )
         pw_encrypted = base64.b64encode(encrypted).decode("utf-8")
 
         # 3단계: 로그인 요청
