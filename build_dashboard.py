@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import json, html, pathlib, re, time, logging
 from datetime import datetime, timezone
 
@@ -264,9 +264,6 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
           <h2 id="d-title" style="margin:0 0 6px"></h2>
           <div id="d-sub" class="item-meta" style="margin-bottom:10px"></div>
           <div class="badges" id="d-badges"></div>
-          <div style="margin:0 0 14px">
-            <a id="d-origin" class="chip" href="#" target="_blank" rel="noopener noreferrer">🔗 약사공론 원문 보기</a>
-          </div>
           <div class="grid4">
             <div class="info"><div class="k">📞 연락처</div><div class="v" id="d-phone"></div></div>
             <div class="info"><div class="k">👤 담당자</div><div class="v" id="d-owner"></div></div>
@@ -309,7 +306,6 @@ function setDetail(item) {{
   txt(item.tags).split(',').map(s => s.trim()).filter(Boolean).forEach(v => {{
     const s = document.createElement('span'); s.className = 'badge tag'; s.textContent = v; badges.appendChild(s);
   }});
-  document.getElementById('d-origin').href = `https://svc.kpanews.co.kr/jobs/estate/detail?idx=${{item.idx}}`;
 }}
 function applyFilters() {{
   const term = txt(q.value).toLowerCase().trim();
