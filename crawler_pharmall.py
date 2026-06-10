@@ -74,20 +74,40 @@ def load_env():
             k, _, v = line.partition("=")
             os.environ.setdefault(k.strip(), v.strip())
 
+def fix_pem(raw_pem: str) -> str:
+    """# 공백으로 구분된 PEM 문자열 → 올바른 PEM 형식으로 변환"""
+    inner = (raw_pem
+             .replace("-----BEGIN PUBLIC KEY-----", "")
+             .replace("-----END PUBLIC KEY-----", "")
+             .replace(" ", ""))
+    lines = [inner[i:i+64] for i in range(0, len(inner), 64)]
+    return "-----BEGIN PUBLIC KEY-----\n" + "\n".join(lines) + "\n-----END PUBLIC KEY-----"
+
+
 def login():
-    """# 팜올 로그인 → access_token 반환 (비밀번호 base64 인코딩 필요)"""
+    """# 팜올 로그인 → access_token 반환 (비밀번호 RSA PKCS#1 v1.5 암호화 필요)"""
     load_env()
     email    = os.environ.get("PHARMALL_EMAIL", "").strip()
     password = os.environ.get("PHARMALL_PASSWORD", "").strip()
     if not email or not password:
         raise ValueError("PHARMALL_EMAIL, PHARMALL_PASSWORD가 .env에 없습니다")
 
-    # API 요구사항: 비밀번호는 base64 인코딩 후 전송
-    pw_b64 = base64.b64encode(password.encode("utf-8")).decode("utf-8")
-
     try:
-        r = requests.post(LOGIN_API, json={"email": email, "password": pw_b64}, timeout=10)
-        # 400 에러 시 서버 응답 본문 먼저 로그 출력
+        # 1단계: 서버에서 RSA 공개키 조회
+        pk_r = requests.get("https://api.pharmallplus.com/v1/users/public-key", timeout=10)
+        pk_r.raise_for_status()
+        raw_pem = pk_r.json()["data"]["public_key"]
+        log.info("팜올 공개키 조회 성공")
+
+        # 2단계: RSA PKCS#1 v1.5로 비밀번호 암호화
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import padding as asym_padding
+        pub_key = serialization.load_pem_public_key(fix_pem(raw_pem).encode())
+        encrypted = pub_key.encrypt(password.encode("utf-8"), asym_padding.PKCS1v15())
+        pw_encrypted = base64.b64encode(encrypted).decode("utf-8")
+
+        # 3단계: 로그인 요청
+        r = requests.post(LOGIN_API, json={"email": email, "password": pw_encrypted}, timeout=10)
         if r.status_code != 200:
             log.error(f"팜올 로그인 실패 응답: {r.status_code} / 본문: {r.text[:500]}")
         r.raise_for_status()
