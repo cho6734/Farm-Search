@@ -68,7 +68,11 @@ def enrich(item, d):
     item["built"]        = d.get("built_label") or item.get("built","")
     item["owner"]        = d.get("owner_label") or d.get("charge_name") or item.get("owner","")
     item["gubun_type"]   = d.get("gubun_type_label") or d.get("gubun_label") or item.get("gubun_type","")
-    item["thumb_url"]    = d.get("thumb_url") or item.get("thumb_url","")
+    # 상대경로를 절대경로로 변환 (이미지 표시 문제 해결)
+    _thumb = d.get("thumb_url") or item.get("thumb_url","")
+    if _thumb and _thumb.startswith("/"):
+        _thumb = "https://svc.kpanews.co.kr" + _thumb
+    item["thumb_url"] = _thumb
     item["sale_count"]   = d.get("sale_count") or item.get("sale_count","")
     item["sale_amount"]  = d.get("sale_amount") or item.get("sale_amount","")
     item["special_flag"] = d.get("special_flag") or item.get("special_flag","")
