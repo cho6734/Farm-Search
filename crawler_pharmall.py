@@ -77,8 +77,8 @@ def load_env():
 def login():
     """# 팜올 로그인 → access_token 반환 (비밀번호 base64 인코딩 필요)"""
     load_env()
-    email    = os.environ.get("PHARMALL_EMAIL", "")
-    password = os.environ.get("PHARMALL_PASSWORD", "")
+    email    = os.environ.get("PHARMALL_EMAIL", "").strip()
+    password = os.environ.get("PHARMALL_PASSWORD", "").strip()
     if not email or not password:
         raise ValueError("PHARMALL_EMAIL, PHARMALL_PASSWORD가 .env에 없습니다")
 
