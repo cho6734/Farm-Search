@@ -9,6 +9,13 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "requests", "-q"])
     import requests
 
+# 팜올 크롤러 임포트 (없으면 경고만)
+try:
+    import crawler_pharmall
+    HAS_PHARMALL = True
+except ImportError:
+    HAS_PHARMALL = False
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
@@ -94,20 +101,27 @@ def enrich(item, d):
     return item
 
 def crawl():
+    # ── 약사공론 크롤링 ──
     items = load_items()
+    # 기존 약사공론 항목에 source 필드 추가
+    for k, v in items.items():
+        if not str(k).startswith("pm_") and "source" not in v:
+            v["source"] = "kpa"
+
     now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    existing_idxs = sorted(int(k) for k in items.keys())
-    max_idx = existing_idxs[-1] if existing_idxs else 9792
+    kpa_idxs = sorted(int(k) for k in items.keys() if not str(k).startswith("pm_"))
+    max_idx = kpa_idxs[-1] if kpa_idxs else 9792
     log.info(f"기존 항목: {len(items)}건 | 최대 idx: {max_idx}")
 
-    log.info("── 기존 항목 갱신 중...")
-    for idx in existing_idxs:
+    log.info("── 약사공론 기존 항목 갱신 중...")
+    for idx in kpa_idxs:
         key = str(idx)
         if items[key].get("status") == "삭제":
             continue
         d = fetch_detail(idx)
         if d:
             items[key] = enrich(items[key], d)
+            items[key]["source"] = "kpa"
             log.info(f"  ✅ [{idx}] {items[key]['title']}")
         else:
             items[key]["status"] = "삭제"
@@ -115,7 +129,7 @@ def crawl():
             log.info(f"  🗑️  [{idx}] 삭제 감지")
         time.sleep(DELAY)
 
-    log.info(f"── 신규 스캔: {max_idx+1} ~ {max_idx+SCAN_AHEAD}")
+    log.info(f"── 약사공론 신규 스캔: {max_idx+1} ~ {max_idx+SCAN_AHEAD}")
     for idx in range(max_idx + 1, max_idx + SCAN_AHEAD + 1):
         key = str(idx)
         if key in items:
@@ -123,8 +137,34 @@ def crawl():
         d = fetch_detail(idx)
         if d:
             items[key] = enrich({"idx": idx}, d)
+            items[key]["source"] = "kpa"
             log.info(f"  🆕 [{idx}] {items[key]['title']} 신규 추가!")
         time.sleep(DELAY)
+
+    # ── 팜올 크롤링 ──
+    if HAS_PHARMALL:
+        log.info("── 팜올 크롤링 시작...")
+        try:
+            pharmall_items = crawler_pharmall.crawl()
+            # 기존 팜올 항목 제거 후 최신으로 교체
+            for k in [k for k in list(items.keys()) if str(k).startswith("pm_")]:
+                del items[k]
+            items.update(pharmall_items)
+            log.info(f"팜올 {len(pharmall_items)}건 병합 완료")
+        except Exception as e:
+            log.error(f"팜올 크롤링 실패 (약사공론 데이터는 유지): {e}")
+    else:
+        log.warning("crawler_pharmall.py 없음 - 팜올 크롤링 스킵")
+
+    # ── 중복 감지 (전화번호 기준) ──
+    phone_map = {}
+    for k, v in items.items():
+        if not str(k).startswith("pm_") and v.get("phone"):
+            phone_map[v["phone"]] = k
+    for k, v in items.items():
+        if str(k).startswith("pm_") and v.get("phone") and v["phone"] in phone_map:
+            v["possible_duplicate"] = True
+            log.info(f"  ⚠️  중복 의심: {v['title']} ↔ {items[phone_map[v['phone']]].get('title')}")
 
     save_items(items)
     log.info(f"items.json 저장 완료 (총 {len(items)}건)")
@@ -132,26 +172,49 @@ def crawl():
 
 def build(items):
     active = [v for v in items.values() if v.get("status") != "삭제"]
-    active = sorted(active, key=lambda x: int(x.get("idx", 0)), reverse=True)
+
+    # 날짜 기준 정렬 (두 소스 통합)
+    def sort_key(x):
+        d = str(x.get("date") or "")
+        return d if d else "0000.00.00"
+    active = sorted(active, key=sort_key, reverse=True)
+
     regions = sorted({str(x.get("region") or "").strip() for x in active if str(x.get("region") or "").strip()})
     all_tags = set()
     for x in active:
         for t in [a.strip() for a in str(x.get("tags") or "").split(",")]:
             if t: all_tags.add(t)
     tags = sorted(all_tags)
+
     # UTC+9 한국 시간으로 변환
     KST = timezone(timedelta(hours=9))
     updated_at = datetime.now(KST).strftime("%Y.%m.%d %H:%M KST")
 
+    # 소스별 카운트
+    kpa_count      = sum(1 for x in active if x.get("source") == "kpa")
+    pharmall_count = sum(1 for x in active if x.get("source") == "pharmall")
+    dup_count      = sum(1 for x in active if x.get("possible_duplicate"))
+
     list_html = []
     for x in active:
-        summary = (x.get("memo") or "")[:120].replace("\n", " ")
+        summary  = (x.get("memo") or "")[:120].replace("\n", " ")
         payload  = html.escape(json.dumps(x, ensure_ascii=False))
         thumb    = esc(x.get("thumb_url") or "")
         thumb_tag = f'<img src="{thumb}" style="width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px;" onerror="this.style.display=\'none\'">' if thumb else ""
-        list_html.append(f"""<button class="item-card" type="button" data-item="{payload}">
+
+        # 소스 뱃지
+        src = x.get("source", "kpa")
+        if src == "pharmall":
+            src_badge = '<span class="src-badge src-pharmall">팜올</span>'
+        else:
+            src_badge = '<span class="src-badge src-kpa">약사공론</span>'
+
+        # 중복 의심 뱃지
+        dup_badge = '<span class="src-badge src-dup">중복의심</span>' if x.get("possible_duplicate") else ""
+
+        list_html.append(f"""<button class="item-card" type="button" data-item="{payload}" data-source="{esc(src)}">
   {thumb_tag}
-  <div class="item-top"><strong>{esc(x.get("title") or "(제목없음)")}</strong><span>#{esc(x.get("idx"))}</span></div>
+  <div class="item-top"><strong>{esc(x.get("title") or "(제목없음)")}</strong><span>{src_badge}{dup_badge}</span></div>
   <div class="item-meta">{esc(" / ".join([v for v in [x.get("region",""), x.get("location",""), x.get("date","")] if v]))}</div>
   <div class="item-price">{esc(x.get("price",""))}</div>
   <div class="item-phone">📞 {esc(x.get("phone",""))}</div>
@@ -210,6 +273,10 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 .detail-img{{width:100%;max-height:280px;object-fit:cover;border-radius:14px;margin-bottom:14px}}
 .empty{{color:var(--muted);padding:30px;text-align:center}}
 .update-time{{font-size:11px;color:var(--muted);margin-top:6px}}
+.src-badge{{font-size:11px;padding:2px 7px;border-radius:999px;font-weight:600;margin-left:4px}}
+.src-kpa{{background:#1a3a6b;color:#7ab4ff;border:1px solid rgba(120,180,255,.4)}}
+.src-pharmall{{background:#1a4a2a;color:#7adf9a;border:1px solid rgba(100,220,120,.4)}}
+.src-dup{{background:#4a2a00;color:#ffb84d;border:1px solid rgba(255,180,60,.4)}}
 @media(max-width:1100px){{
   .wrap{{grid-template-columns:1fr}}
   .sidebar{{position:relative;top:auto;height:auto}}
@@ -234,10 +301,16 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
         <button class="chip active sort-btn" data-sort="desc" type="button">최신순</button>
         <button class="chip sort-btn" data-sort="asc" type="button">오래된순</button>
       </div>
+      <h2>출처 필터</h2>
+      <div class="row">
+        <button class="chip active src-btn" data-src="" type="button">전체 ({len(active)})</button>
+        <button class="chip src-btn" data-src="kpa" type="button">약사공론 ({kpa_count})</button>
+        <button class="chip src-btn" data-src="pharmall" type="button">팜올 ({pharmall_count})</button>
+      </div>
       <h2>태그 필터</h2>
       <div class="row">{tag_html}</div>
     </div>
-    <p style="margin-top:20px;font-size:13px;color:var(--muted)">활성 <strong>{len(active)}</strong>건 · 삭제 {deleted_count}건</p>
+    <p style="margin-top:20px;font-size:13px;color:var(--muted)">활성 <strong>{len(active)}</strong>건 · 삭제 {deleted_count}건 · 중복의심 {dup_count}건</p>
     <p class="update-time">최종 갱신: {updated_at}</p>
   </aside>
 
@@ -245,7 +318,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
     <div class="panel hero">
       <div class="hero-main">
         <h1>💊 약국 매물<br>대시보드</h1>
-        <p>약사공론 부동산 매물 실시간 모니터링</p>
+        <p>약사공론 + 팜올 부동산 매물 통합 모니터링</p>
         <div class="row" style="margin-top:14px">
           <span class="chip">총 <strong id="hero-count">{len(active)}</strong>건</span>
           <span class="chip">지역 {len(regions)}개</span>
@@ -299,7 +372,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 const listEl = document.getElementById('list');
 const q = document.getElementById('q');
 const selRegion = document.getElementById('sel-region');
-let activeTag = '', sortDir = 'desc';
+let activeTag = '', sortDir = 'desc', activeSrc = '';
 function txt(v) {{ return (v == null ? '' : String(v)); }}
 function setDetail(item) {{
   document.getElementById('detail-empty').style.display = 'none';
@@ -327,73 +400,4 @@ function setDetail(item) {{
   const badges = document.getElementById('d-badges');
   badges.innerHTML = '';
   [item.price, item.area_label, item.move_date, item.gubun_type].filter(Boolean).forEach(v => {{
-    const s = document.createElement('span'); s.className = 'badge'; s.textContent = v; badges.appendChild(s);
-  }});
-  txt(item.tags).split(',').map(s => s.trim()).filter(Boolean).forEach(v => {{
-    const s = document.createElement('span'); s.className = 'badge tag'; s.textContent = v; badges.appendChild(s);
-  }});
-}}
-function applyFilters() {{
-  const term = txt(q.value).toLowerCase().trim();
-  const allCards = [...listEl.querySelectorAll('.item-card')];
-  const visible = [];
-  allCards.forEach(c => {{
-    const item = JSON.parse(c.dataset.item);
-    const hay = [item.title,item.region,item.location,item.memo,item.tags].join(' ').toLowerCase();
-    const ok = (!term || hay.includes(term))
-      && (!selRegion.value || txt(item.region) === selRegion.value)
-      && (!activeTag || txt(item.tags).includes(activeTag));
-    c.style.display = ok ? '' : 'none';
-    if (ok) visible.push(c);
-  }});
-  visible.sort((a,b) => {{
-    const ai = parseInt(JSON.parse(a.dataset.item).idx);
-    const bi = parseInt(JSON.parse(b.dataset.item).idx);
-    return sortDir === 'desc' ? bi-ai : ai-bi;
-  }});
-  visible.forEach(c => listEl.appendChild(c));
-  allCards.forEach(c => c.classList.remove('active'));
-  if (visible.length) {{ visible[0].classList.add('active'); setDetail(JSON.parse(visible[0].dataset.item)); }}
-  const all = visible.map(c => JSON.parse(c.dataset.item));
-  document.getElementById('stat-new').textContent   = all.filter(x => /신규/.test(txt(x.tags)+txt(x.title))).length;
-  document.getElementById('stat-near').textContent  = all.filter(x => /역세권|의원인근|종병|문전/.test(txt(x.tags)+txt(x.memo)+txt(x.title))).length;
-  document.getElementById('stat-phone').textContent = all.filter(x => txt(x.phone)).length;
-  document.getElementById('stat-fast').textContent  = all.filter(x => /바로|즉시/.test(txt(x.move_date)+txt(x.memo))).length;
-  document.getElementById('hero-count').textContent = visible.length;
-}}
-listEl.addEventListener('click', e => {{
-  const card = e.target.closest('.item-card');
-  if (!card) return;
-  [...listEl.querySelectorAll('.item-card')].forEach(c => c.classList.remove('active'));
-  card.classList.add('active');
-  setDetail(JSON.parse(card.dataset.item));
-}});
-q.addEventListener('input', applyFilters);
-selRegion.addEventListener('change', applyFilters);
-document.querySelectorAll('.chip-filter').forEach(b => b.addEventListener('click', () => {{
-  activeTag = activeTag === b.dataset.tag ? '' : b.dataset.tag;
-  document.querySelectorAll('.chip-filter').forEach(x => x.classList.toggle('active', x.dataset.tag === activeTag));
-  applyFilters();
-}}));
-document.querySelectorAll('.sort-btn').forEach(b => b.addEventListener('click', () => {{
-  sortDir = b.dataset.sort;
-  document.querySelectorAll('.sort-btn').forEach(x => x.classList.toggle('active', x.dataset.sort === sortDir));
-  applyFilters();
-}}));
-applyFilters();
-</script>
-</body>
-</html>"""
-
-    DOCS_PATH.write_text(html_out, encoding="utf-8")
-    log.info(f"docs/index.html 빌드 완료 ({len(active)}건)")
-
-if __name__ == "__main__":
-    import sys
-    if "--build-only" in sys.argv:
-        log.info("빌드 전용 모드")
-        items = load_items()
-    else:
-        items = crawl()
-    build(items)
-    log.info("완료!")
+    const s = docu

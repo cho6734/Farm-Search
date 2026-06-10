@@ -27,11 +27,11 @@ jobs:
 
       - name: Build dashboard
         run: python build_dashboard.py
+        env:
+          PHARMALL_EMAIL: ${{ secrets.PHARMALL_EMAIL }}
+          PHARMALL_PASSWORD: ${{ secrets.PHARMALL_PASSWORD }}
 
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs data
-          git diff --cached --quiet || git commit -m "auto: update dashboard"
-          git push
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.
