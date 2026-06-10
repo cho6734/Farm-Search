@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json, html, pathlib, re, time, logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 try:
     import requests
@@ -139,7 +139,9 @@ def build(items):
         for t in [a.strip() for a in str(x.get("tags") or "").split(",")]:
             if t: all_tags.add(t)
     tags = sorted(all_tags)
-    updated_at = datetime.now(timezone.utc).strftime("%Y.%m.%d %H:%M UTC")
+    # UTC+9 한국 시간으로 변환
+    KST = timezone(timedelta(hours=9))
+    updated_at = datetime.now(KST).strftime("%Y.%m.%d %H:%M KST")
 
     list_html = []
     for x in active:
