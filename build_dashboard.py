@@ -400,4 +400,79 @@ function setDetail(item) {{
   const badges = document.getElementById('d-badges');
   badges.innerHTML = '';
   [item.price, item.area_label, item.move_date, item.gubun_type].filter(Boolean).forEach(v => {{
-    const s = docu
+    const s = document.createElement('span'); s.className = 'badge'; s.textContent = v; badges.appendChild(s);
+  }});
+  txt(item.tags).split(',').map(s => s.trim()).filter(Boolean).forEach(v => {{
+    const s = document.createElement('span'); s.className = 'badge tag'; s.textContent = v; badges.appendChild(s);
+  }});
+}}
+function applyFilters() {{
+  const term = txt(q.value).toLowerCase().trim();
+  const allCards = [...listEl.querySelectorAll('.item-card')];
+  const visible = [];
+  allCards.forEach(c => {{
+    const item = JSON.parse(c.dataset.item);
+    const hay = [item.title,item.region,item.location,item.memo,item.tags].join(' ').toLowerCase();
+    const ok = (!term || hay.includes(term))
+      && (!selRegion.value || txt(item.region) === selRegion.value)
+      && (!activeTag || txt(item.tags).includes(activeTag))
+      && (!activeSrc || txt(item.source) === activeSrc);
+    c.style.display = ok ? '' : 'none';
+    if (ok) visible.push(c);
+  }});
+  visible.sort((a,b) => {{
+    const ad = txt(JSON.parse(a.dataset.item).date) || '0000.00.00';
+    const bd = txt(JSON.parse(b.dataset.item).date) || '0000.00.00';
+    return sortDir === 'desc' ? bd.localeCompare(ad) : ad.localeCompare(bd);
+  }});
+  visible.forEach(c => listEl.appendChild(c));
+  allCards.forEach(c => c.classList.remove('active'));
+  if (visible.length) {{ visible[0].classList.add('active'); setDetail(JSON.parse(visible[0].dataset.item)); }}
+  const all = visible.map(c => JSON.parse(c.dataset.item));
+  document.getElementById('stat-new').textContent   = all.filter(x => /신규/.test(txt(x.tags)+txt(x.title))).length;
+  document.getElementById('stat-near').textContent  = all.filter(x => /역세권|의원인근|종병|문전/.test(txt(x.tags)+txt(x.memo)+txt(x.title))).length;
+  document.getElementById('stat-phone').textContent = all.filter(x => txt(x.phone)).length;
+  document.getElementById('stat-fast').textContent  = all.filter(x => /바로|즉시/.test(txt(x.move_date)+txt(x.memo))).length;
+  document.getElementById('hero-count').textContent = visible.length;
+}}
+listEl.addEventListener('click', e => {{
+  const card = e.target.closest('.item-card');
+  if (!card) return;
+  [...listEl.querySelectorAll('.item-card')].forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  setDetail(JSON.parse(card.dataset.item));
+}});
+q.addEventListener('input', applyFilters);
+selRegion.addEventListener('change', applyFilters);
+document.querySelectorAll('.chip-filter').forEach(b => b.addEventListener('click', () => {{
+  activeTag = activeTag === b.dataset.tag ? '' : b.dataset.tag;
+  document.querySelectorAll('.chip-filter').forEach(x => x.classList.toggle('active', x.dataset.tag === activeTag));
+  applyFilters();
+}}));
+document.querySelectorAll('.sort-btn').forEach(b => b.addEventListener('click', () => {{
+  sortDir = b.dataset.sort;
+  document.querySelectorAll('.sort-btn').forEach(x => x.classList.toggle('active', x.dataset.sort === sortDir));
+  applyFilters();
+}}));
+document.querySelectorAll('.src-btn').forEach(b => b.addEventListener('click', () => {{
+  activeSrc = b.dataset.src;
+  document.querySelectorAll('.src-btn').forEach(x => x.classList.toggle('active', x.dataset.src === activeSrc));
+  applyFilters();
+}}));
+applyFilters();
+</script>
+</body>
+</html>"""
+
+    DOCS_PATH.write_text(html_out, encoding="utf-8")
+    log.info(f"docs/index.html 빌드 완료 ({len(active)}건)")
+
+if __name__ == "__main__":
+    import sys
+    if "--build-only" in sys.argv:
+        log.info("빌드 전용 모드")
+        items = load_items()
+    else:
+        items = crawl()
+    build(items)
+    log.info("완료!")
