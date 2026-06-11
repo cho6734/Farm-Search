@@ -469,3 +469,4 @@ if __name__ == "__main__":
     print(f"\n수집 완료: {len(result)}건")
 
 
+
