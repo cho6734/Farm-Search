@@ -93,28 +93,32 @@ def login():
         raise ValueError("PHARMALL_EMAIL, PHARMALL_PASSWORD가 .env에 없습니다")
 
     try:
-        # 1단계: 서버에서 RSA 공개키 조회
-        pk_r = requests.get("https://api.pharmallplus.com/v1/users/public-key", timeout=10)
-        pk_r.raise_for_status()
-        raw_pem = pk_r.json()["data"]["public_key"]
-        log.info("팜올 공개키 조회 성공")
-
-        # 2단계: RSA OAEP (SHA-1) 로 비밀번호 암호화 - node-forge 기본값
         from cryptography.hazmat.primitives import serialization, hashes
         from cryptography.hazmat.primitives.asymmetric import padding as asym_padding
+
+        # Session 으로 쿠키 공유 (공개키 세션 ↔ 로그인 세션 연결)
+        sess = requests.Session()
+
+        # 1단계: 서버에서 RSA 공개키 조회
+        pk_r = sess.get("https://api.pharmallplus.com/v1/users/public-key", timeout=10)
+        pk_r.raise_for_status()
+        raw_pem = pk_r.json()["data"]["public_key"]
+        log.info(f"팜올 공개키 조회 성공 / 쿠키: {dict(sess.cookies)}")
+
+        # 2단계: RSA OAEP (SHA-256) 로 비밀번호 암호화
         pub_key = serialization.load_pem_public_key(fix_pem(raw_pem).encode())
         encrypted = pub_key.encrypt(
             password.encode("utf-8"),
             asym_padding.OAEP(
-                mgf=asym_padding.MGF1(algorithm=hashes.SHA1()),
-                algorithm=hashes.SHA1(),
+                mgf=asym_padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
                 label=None
             )
         )
         pw_encrypted = base64.b64encode(encrypted).decode("utf-8")
 
-        # 3단계: 로그인 요청
-        r = requests.post(LOGIN_API, json={"email": email, "password": pw_encrypted}, timeout=10)
+        # 3단계: 로그인 요청 (동일 Session 사용)
+        r = sess.post(LOGIN_API, json={"email": email, "password": pw_encrypted}, timeout=10)
         if r.status_code != 200:
             log.error(f"팜올 로그인 실패 응답: {r.status_code} / 본문: {r.text[:500]}")
         r.raise_for_status()
