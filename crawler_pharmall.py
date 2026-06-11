@@ -275,9 +275,8 @@ def enrich_item(raw_list, raw_detail=None):
 
     gubun_type = f"{TRADE_TYPE_MAP.get(trade_type_raw, trade_type_raw)} / {OP_TYPE_MAP.get(op_type_raw, op_type_raw)}"
     trade_area = AREA_TYPE_MAP.get(trade_area_raw, trade_area_raw)
-    if item_id:
-        is_brok = d.get("is_brokerage") or d.get("broker_listing") or d.get("listing_type") or trade.get("is_brokerage") or operation.get("is_brokerage")
-        log.info(f"[DEBUG] [{item_id}] trade_area_type={trade_area_raw!r} is_brok={is_brok!r}")
+    is_brok = d.get("is_brokerage") or d.get("broker_listing") or d.get("listing_type") or trade.get("is_brokerage") or operation.get("is_brokerage")
+    log.info(f"[DEBUG] id={item_id!r} trade_area={trade_area_raw!r} is_brok={is_brok!r} keys={list(d.keys())[:8]}")
     form_type  = SALES_TYPE_MAP.get(sales_type_raw, sales_type_raw)
 
     # ── 건축물 정보 ──
