@@ -31,6 +31,7 @@ AREA_TYPE_MAP  = {
     "LOCAL": "로컬", "LOCAL_CLINIC": "로컬의원", "LOCAL_HOSPITAL": "로컬병원",
     "GENERAL": "일반상권", "STATION": "역세권", "APARTMENT": "아파트단지",
     "MEDICAL_CENTER": "메디컬센터", "HOSPITAL_NEARBY": "병원인근",
+    "OTHERS": "기타", "SHOPPING_MALL": "쇼핑몰",
 }
 # 형태 (판매유형)
 SALES_TYPE_MAP = {
@@ -428,49 +429,4 @@ def crawl():
     """# 팜올 전체 크롤링 → {key: item} dict 반환"""
     token = login()
 
-    # 1페이지로 전체 수 파악
-    first = fetch_listings(token, page=1, size=24)
-    if not first:
-        log.error("팜올 목록 조회 실패")
-        return {}
-
-    total_pages = first.get("total_pages", 1)
-    total_items = first.get("total_items", 0)
-    log.info(f"팜올 총 {total_items}건 / {total_pages}페이지")
-
-    # 전체 목록 수집
-    all_listings = list(first.get("items", []))
-    for page in range(2, total_pages + 1):
-        data = fetch_listings(token, page=page, size=24)
-        if data:
-            all_listings.extend(data.get("items", []))
-        time.sleep(0.3)
-
-    log.info(f"목록 수집 완료: {len(all_listings)}건 → 상세 조회 시작")
-
-    # 상세 조회 및 변환
-    items = {}
-    for listing in all_listings:
-        item_id = listing.get("id")
-        key     = f"pm_{item_id}"
-        detail  = fetch_detail(token, item_id)
-        time.sleep(0.3)
-
-        if detail:
-            items[key] = enrich_item(listing, detail)
-            log.info(f"  ✅ [pm_{item_id}] {items[key]['title']}")
-        else:
-            items[key] = enrich_item(listing)
-            log.warning(f"  ⚠️  [pm_{item_id}] 상세 조회 실패, 목록 데이터만 사용")
-
-    log.info(f"팜올 크롤링 완료: {len(items)}건")
-    return items
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    result = crawl()
-    print(f"\n수집 완료: {len(result)}건")
-
-
-
+    # 1페이지로 전�
