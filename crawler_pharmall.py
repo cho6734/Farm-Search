@@ -129,28 +129,37 @@ def login():
         raw_pem = pk_r.json()["data"]["public_key"]
         log.info(f"팜올 공개키 조회 성공 / 쿠키: {dict(sess.cookies)}")
 
-        # 2단계: RSA OAEP (SHA-256) 암호화
+        # 2단계: RSA OAEP 암호화 (SHA-1 시도 → 실패 시 SHA-256 재시도)
         pub_key = serialization.load_pem_public_key(fix_pem(raw_pem).encode())
-        encrypted = pub_key.encrypt(
-            password.encode("utf-8"),
-            asym_padding.OAEP(
-                mgf=asym_padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
-            )
-        )
-        pw_encrypted = base64.b64encode(encrypted).decode("utf-8")
 
-        # 3단계: 로그인 요청
-        r = sess.post(LOGIN_API, json={"email": email, "password": pw_encrypted}, timeout=10)
-        if r.status_code != 200:
-            log.error(f"팜올 로그인 실패 응답: {r.status_code} / 본문: {r.text[:500]}")
-        r.raise_for_status()
-        j = r.json()
-        if j.get("meta", {}).get("success"):
-            log.info("팜올 로그인 성공")
-            return j["data"]["access_token"]
-        raise ValueError(f"로그인 실패: {j.get('meta', {}).get('message')}")
+        def try_login(padding_algo):
+            """# 지정된 패딩으로 암호화 후 로그인 시도"""
+            enc = pub_key.encrypt(
+                password.encode("utf-8"),
+                asym_padding.OAEP(
+                    mgf=asym_padding.MGF1(algorithm=padding_algo()),
+                    algorithm=padding_algo(),
+                    label=None
+                )
+            )
+            pw_enc = base64.b64encode(enc).decode("utf-8")
+            resp = sess.post(LOGIN_API, json={"email": email, "password": pw_enc}, timeout=10)
+            log.info(f"로그인 응답 [{padding_algo.__name__}]: {resp.status_code} / {resp.text[:300]}")
+            if resp.status_code == 200:
+                j = resp.json()
+                if j.get("meta", {}).get("success"):
+                    return j["data"]["access_token"]
+            return None
+
+        # SHA-1 먼저 시도 (원래 방식)
+        token = try_login(hashes.SHA1)
+        if not token:
+            log.warning("SHA-1 로그인 실패 → SHA-256 재시도")
+            token = try_login(hashes.SHA256)
+        if not token:
+            raise ValueError("SHA-1, SHA-256 모두 로그인 실패")
+        log.info("팜올 로그인 성공")
+        return token
     except Exception as e:
         log.error(f"팜올 로그인 에러: {e}")
         raise
