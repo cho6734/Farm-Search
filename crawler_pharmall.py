@@ -269,7 +269,8 @@ def enrich_item(raw_list, raw_detail=None):
     form_type  = SALES_TYPE_MAP.get(sales_type_raw, sales_type_raw)
 
     # ── 건축물 정보 ──
-    property_type_raw = trade.get("property_type") or ""
+    # property_type: trade -> building -> 최상위 순서로 탐색
+    property_type_raw = trade.get("property_type") or building.get("property_type") or d.get("property_type") or ""
     building_usage    = PROPERTY_TYPE_MAP.get(property_type_raw, property_type_raw)
     total_floors      = sanitize_number(building.get("total_floors"))
     floor_label       = format_floor(building)
@@ -280,7 +281,8 @@ def enrich_item(raw_list, raw_detail=None):
     direction         = sanitize_text(building.get("direction") or "", max_len=20)
     parking_total     = sanitize_number(building.get("parking_total_count"))
     parking_avail     = sanitize_number(building.get("parking_available_count"))
-    approval_date     = sanitize_text(trade.get("approval_date") or "", max_len=30)
+    # approval_date: trade -> building -> 최상위 순서로 탐색
+    approval_date     = sanitize_text(trade.get("approval_date") or building.get("approval_date") or d.get("approval_date") or "", max_len=30)
     move_in_label     = format_move_in(trade)
 
     # ── 조회수 ──

@@ -36,8 +36,11 @@ def load_items():
         return {}
 
 def save_items(items):
+    # 원자적 쓰기: 임시 파일에 저장 후 교체 (쓰기 도중 잘림 방지)
     ITEMS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    ITEMS_PATH.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8")
+    tmp = ITEMS_PATH.with_suffix('.tmp')
+    tmp.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding='utf-8')
+    tmp.replace(ITEMS_PATH)
 
 def html_to_text(s):
     s = s or ""
