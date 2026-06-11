@@ -277,7 +277,7 @@ def enrich_item(raw_list, raw_detail=None):
     trade_area = AREA_TYPE_MAP.get(trade_area_raw, trade_area_raw)
     if item_id:
         is_brok = d.get("is_brokerage") or d.get("broker_listing") or d.get("listing_type") or trade.get("is_brokerage") or operation.get("is_brokerage")
-        log.debug(f"[{item_id}] trade_area_type={trade_area_raw!r} is_brok={is_brok!r}")
+        log.info(f"[DEBUG] [{item_id}] trade_area_type={trade_area_raw!r} is_brok={is_brok!r}")
     form_type  = SALES_TYPE_MAP.get(sales_type_raw, sales_type_raw)
 
     # ── 건축물 정보 ──
@@ -467,4 +467,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     result = crawl()
     print(f"\n수집 완료: {len(result)}건")
+
 
