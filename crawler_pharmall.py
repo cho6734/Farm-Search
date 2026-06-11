@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 팜올플러스(pharmallplus) 매물 크롤러
 API: https://open-api.pharmallplus.com/v1/listings
@@ -259,7 +259,7 @@ def enrich_item(raw_list, raw_detail=None):
     area_label = f"전용 {exc:.2f}㎡ ({exc/3.305785:.1f}평)" if exc else ""
     area_full  = area_label
     if sup:
-        area_full += f" / 공용 {sup:.2f}㎡"
+        area_full += f" / 공용 {sup:.2f}㎡ (약 {sup/3.305785:.2f}평)"
 
     # ── 수익 ──
     rx  = sanitize_number(operation.get("monthly_rx_fee_avg") or d.get("monthly_rx_fee_avg"))
@@ -275,6 +275,9 @@ def enrich_item(raw_list, raw_detail=None):
 
     gubun_type = f"{TRADE_TYPE_MAP.get(trade_type_raw, trade_type_raw)} / {OP_TYPE_MAP.get(op_type_raw, op_type_raw)}"
     trade_area = AREA_TYPE_MAP.get(trade_area_raw, trade_area_raw)
+    if item_id:
+        is_brok = d.get("is_brokerage") or d.get("broker_listing") or d.get("listing_type") or trade.get("is_brokerage") or operation.get("is_brokerage")
+        log.debug(f"[{item_id}] trade_area_type={trade_area_raw!r} is_brok={is_brok!r}")
     form_type  = SALES_TYPE_MAP.get(sales_type_raw, sales_type_raw)
 
     # ── 건축물 정보 ──
@@ -464,3 +467,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     result = crawl()
     print(f"\n수집 완료: {len(result)}건")
+
