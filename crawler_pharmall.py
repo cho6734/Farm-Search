@@ -252,6 +252,7 @@ def enrich_item(raw_list, raw_detail=None):
     business  = d.get("business") or {}
     images    = d.get("images") or []
     item_id   = d.get("id") or raw_list.get("id")
+    user_raw  = d.get("user") or raw_list.get("user") or {}
 
     # ── 면적 ──
     exc = sanitize_number(building.get("exclusive_area_m2") or d.get("exclusive_area_m2"))
@@ -275,8 +276,9 @@ def enrich_item(raw_list, raw_detail=None):
 
     gubun_type = f"{TRADE_TYPE_MAP.get(trade_type_raw, trade_type_raw)} / {OP_TYPE_MAP.get(op_type_raw, op_type_raw)}"
     trade_area = AREA_TYPE_MAP.get(trade_area_raw, trade_area_raw)
-    is_brok = d.get("is_brokerage") or d.get("broker_listing") or d.get("listing_type") or trade.get("is_brokerage") or operation.get("is_brokerage")
-    log.info(f"[DEBUG] id={item_id!r} trade_area={trade_area_raw!r} is_brok={is_brok!r} keys={list(d.keys())[:8]}")
+    # user.type으로 중개매물 / 약사직거래 구분 (PARTNER=중개매물, PHARMACIST=약사직거래)
+    user_type   = user_raw.get("type", "")
+    seller_type = "중개매물" if user_type == "PARTNER" else "약사직거래" if user_type == "PHARMACIST" else ""
     form_type  = SALES_TYPE_MAP.get(sales_type_raw, sales_type_raw)
 
     # ── 건축물 정보 ──
@@ -324,6 +326,8 @@ def enrich_item(raw_list, raw_detail=None):
 
     # ── 태그 ──
     tags_list = []
+    if seller_type:
+        tags_list.append(seller_type)  # 중개매물 / 약사직거래 태그를 맨 앞에 추가
     if operation.get("is_exclusive") or d.get("is_exclusive"):
         tags_list.append("독점")
     if op_type_raw:
@@ -380,6 +384,7 @@ def enrich_item(raw_list, raw_detail=None):
 
     return {
         "idx":            f"pm_{item_id}",
+        "seller_type":    seller_type,   # 중개매물 / 약사직거래
         "pharmall_id":    item_id,
         "source":         "pharmall",
         "title":          sanitize_text(d.get("title") or "", max_len=200),

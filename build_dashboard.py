@@ -212,12 +212,21 @@ def build(items):
         else:
             src_badge = '<span class="src-badge src-kpa">약사공론</span>'
 
+        # 매물 유형 배지 (중개매물 / 약사직거래)
+        seller = x.get("seller_type", "")
+        if seller == "중개매물":
+            seller_badge = '<span class="src-badge src-broker">중개매물</span>'
+        elif seller == "약사직거래":
+            seller_badge = '<span class="src-badge src-direct">약사직거래</span>'
+        else:
+            seller_badge = ""
+
         # 중복 의심 뱃지
         dup_badge = '<span class="src-badge src-dup">중복의심</span>' if x.get("possible_duplicate") else ""
 
         list_html.append(f"""<button class="item-card" type="button" data-item="{payload}" data-source="{esc(src)}">
   {thumb_tag}
-  <div class="item-top"><strong>{esc(x.get("title") or "(제목없음)")}</strong><span>{src_badge}{dup_badge}</span></div>
+  <div class="item-top"><strong>{esc(x.get("title") or "(제목없음)")}</strong><span>{src_badge}{seller_badge}{dup_badge}</span></div>
   <div class="item-meta">{esc(" / ".join([v for v in [x.get("region",""), x.get("location",""), x.get("date","")] if v]))}</div>
   <div class="item-price">{esc(x.get("price",""))}</div>
   <div class="item-phone">📞 {esc(x.get("phone",""))}</div>
@@ -280,6 +289,8 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 .src-kpa{{background:#1a3a6b;color:#7ab4ff;border:1px solid rgba(120,180,255,.4)}}
 .src-pharmall{{background:#1a4a2a;color:#7adf9a;border:1px solid rgba(100,220,120,.4)}}
 .src-dup{{background:#4a2a00;color:#ffb84d;border:1px solid rgba(255,180,60,.4)}}
+.src-broker{{background:#3a1a00;color:#ffaa55;border:1px solid rgba(255,150,50,.4)}}
+.src-direct{{background:#0a2a4a;color:#55aaff;border:1px solid rgba(60,150,255,.4)}}
 @media(max-width:1100px){{
   .wrap{{grid-template-columns:1fr}}
   .sidebar{{position:relative;top:auto;height:auto}}
