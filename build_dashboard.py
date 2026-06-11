@@ -347,16 +347,21 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
           <div class="grid4">
             <div class="info"><div class="k">매물구분</div><div class="v" id="d-gubun"></div></div>
             <div class="info"><div class="k">상권</div><div class="v" id="d-trade"></div></div>
+            <div class="info"><div class="k">형태</div><div class="v" id="d-category"></div></div>
             <div class="info"><div class="k">면적</div><div class="v" id="d-area"></div></div>
-            <div class="info"><div class="k">준공년월</div><div class="v" id="d-built"></div></div>
-            <div class="info"><div class="k">입주가능일</div><div class="v" id="d-move"></div></div>
-            <div class="info"><div class="k">형태분류</div><div class="v" id="d-category"></div></div>
-            <div class="info"><div class="k">처방조제건수</div><div class="v" id="d-sale-count"></div></div>
+            <div class="info"><div class="k">월조제료</div><div class="v" id="d-sale-count"></div></div>
             <div class="info"><div class="k">1일매출</div><div class="v" id="d-sale-amount"></div></div>
-            <div class="info"><div class="k">특이사항</div><div class="v" id="d-special"></div></div>
+            <div class="info"><div class="k">입주가능일</div><div class="v" id="d-move"></div></div>
+            <div class="info"><div class="k">관리비</div><div class="v" id="d-maint"></div></div>
             <div class="info"><div class="k">📞 연락처</div><div class="v" id="d-phone"></div></div>
             <div class="info"><div class="k">👤 담당자</div><div class="v" id="d-owner"></div></div>
+            <div class="info"><div class="k">특이사항</div><div class="v" id="d-special"></div></div>
             <div class="info"><div class="k">📍 지역</div><div class="v" id="d-region"></div></div>
+          </div>
+          <div id="d-pharmall-section" style="display:none;margin-top:14px">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:8px">🏢 건축물 정보</div>
+            <div class="grid4" id="d-building-grid"></div>
+            <div id="d-viewcount-row" style="margin-top:10px;font-size:13px;color:var(--muted)"></div>
           </div>
           <div class="memo" id="d-memo"></div>
         </div>
@@ -381,30 +386,59 @@ function setDetail(item) {{
   document.getElementById('d-sub').textContent = [item.region, item.location, item.date ? '등록일 ' + item.date : ''].filter(Boolean).join(' · ');
   document.getElementById('d-phone').textContent = txt(item.phone) || '-';
   document.getElementById('d-owner').textContent = txt(item.owner) || '-';
-  document.getElementById('d-built').textContent = txt(item.built) || '-';
   document.getElementById('d-region').textContent = txt(item.region) || '-';
   document.getElementById('d-gubun').textContent = txt(item.gubun_type) || '-';
   document.getElementById('d-trade').textContent = txt(item.trade_area) || '-';
-  document.getElementById('d-area').textContent = txt(item.area_label) || '-';
-  document.getElementById('d-move').textContent = txt(item.move_date) || '-';
-  document.getElementById('d-category').textContent = txt(item.trade_area) || '-';
+  document.getElementById('d-area').textContent = txt(item.area_full || item.area_label) || '-';
+  document.getElementById('d-category').textContent = txt(item.form_type || item.trade_area) || '-';
   document.getElementById('d-sale-count').textContent = txt(item.sale_count) || '-';
   document.getElementById('d-sale-amount').textContent = txt(item.sale_amount) || '-';
   document.getElementById('d-special').textContent = txt(item.special_flag) || '-';
+  document.getElementById('d-maint').textContent = txt(item.maintenance_fee) || '-';
+  // 입주가능일: 팜올은 move_in, 약사공론은 move_date
+  document.getElementById('d-move').textContent = txt(item.move_in || item.move_date) || '-';
   document.getElementById('d-memo').textContent = txt(item.memo);
   const img = document.getElementById('d-img');
   if (item.thumb_url) {{
     img.src = item.thumb_url; img.style.display = 'block';
     img.onerror = () => {{ img.style.display = 'none'; }};
   }} else {{ img.style.display = 'none'; }}
+  // 뱃지
   const badges = document.getElementById('d-badges');
   badges.innerHTML = '';
-  [item.price, item.area_label, item.move_date, item.gubun_type].filter(Boolean).forEach(v => {{
+  [item.price, item.area_full || item.area_label, item.move_in || item.move_date, item.gubun_type].filter(Boolean).forEach(v => {{
     const s = document.createElement('span'); s.className = 'badge'; s.textContent = v; badges.appendChild(s);
   }});
   txt(item.tags).split(',').map(s => s.trim()).filter(Boolean).forEach(v => {{
     const s = document.createElement('span'); s.className = 'badge tag'; s.textContent = v; badges.appendChild(s);
   }});
+  // 팜올 전용: 건축물 정보 섹션
+  const pmSection = document.getElementById('d-pharmall-section');
+  if (item.source === 'pharmall') {{
+    pmSection.style.display = 'block';
+    const bg = document.getElementById('d-building-grid');
+    bg.innerHTML = '';
+    const bfields = [
+      ['건물용도', item.building_usage],
+      ['사용승인일', item.approval_date],
+      ['총층', item.total_floors ? item.total_floors + '층' : ''],
+      ['해당층', item.floor_label],
+      ['방수', item.rooms ? item.rooms + '개' : ''],
+      ['화장실', item.bathroom],
+      ['총주차', item.parking_total ? item.parking_total + '대' : ''],
+      ['가능주차', item.parking_avail ? item.parking_avail + '대' : ''],
+      ['방향', item.direction],
+      ['관리비', item.maintenance_fee],
+      ['입주가능일', item.move_in],
+      ['조회수', item.view_count ? item.view_count + '회' : ''],
+    ];
+    bfields.filter(f => f[1]).forEach(f => {{
+      bg.innerHTML += '<div class="info"><div class="k">' + f[0] + '</div><div class="v">' + txt(f[1]) + '</div></div>';
+    }});
+    document.getElementById('d-viewcount-row').textContent = item.view_count ? '👁 조회수 ' + item.view_count + '회' : '';
+  }} else {{
+    pmSection.style.display = 'none';
+  }}
 }}
 function applyFilters() {{
   const term = txt(q.value).toLowerCase().trim();

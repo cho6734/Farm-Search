@@ -2,7 +2,7 @@
 """
 팜올플러스(pharmallplus) 매물 크롤러
 API: https://open-api.pharmallplus.com/v1/listings
-인증: 이메일/비밀번호 로그인 → JWT access_token (base64 패스워드)
+인증: 이메일/비밀번호 로그인 → JWT access_token (RSA OAEP SHA-256)
 """
 import json, re, time, base64, logging, pathlib, os
 from datetime import datetime, timezone, timedelta
@@ -27,7 +27,31 @@ ALLOWED_IMG_DOMAINS = ["i.pharmallplus.com"]
 # 코드 → 한국어 매핑
 TRADE_TYPE_MAP = {"SALE": "매매", "RENT": "임대", "PRE_SALE": "분양"}
 OP_TYPE_MAP    = {"OPERATING": "기존약국", "NEW_PHARMACY": "신규약국"}
-AREA_TYPE_MAP  = {"LOCAL": "로컬", "GENERAL": "일반상권"}
+AREA_TYPE_MAP  = {
+    "LOCAL": "로컬", "LOCAL_CLINIC": "로컬의원", "LOCAL_HOSPITAL": "로컬병원",
+    "GENERAL": "일반상권", "STATION": "역세권", "APARTMENT": "아파트단지",
+    "MEDICAL_CENTER": "메디컬센터", "HOSPITAL_NEARBY": "병원인근",
+}
+# 형태 (판매유형)
+SALES_TYPE_MAP = {
+    "PRESCRIPTION_OTC": "조제 + 매약",
+    "PRESCRIPTION":     "조제",
+    "OTC":              "매약",
+}
+# 건물용도 (property_type)
+PROPERTY_TYPE_MAP = {
+    "TYPE_1_NEIGHBORHOOD_FACILITY":  "제 1종 근린시설",
+    "TYPE_2_NEIGHBORHOOD_FACILITY":  "제 2종 근린시설",
+    "APARTMENT":                     "아파트",
+    "OFFICE_BUILDING":               "업무용빌딩",
+    "MEDICAL_FACILITY":              "의료시설",
+}
+# 화장실 유형
+BATHROOM_TYPE_MAP = {
+    "SHARED":  "공용",
+    "PRIVATE": "전용",
+    "BOTH":    "공용+전용",
+}
 
 
 # ── 보안: 4단계 살균 함수 ──────────────────────────────────────────────────
@@ -37,10 +61,10 @@ def sanitize_text(v, max_len=500):
     if v is None:
         return ""
     s = str(v)
-    s = re.sub(r"<[^>]+>", "", s)                          # 1단계: HTML 태그 제거
-    s = re.sub(r"javascript\s*:", "", s, flags=re.I)        # 2단계: js 스킴 제거
-    s = re.sub(r"(on\w+\s*=|<script|</script)", "", s, flags=re.I)  # 3단계: 이벤트핸들러 제거
-    return s.strip()[:max_len]                              # 4단계: 길이 제한
+    s = re.sub(r"<[^>]+>", "", s)
+    s = re.sub(r"javascript\s*:", "", s, flags=re.I)
+    s = re.sub(r"(on\w+\s*=|<script|</script)", "", s, flags=re.I)
+    return s.strip()[:max_len]
 
 def sanitize_number(v):
     """# 숫자 타입 검증 - 숫자가 아니면 None 반환"""
@@ -85,7 +109,7 @@ def fix_pem(raw_pem: str) -> str:
 
 
 def login():
-    """# 팜올 로그인 → access_token 반환 (비밀번호 RSA PKCS#1 v1.5 암호화 필요)"""
+    """# 팜올 로그인 → access_token 반환 (RSA OAEP SHA-256 암호화)"""
     load_env()
     email    = os.environ.get("PHARMALL_EMAIL", "").strip()
     password = os.environ.get("PHARMALL_PASSWORD", "").strip()
@@ -96,16 +120,16 @@ def login():
         from cryptography.hazmat.primitives import serialization, hashes
         from cryptography.hazmat.primitives.asymmetric import padding as asym_padding
 
-        # Session 으로 쿠키 공유 (공개키 세션 ↔ 로그인 세션 연결)
+        # Session으로 쿠키 공유
         sess = requests.Session()
 
-        # 1단계: 서버에서 RSA 공개키 조회
+        # 1단계: RSA 공개키 조회
         pk_r = sess.get("https://api.pharmallplus.com/v1/users/public-key", timeout=10)
         pk_r.raise_for_status()
         raw_pem = pk_r.json()["data"]["public_key"]
         log.info(f"팜올 공개키 조회 성공 / 쿠키: {dict(sess.cookies)}")
 
-        # 2단계: RSA OAEP (SHA-256) 로 비밀번호 암호화
+        # 2단계: RSA OAEP (SHA-256) 암호화
         pub_key = serialization.load_pem_public_key(fix_pem(raw_pem).encode())
         encrypted = pub_key.encrypt(
             password.encode("utf-8"),
@@ -117,7 +141,7 @@ def login():
         )
         pw_encrypted = base64.b64encode(encrypted).decode("utf-8")
 
-        # 3단계: 로그인 요청 (동일 Session 사용)
+        # 3단계: 로그인 요청
         r = sess.post(LOGIN_API, json={"email": email, "password": pw_encrypted}, timeout=10)
         if r.status_code != 200:
             log.error(f"팜올 로그인 실패 응답: {r.status_code} / 본문: {r.text[:500]}")
@@ -188,8 +212,29 @@ def format_price(trade):
         return f"분양가 {int(p):,}만원" if (p and p > 1) else "분양가 협의"
     return ""
 
+def format_move_in(trade):
+    """# 입주가능일 포맷"""
+    parts = []
+    date = trade.get("move_in_available_date") or ""
+    if date:
+        parts.append(date)
+    if trade.get("is_move_in_immediate"):
+        parts.append("즉시입주가능")
+    if trade.get("is_move_in_adjustable"):
+        parts.append("입주일 조율가능")
+    return " / ".join(parts) if parts else ""
+
+def format_floor(building):
+    """# 해당층 포맷 (지상/지하 + 층수)"""
+    floor_no = sanitize_number(building.get("floor_no"))
+    is_ground = building.get("is_ground")
+    if floor_no is None:
+        return ""
+    prefix = "지상" if is_ground else "지하"
+    return f"{prefix} {int(floor_no)}층"
+
 def enrich_item(raw_list, raw_detail=None):
-    """# 팜올 API 데이터 → 대시보드 공통 형식으로 변환 (보안 살균 포함)"""
+    """# 팜올 API 데이터 → 대시보드 공통 형식으로 변환 (모든 필드 포함)"""
     d         = raw_detail or raw_list
     trade     = d.get("trade") or {}
     building  = d.get("building") or {}
@@ -199,24 +244,49 @@ def enrich_item(raw_list, raw_detail=None):
     images    = d.get("images") or []
     item_id   = d.get("id") or raw_list.get("id")
 
-    # 면적
+    # ── 면적 ──
     exc = sanitize_number(building.get("exclusive_area_m2") or d.get("exclusive_area_m2"))
+    sup = sanitize_number(building.get("supply_area_m2") or d.get("supply_area_m2"))
     area_label = f"전용 {exc:.2f}㎡ ({exc/3.305785:.1f}평)" if exc else ""
+    area_full  = area_label
+    if sup:
+        area_full += f" / 공용 {sup:.2f}㎡"
 
-    # 조제료 / 매출
+    # ── 수익 ──
     rx  = sanitize_number(operation.get("monthly_rx_fee_avg") or d.get("monthly_rx_fee_avg"))
     otc = sanitize_number(operation.get("otc_daily_sales_avg") or d.get("otc_daily_sales_avg"))
     sale_count  = f"{int(rx):,}만원/월" if rx else ""
     sale_amount = f"{int(otc):,}만원/일" if otc else ""
 
-    # 거래구분
+    # ── 거래구분 / 상권 / 형태 ──
     trade_type_raw = trade.get("trade_type") or d.get("trade_type", "")
     op_type_raw    = operation.get("operation_type") or d.get("operation_type", "")
-    gubun_type     = f"{TRADE_TYPE_MAP.get(trade_type_raw, trade_type_raw)} / {OP_TYPE_MAP.get(op_type_raw, op_type_raw)}"
+    sales_type_raw = operation.get("sales_type") or d.get("sales_type", "")
     trade_area_raw = operation.get("trade_area_type") or d.get("trade_area_type", "")
-    trade_area     = AREA_TYPE_MAP.get(trade_area_raw, trade_area_raw)
 
-    # 이미지 (화이트리스트 검증)
+    gubun_type = f"{TRADE_TYPE_MAP.get(trade_type_raw, trade_type_raw)} / {OP_TYPE_MAP.get(op_type_raw, op_type_raw)}"
+    trade_area = AREA_TYPE_MAP.get(trade_area_raw, trade_area_raw)
+    form_type  = SALES_TYPE_MAP.get(sales_type_raw, sales_type_raw)
+
+    # ── 건축물 정보 ──
+    property_type_raw = trade.get("property_type") or ""
+    building_usage    = PROPERTY_TYPE_MAP.get(property_type_raw, property_type_raw)
+    total_floors      = sanitize_number(building.get("total_floors"))
+    floor_label       = format_floor(building)
+    rooms             = sanitize_number(building.get("rooms"))
+    bathroom_type_raw = building.get("bathroom_type") or ""
+    bathroom_type     = BATHROOM_TYPE_MAP.get(bathroom_type_raw, bathroom_type_raw)
+    bathroom_count    = sanitize_number(building.get("bathroom_count"))
+    direction         = sanitize_text(building.get("direction") or "", max_len=20)
+    parking_total     = sanitize_number(building.get("parking_total_count"))
+    parking_avail     = sanitize_number(building.get("parking_available_count"))
+    approval_date     = sanitize_text(trade.get("approval_date") or "", max_len=30)
+    move_in_label     = format_move_in(trade)
+
+    # ── 조회수 ──
+    view_count = sanitize_number(d.get("page_view_count") or d.get("view_count") or 0)
+
+    # ── 이미지 ──
     thumb_url = ""
     for img in images:
         url = sanitize_url(img.get("url") or img.get("image_url") or "")
@@ -224,11 +294,11 @@ def enrich_item(raw_list, raw_detail=None):
             thumb_url = url
             break
 
-    # 연락처 / 담당자
+    # ── 연락처 / 담당자 ──
     phone = sanitize_text(business.get("representative_phone_number") or "", max_len=20)
     owner = sanitize_text(business.get("company_name") or "", max_len=100)
 
-    # 등록일 (KST 변환)
+    # ── 등록일 ──
     date_str = ""
     created_at = d.get("created_at") or ""
     if created_at:
@@ -239,7 +309,7 @@ def enrich_item(raw_list, raw_detail=None):
         except Exception:
             date_str = created_at[:10]
 
-    # 태그
+    # ── 태그 ──
     tags_list = []
     if operation.get("is_exclusive") or d.get("is_exclusive"):
         tags_list.append("독점")
@@ -247,18 +317,48 @@ def enrich_item(raw_list, raw_detail=None):
         tags_list.append(OP_TYPE_MAP.get(op_type_raw, op_type_raw))
     if trade_type_raw:
         tags_list.append(TRADE_TYPE_MAP.get(trade_type_raw, trade_type_raw))
+    if form_type:
+        tags_list.append(form_type)
+    if trade_area:
+        tags_list.append(trade_area)
 
-    # 메모
-    parts = []
+    # ── 메모 (전체 정보 텍스트) ──
     addr = sanitize_text(location.get("address") or "", max_len=200)
-    if addr:           parts.append(f"주소: {addr}")
-    if area_label:     parts.append(f"면적: {area_label}")
+    parts = []
+    if addr:
+        parts.append(f"주소: {addr}")
+    if area_full:
+        parts.append(f"면적: {area_full}")
     maint = sanitize_number(trade.get("maintenance_fee"))
-    if maint:          parts.append(f"관리비: {int(maint):,}만원")
-    if sale_count:     parts.append(f"월조제료: {sale_count}")
-    if sale_amount:    parts.append(f"일반약일매출: {sale_amount}")
+    if maint:
+        parts.append(f"관리비: {int(maint):,}만원")
+    if sale_count:
+        parts.append(f"월조제료: {sale_count}")
+    if sale_amount:
+        parts.append(f"일반약일매출: {sale_amount}")
+    # 건축물 정보 추가
+    if building_usage:
+        parts.append(f"건물용도: {building_usage}")
+    if approval_date:
+        parts.append(f"사용승인일: {approval_date}")
+    if total_floors:
+        parts.append(f"총층: {int(total_floors)}층")
+    if floor_label:
+        parts.append(f"해당층: {floor_label}")
+    if rooms:
+        bath_str = f"{bathroom_type}, {int(bathroom_count)}개" if bathroom_count else ""
+        parts.append(f"방수: {int(rooms)}개 / 화장실: {bath_str}")
+    if parking_total is not None:
+        parts.append(f"주차: 총 {int(parking_total)}대 / 가능 {int(parking_avail) if parking_avail else 0}대")
+    if direction:
+        parts.append(f"방향: {direction}")
+    if move_in_label:
+        parts.append(f"입주가능일: {move_in_label}")
+    if view_count:
+        parts.append(f"조회수: {int(view_count)}")
     desc = sanitize_text(d.get("description") or "", max_len=1000)
-    if desc:           parts.append(f"상세: {desc}")
+    if desc:
+        parts.append(f"상세: {desc}")
 
     full_location = sanitize_text(
         location.get("administrative_area_full_name") or d.get("administrative_area_full_name") or "", max_len=100
@@ -266,26 +366,41 @@ def enrich_item(raw_list, raw_detail=None):
     region = full_location.split()[0] if full_location else ""
 
     return {
-        "idx":          f"pm_{item_id}",
-        "pharmall_id":  item_id,
-        "source":       "pharmall",
-        "title":        sanitize_text(d.get("title") or "", max_len=200),
-        "region":       region,
-        "location":     full_location,
-        "price":        format_price(trade),
-        "phone":        phone,
-        "owner":        owner,
-        "date":         date_str,
-        "area_label":   area_label,
-        "trade_area":   trade_area,
-        "gubun_type":   gubun_type,
-        "sale_count":   sale_count,
-        "sale_amount":  sale_amount,
-        "thumb_url":    thumb_url,
-        "tags":         ", ".join(tags_list),
-        "memo":         "\n".join(parts),
-        "status":       "active",
-        "collected_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        "idx":            f"pm_{item_id}",
+        "pharmall_id":    item_id,
+        "source":         "pharmall",
+        "title":          sanitize_text(d.get("title") or "", max_len=200),
+        "region":         region,
+        "location":       full_location,
+        "price":          format_price(trade),
+        "phone":          phone,
+        "owner":          owner,
+        "date":           date_str,
+        "area_label":     area_label,
+        "area_full":      area_full,
+        "trade_area":     trade_area,
+        "form_type":      form_type,
+        "gubun_type":     gubun_type,
+        "sale_count":     sale_count,
+        "sale_amount":    sale_amount,
+        "thumb_url":      thumb_url,
+        "tags":           ", ".join(tags_list),
+        "memo":           "\n".join(parts),
+        # 건축물 정보
+        "building_usage": building_usage,
+        "approval_date":  approval_date,
+        "total_floors":   int(total_floors) if total_floors else "",
+        "floor_label":    floor_label,
+        "rooms":          int(rooms) if rooms else "",
+        "bathroom":       f"{bathroom_type}, {int(bathroom_count)}개" if bathroom_count else "",
+        "parking_total":  int(parking_total) if parking_total else "",
+        "parking_avail":  int(parking_avail) if parking_avail else "",
+        "direction":      direction,
+        "move_in":        move_in_label,
+        "view_count":     int(view_count) if view_count else 0,
+        "maintenance_fee": f"{int(maint):,}만원" if maint else "",
+        "status":         "active",
+        "collected_at":   datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
     }
 
 
@@ -295,7 +410,7 @@ def crawl():
     """# 팜올 전체 크롤링 → {key: item} dict 반환"""
     token = login()
 
-    # 1페이지로 전체 페이지 수 파악
+    # 1페이지로 전체 수 파악
     first = fetch_listings(token, page=1, size=24)
     if not first:
         log.error("팜올 목록 조회 실패")
