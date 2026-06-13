@@ -159,18 +159,13 @@ def crawl():
     else:
         log.warning("crawler_pharmall.py 없음 - 팜올 크롤링 스킵")
 
-    # ── 중복 감지 (다중 기준 스코어링: 주소·전화·가격·제목 종합) ──
+    # ── 중복 감지 ──
+    # 기준 1 (교차중복): KPA↔팜올 같은 시/군 주소
+    # 기준 2 (내부중복): 같은 사이트 내 전화번호+지역 동일
     def _norm_phone(p):
         return re.sub(r'\D', '', str(p or ''))
 
-    def _title_sim(t1, t2):
-        s1 = set(str(t1 or '').replace(' ', ''))
-        s2 = set(str(t2 or '').replace(' ', ''))
-        if not s1 or not s2:
-            return 0.0
-        return len(s1 & s2) / max(len(s1 | s2), 1)
-
-    active_pairs = [(k, v) for k, v in items.items() if v.get("status") != "삭제"]
+    active_list = [(k, v) for k, v in items.items() if v.get("status") != "삭제"]
     uf = {}
     def _find(x):
         while uf.get(x, x) != x:
@@ -182,41 +177,39 @@ def crawl():
         if rx != ry:
             uf[ry] = rx
 
-    n = len(active_pairs)
+    n = len(active_list)
     for i in range(n):
-        k1, v1 = active_pairs[i]
-        ph1  = _norm_phone(v1.get("phone"))
+        k1, v1 = active_list[i]
         loc1 = str(v1.get("location") or '').strip()
-        pr1  = str(v1.get("price") or '').strip()
-        t1   = str(v1.get("title") or '')
+        ph1  = _norm_phone(v1.get("phone"))
+        reg1 = str(v1.get("region") or '').strip()
+        src1 = str(v1.get("source") or '')
+        is_pm1 = str(k1).startswith('pm_')
         for j in range(i + 1, n):
-            k2, v2 = active_pairs[j]
-            score = 0
-            ph2 = _norm_phone(v2.get("phone"))
-            if len(ph1) >= 8 and ph1 == ph2:
-                score += 30
+            k2, v2 = active_list[j]
+            src2 = str(v2.get("source") or '')
+            is_pm2 = str(k2).startswith('pm_')
             loc2 = str(v2.get("location") or '').strip()
-            if loc1 and loc1 == loc2:
-                score += 50
-            pr2 = str(v2.get("price") or '').strip()
-            if pr1 and pr1 == pr2:
-                score += 20
-            t2 = str(v2.get("title") or '')
-            if _title_sim(t1, t2) >= 0.7:
-                score += 25
-            if score >= 50:
+            ph2  = _norm_phone(v2.get("phone"))
+            reg2 = str(v2.get("region") or '').strip()
+            # 기준 1: 교차중복 - 서로 다른 사이트, 같은 시/군 주소
+            if is_pm1 != is_pm2 and loc1 and loc1 == loc2:
+                _union(k1, k2)
+                continue
+            # 기준 2: 내부중복 - 같은 사이트, 전화번호+지역 동일
+            if src1 == src2 and len(ph1) >= 8 and ph1 == ph2 and reg1 and reg1 == reg2:
                 _union(k1, k2)
 
     group_map = {}
     dup_group_counter = 0
-    for k, v in active_pairs:
+    for k, v in active_list:
         root = _find(k)
         if root not in group_map:
-            members = [kk for kk, _ in active_pairs if _find(kk) == root]
+            members = [kk for kk, _ in active_list if _find(kk) == root]
             if len(members) >= 2:
                 dup_group_counter += 1
                 group_map[root] = (dup_group_counter, members)
-    for k, v in active_pairs:
+    for k, v in active_list:
         root = _find(k)
         if root in group_map:
             gid, members = group_map[root]
@@ -226,7 +219,7 @@ def crawl():
             v["dup_group"] = gid
             v["dup_kind"] = kind
     for root, (gid, members) in group_map.items():
-        titles = [str(items[m].get('title', ''))[:15] for m in members]
+        titles = [str(items[m].get('title',''))[:15] for m in members]
         srcs = set('팜올' if str(m).startswith('pm_') else 'KPA' for m in members)
         kind = 'cross' if len(srcs) > 1 else ('kpa' if 'KPA' in srcs else 'pm')
         log.info(f"  ⚠️  중복의심[{kind}] {len(members)}건: {', '.join(titles)}")
