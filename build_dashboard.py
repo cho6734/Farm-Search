@@ -252,6 +252,9 @@ def build(items):
     kpa_count      = sum(1 for x in active if x.get("source") == "kpa")
     pharmall_count = sum(1 for x in active if x.get("source") == "pharmall")
     dup_count      = sum(1 for x in active if x.get("possible_duplicate"))
+    non_dup_count  = len(active) - dup_count
+    broker_count   = sum(1 for x in active if x.get("seller_type") == "중개매물")
+    direct_count   = sum(1 for x in active if x.get("seller_type") == "약사직거래")
 
     list_html = []
     for x in active:
@@ -377,10 +380,27 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
         <button class="chip src-btn" data-src="kpa" type="button">약사공론 ({kpa_count})</button>
         <button class="chip src-btn" data-src="pharmall" type="button">팜올 ({pharmall_count})</button>
       </div>
+      <h2>거래 유형</h2>
+      <div class="row">
+        <button class="chip active type-btn" data-type="" type="button">전체 ({len(active)})</button>
+        <button class="chip type-btn" data-type="중개매물" type="button">🏢 중개매물 ({broker_count})</button>
+        <button class="chip type-btn" data-type="약사직거래" type="button">🤝 약사직거래 ({direct_count})</button>
+      </div>
       <h2>중복 필터</h2>
       <div class="row">
         <button class="chip dup-btn" data-dup="show" type="button">⚠️ 중복의심 ({dup_count})</button>
-        <button class="chip dup-btn" data-dup="hide" type="button">✅ 중복 제외</button>
+        <button class="chip dup-btn" data-dup="hide" type="button">✅ 중복 제외 ({non_dup_count}건)</button>
+      </div>
+      <h2>조제/처방 건수</h2>
+      <div style="padding:2px 0 6px">
+        <div class="row" style="gap:6px;align-items:center;flex-wrap:nowrap">
+          <input type="number" id="sale-min" placeholder="최소" min="0" step="10" style="width:64px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+          <span style="color:var(--muted)">~</span>
+          <input type="number" id="sale-max" placeholder="최대" min="0" step="10" style="width:64px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+          <button class="chip" id="sale-apply" type="button">적용</button>
+          <button class="chip" id="sale-reset" type="button">초기화</button>
+        </div>
+        <p style="margin:4px 0 0;font-size:11px;color:var(--muted)">※ 건수 미기재 매물은 항상 포함</p>
       </div>
       <h2>태그 필터</h2>
       <div class="row">{tag_html}</div>
@@ -452,7 +472,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 const listEl = document.getElementById('list');
 const q = document.getElementById('q');
 const selRegion = document.getElementById('sel-region');
-let activeTag = '', sortDir = 'desc', activeSrc = '', activeDup = '';
+let activeTag = '', sortDir = 'desc', activeSrc = '', activeDup = '', activeType = '', saleMin = 0, saleMax = 0;
 function txt(v) {{ return (v == null ? '' : String(v)); }}
 function setDetail(item) {{
   document.getElementById('detail-empty').style.display = 'none';
@@ -527,7 +547,16 @@ function applyFilters() {{
       && (!activeTag || txt(item.tags).includes(activeTag))
       && (!activeSrc || txt(item.source) === activeSrc)
       && (activeDup !== 'show' || c.dataset.dup === '1')
-      && (activeDup !== 'hide' || c.dataset.dup !== '1');
+      && (activeDup !== 'hide' || c.dataset.dup !== '1')
+      && (!activeType || txt(item.seller_type) === activeType)
+      && ((() => {{
+        if (!saleMin && !saleMax) return true;
+        const cnt = parseInt(txt(item.sale_count)) || 0;
+        if (!cnt) return true;
+        if (saleMin && cnt < saleMin) return false;
+        if (saleMax && cnt > saleMax) return false;
+        return true;
+      }})());
     c.style.display = ok ? '' : 'none';
     if (ok) visible.push(c);
   }});
@@ -577,6 +606,24 @@ document.querySelectorAll('.dup-btn').forEach(b => b.addEventListener('click', (
   document.querySelectorAll('.dup-btn').forEach(x => x.classList.toggle('active', x.dataset.dup === activeDup));
   applyFilters();
 }}));
+document.querySelectorAll('.type-btn').forEach(b => b.addEventListener('click', () => {{
+  activeType = activeType === b.dataset.type ? '' : b.dataset.type;
+  document.querySelectorAll('.type-btn').forEach(x => x.classList.toggle('active', x.dataset.type === activeType));
+  applyFilters();
+}}));
+const saleApply = document.getElementById('sale-apply');
+const saleReset = document.getElementById('sale-reset');
+if (saleApply) saleApply.addEventListener('click', () => {{
+  saleMin = parseInt(document.getElementById('sale-min').value) || 0;
+  saleMax = parseInt(document.getElementById('sale-max').value) || 0;
+  applyFilters();
+}});
+if (saleReset) saleReset.addEventListener('click', () => {{
+  saleMin = saleMax = 0;
+  document.getElementById('sale-min').value = '';
+  document.getElementById('sale-max').value = '';
+  applyFilters();
+}});
 applyFilters();
 </script>
 </body>
