@@ -1595,11 +1595,7 @@ function applyFilters() {
     if (cmp !== 0) return cmp;
     const aidx = parseInt(ai.idx) || 0, bidx = parseInt(bi.idx) || 0;
     return sortDir === 'desc' ? bidx - aidx : aidx - bidx;
-  });});
-  visible.forEach(c => listEl.appendChild(c));
-  allCards.forEach(c => c.classList.remove('active'));
-  if (visible.length) { visible[0].classList.add('active'); setDetail(JSON.parse(visible[0].dataset.item)); }
-  const all = visible.map(c => JSON.parse(c.dataset.item));
+  });c.dataset.item));
   document.getElementById('stat-new').textContent = all.filter(x => /신규/.test(txt(x.tags)+txt(x.title))).length;
   document.getElementById('stat-near').textContent = all.filter(x => /역세권|의원인근|종병|문전/.test(txt(x.tags)+txt(x.memo)+txt(x.title))).length;
   document.getElementById('stat-phone').textContent = all.filter(x => txt(x.phone)).length;
