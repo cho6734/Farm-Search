@@ -1593,15 +1593,9 @@ function applyFilters() {
     const ad = txt(ai.date) || '0000.00.00', bd = txt(bi.date) || '0000.00.00';
     const cmp = sortDir === 'desc' ? bd.localeCompare(ad) : ad.localeCompare(bd);
     if (cmp !== 0) return cmp;
-    // 날짜 기준 정렬 (KPA/팜올 모두 호환)
-    const ad = txt(ai.date) || '0000.00.00';
-    const bd = txt(bi.date) || '0000.00.00';
-    if (ad !== bd) return sortDir === 'desc' ? bd.localeCompare(ad) : ad.localeCompare(bd);
-    // 날짜 동일 시 idx 숫자 비교 (KPA만 해당)
-    const aidx = parseInt(ai.idx) || 0;
-    const bidx = parseInt(bi.idx) || 0;
+    const aidx = parseInt(ai.idx) || 0, bidx = parseInt(bi.idx) || 0;
     return sortDir === 'desc' ? bidx - aidx : aidx - bidx;
-  });
+  });});
   visible.forEach(c => listEl.appendChild(c));
   allCards.forEach(c => c.classList.remove('active'));
   if (visible.length) { visible[0].classList.add('active'); setDetail(JSON.parse(visible[0].dataset.item)); }
