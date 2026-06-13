@@ -473,8 +473,13 @@ function applyFilters() {{
     const ad = txt(ai.date) || '0000.00.00', bd = txt(bi.date) || '0000.00.00';
     const cmp = sortDir === 'desc' ? bd.localeCompare(ad) : ad.localeCompare(bd);
     if (cmp !== 0) return cmp;
-    const aidx = parseInt(ai.idx || ai.pharmall_id || 0);
-    const bidx = parseInt(bi.idx || bi.pharmall_id || 0);
+    // 날짜 기준 정렬 (KPA/팜올 모두 호환)
+    const ad = txt(ai.date) || '0000.00.00';
+    const bd = txt(bi.date) || '0000.00.00';
+    if (ad !== bd) return sortDir === 'desc' ? bd.localeCompare(ad) : ad.localeCompare(bd);
+    // 날짜 동일 시 idx 숫자 비교 (KPA만 해당)
+    const aidx = parseInt(ai.idx) || 0;
+    const bidx = parseInt(bi.idx) || 0;
     return sortDir === 'desc' ? bidx - aidx : aidx - bidx;
   }});
   visible.forEach(c => listEl.appendChild(c));
@@ -484,7 +489,7 @@ function applyFilters() {{
   document.getElementById('stat-new').textContent = all.filter(x => /신규/.test(txt(x.tags)+txt(x.title))).length;
   document.getElementById('stat-near').textContent = all.filter(x => /역세권|의원인근|종병|문전/.test(txt(x.tags)+txt(x.memo)+txt(x.title))).length;
   document.getElementById('stat-phone').textContent = all.filter(x => txt(x.phone)).length;
-  document.getElementById('stat-fast').textContent = all.filter(x => /바로|즉시/.test(txt(x.move_date)+txt(x.memo))).length;
+  document.getElementById('stat-fast').textContent = all.filter(x => /바로|즉시/.test(txt(x.move_date)+txt(x.move_in)+txt(x.memo))).length;
   document.getElementById('hero-count').textContent = visible.length;
 }}
 listEl.addEventListener('click', e => {{
@@ -515,6 +520,11 @@ applyFilters();
 </script>
 </body>
 </html>"""
+
+    # ── HTML 파일 저장 ──────────────────────────────────────────────────────
+    DOCS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    DOCS_PATH.write_text(html_out, encoding='utf-8')
+    log.info(f"HTML 저장 완료: {DOCS_PATH}")
 
 if __name__ == "__main__":
     import sys
