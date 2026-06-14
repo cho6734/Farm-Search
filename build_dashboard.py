@@ -9,7 +9,7 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "requests", "-q"])
     import requests
 
-# íì¬ í¬ë¡¤ë¬ ìí¬í¸ (ìì¼ë©´ ê²½ê³ ë§)
+# Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«ÂÂ¬ Ã¬ÂÂÃ­ÂÂ¬Ã­ÂÂ¸ (Ã¬ÂÂÃ¬ÂÂ¼Ã«Â©Â´ ÃªÂ²Â½ÃªÂ³Â Ã«Â§Â)
 try:
     import crawler_pharmall
     HAS_PHARMALL = True
@@ -36,7 +36,7 @@ def load_items():
         return {}
 
 def save_items(items):
-    # ììì  ì°ê¸°: ìì íì¼ì ì ì¥ í êµì²´ (ì°ê¸° ëì¤ ìë¦¼ ë°©ì§)
+    # Ã¬ÂÂÃ¬ÂÂÃ¬Â Â Ã¬ÂÂ°ÃªÂ¸Â°: Ã¬ÂÂÃ¬ÂÂ Ã­ÂÂÃ¬ÂÂ¼Ã¬ÂÂ Ã¬Â ÂÃ¬ÂÂ¥ Ã­ÂÂ ÃªÂµÂÃ¬Â²Â´ (Ã¬ÂÂ°ÃªÂ¸Â° Ã«ÂÂÃ¬Â¤Â Ã¬ÂÂÃ«Â¦Â¼ Ã«Â°Â©Ã¬Â§Â)
     ITEMS_PATH.parent.mkdir(parents=True, exist_ok=True)
     tmp = ITEMS_PATH.with_suffix('.tmp')
     tmp.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding='utf-8')
@@ -63,7 +63,7 @@ def fetch_detail(idx):
         if j.get("rs_code") == "succ" and j.get("data") and j["data"].get("idx"):
             return j["data"]
     except Exception as e:
-        log.warning(f"  idx={idx} ìì²­ ì¤í¨: {e}")
+        log.warning(f"  idx={idx} Ã¬ÂÂÃ¬Â²Â­ Ã¬ÂÂ¤Ã­ÂÂ¨: {e}")
     return None
 
 def enrich(item, d):
@@ -78,7 +78,7 @@ def enrich(item, d):
     item["built"]        = d.get("built_label") or item.get("built","")
     item["owner"]        = d.get("owner_label") or d.get("charge_name") or item.get("owner","")
     item["gubun_type"]   = d.get("gubun_type_label") or d.get("gubun_label") or item.get("gubun_type","")
-    # ìëê²½ë¡ë¥¼ ì ëê²½ë¡ë¡ ë³í (ì´ë¯¸ì§ íì ë¬¸ì  í´ê²°)
+    # Ã¬ÂÂÃ«ÂÂÃªÂ²Â½Ã«Â¡ÂÃ«Â¥Â¼ Ã¬Â ÂÃ«ÂÂÃªÂ²Â½Ã«Â¡ÂÃ«Â¡Â Ã«Â³ÂÃ­ÂÂ (Ã¬ÂÂ´Ã«Â¯Â¸Ã¬Â§Â Ã­ÂÂÃ¬ÂÂ Ã«Â¬Â¸Ã¬Â Â Ã­ÂÂ´ÃªÂ²Â°)
     _thumb = d.get("thumb_url") or item.get("thumb_url","")
     if _thumb and _thumb.startswith("/"):
         _thumb = "https://svc.kpanews.co.kr" + _thumb
@@ -90,23 +90,23 @@ def enrich(item, d):
     item["trade_area"]   = d.get("trade_flag_label") or d.get("category_label") or item.get("trade_area","")
     item["status"]       = "active"
     parts = []
-    if item["location"]:     parts.append(f"ì£¼ì: {item['location']}")
-    if item["area_label"]:   parts.append(f"ë©´ì : {item['area_label']}")
-    if item["built"]:        parts.append(f"ì¤ê³µ: {item['built']}")
-    if item["move_date"]:    parts.append(f"ìì£¼: {item['move_date']}")
-    if item["sale_count"]:   parts.append(f"ì²ë°©ì¡°ì : {item['sale_count']}")
-    if item["sale_amount"]:  parts.append(f"ì¼ë§¤ì¶: {item['sale_amount']}")
-    if item["special_flag"]: parts.append(f"í¹ì´ì¬í­: {item['special_flag']}")
+    if item["location"]:     parts.append(f"Ã¬Â£Â¼Ã¬ÂÂ: {item['location']}")
+    if item["area_label"]:   parts.append(f"Ã«Â©Â´Ã¬Â Â: {item['area_label']}")
+    if item["built"]:        parts.append(f"Ã¬Â¤ÂÃªÂ³Âµ: {item['built']}")
+    if item["move_date"]:    parts.append(f"Ã¬ÂÂÃ¬Â£Â¼: {item['move_date']}")
+    if item["sale_count"]:   parts.append(f"Ã¬Â²ÂÃ«Â°Â©Ã¬Â¡Â°Ã¬Â Â: {item['sale_count']}")
+    if item["sale_amount"]:  parts.append(f"Ã¬ÂÂ¼Ã«Â§Â¤Ã¬Â¶Â: {item['sale_amount']}")
+    if item["special_flag"]: parts.append(f"Ã­ÂÂ¹Ã¬ÂÂ´Ã¬ÂÂ¬Ã­ÂÂ­: {item['special_flag']}")
     cp = html_to_text(d.get("content") or "")
-    if cp: parts.append(f"ìì¸: {cp}")
+    if cp: parts.append(f"Ã¬ÂÂÃ¬ÂÂ¸: {cp}")
     item["memo"] = "\n".join(parts)
     item["collected_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     return item
 
 def crawl():
-    # ââ ì½ì¬ê³µë¡  í¬ë¡¤ë§ ââ
+    # Ã¢ÂÂÃ¢ÂÂ Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¢ÂÂÃ¢ÂÂ
     items = load_items()
-    # ê¸°ì¡´ ì½ì¬ê³µë¡  í­ëª©ì source íë ì¶ê°
+    # ÃªÂ¸Â°Ã¬Â¡Â´ Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  Ã­ÂÂ­Ã«ÂªÂ©Ã¬ÂÂ source Ã­ÂÂÃ«ÂÂ Ã¬Â¶ÂÃªÂ°Â
     for k, v in items.items():
         if not str(k).startswith("pm_") and "source" not in v:
             v["source"] = "kpa"
@@ -114,25 +114,25 @@ def crawl():
     now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     kpa_idxs = sorted(int(k) for k in items.keys() if not str(k).startswith("pm_"))
     max_idx = kpa_idxs[-1] if kpa_idxs else 9792
-    log.info(f"ê¸°ì¡´ í­ëª©: {len(items)}ê±´ | ìµë idx: {max_idx}")
+    log.info(f"ÃªÂ¸Â°Ã¬Â¡Â´ Ã­ÂÂ­Ã«ÂªÂ©: {len(items)}ÃªÂ±Â´ | Ã¬ÂµÂÃ«ÂÂ idx: {max_idx}")
 
-    log.info("ââ ì½ì¬ê³µë¡  ê¸°ì¡´ í­ëª© ê°±ì  ì¤...")
+    log.info("Ã¢ÂÂÃ¢ÂÂ Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  ÃªÂ¸Â°Ã¬Â¡Â´ Ã­ÂÂ­Ã«ÂªÂ© ÃªÂ°Â±Ã¬ÂÂ  Ã¬Â¤Â...")
     for idx in kpa_idxs:
         key = str(idx)
-        if items[key].get("status") == "ì­ì ":
+        if items[key].get("status") == "Ã¬ÂÂ­Ã¬Â Â":
             continue
         d = fetch_detail(idx)
         if d:
             items[key] = enrich(items[key], d)
             items[key]["source"] = "kpa"
-            log.info(f"  â [{idx}] {items[key]['title']}")
+            log.info(f"  Ã¢ÂÂ [{idx}] {items[key]['title']}")
         else:
-            items[key]["status"] = "ì­ì "
+            items[key]["status"] = "Ã¬ÂÂ­Ã¬Â Â"
             items[key]["deleted_at"] = now_str
-            log.info(f"  ðï¸  [{idx}] ì­ì  ê°ì§")
+            log.info(f"  Ã°ÂÂÂÃ¯Â¸Â  [{idx}] Ã¬ÂÂ­Ã¬Â Â ÃªÂ°ÂÃ¬Â§Â")
         time.sleep(DELAY)
 
-    log.info(f"ââ ì½ì¬ê³µë¡  ì ê· ì¤ìº: {max_idx+1} ~ {max_idx+SCAN_AHEAD}")
+    log.info(f"Ã¢ÂÂÃ¢ÂÂ Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  Ã¬ÂÂ ÃªÂ·Â Ã¬ÂÂ¤Ã¬ÂºÂ: {max_idx+1} ~ {max_idx+SCAN_AHEAD}")
     for idx in range(max_idx + 1, max_idx + SCAN_AHEAD + 1):
         key = str(idx)
         if key in items:
@@ -141,31 +141,31 @@ def crawl():
         if d:
             items[key] = enrich({"idx": idx}, d)
             items[key]["source"] = "kpa"
-            log.info(f"  ð [{idx}] {items[key]['title']} ì ê· ì¶ê°!")
+            log.info(f"  Ã°ÂÂÂ [{idx}] {items[key]['title']} Ã¬ÂÂ ÃªÂ·Â Ã¬Â¶ÂÃªÂ°Â!")
         time.sleep(DELAY)
 
-    # ââ íì¬ í¬ë¡¤ë§ ââ
+    # Ã¢ÂÂÃ¢ÂÂ Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¢ÂÂÃ¢ÂÂ
     if HAS_PHARMALL:
-        log.info("ââ íì¬ í¬ë¡¤ë§ ìì...")
+        log.info("Ã¢ÂÂÃ¢ÂÂ Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¬ÂÂÃ¬ÂÂ...")
         try:
             pharmall_items = crawler_pharmall.crawl()
-            # ê¸°ì¡´ íì¬ í­ëª© ì ê±° í ìµì ì¼ë¡ êµì²´
+            # ÃªÂ¸Â°Ã¬Â¡Â´ Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ­Ã«ÂªÂ© Ã¬Â ÂÃªÂ±Â° Ã­ÂÂ Ã¬ÂµÂÃ¬ÂÂ Ã¬ÂÂ¼Ã«Â¡Â ÃªÂµÂÃ¬Â²Â´
             for k in [k for k in list(items.keys()) if str(k).startswith("pm_")]:
                 del items[k]
             items.update(pharmall_items)
-            log.info(f"íì¬ {len(pharmall_items)}ê±´ ë³í© ìë£")
+            log.info(f"Ã­ÂÂÃ¬ÂÂ¬ {len(pharmall_items)}ÃªÂ±Â´ Ã«Â³ÂÃ­ÂÂ© Ã¬ÂÂÃ«Â£Â")
         except Exception as e:
-            log.error(f"íì¬ í¬ë¡¤ë§ ì¤í¨ (ì½ì¬ê³µë¡  ë°ì´í°ë ì ì§): {e}")
+            log.error(f"Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¬ÂÂ¤Ã­ÂÂ¨ (Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  Ã«ÂÂ°Ã¬ÂÂ´Ã­ÂÂ°Ã«ÂÂ Ã¬ÂÂ Ã¬Â§Â): {e}")
     else:
-        log.warning("crawler_pharmall.py ìì - íì¬ í¬ë¡¤ë§ ì¤íµ")
+        log.warning("crawler_pharmall.py Ã¬ÂÂÃ¬ÂÂ - Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¬ÂÂ¤Ã­ÂÂµ")
 
-    # ââ ì¤ë³µ ê°ì§ ââ
-    # ê¸°ì¤ 1 (êµì°¨ì¤ë³µ): KPAâíì¬ ê°ì ì/êµ° ì£¼ì
-    # ê¸°ì¤ 2 (ë´ë¶ì¤ë³µ): ê°ì ì¬ì´í¸ ë´ ì íë²í¸+ì§ì­ ëì¼
+    # Ã¢ÂÂÃ¢ÂÂ Ã¬Â¤ÂÃ«Â³Âµ ÃªÂ°ÂÃ¬Â§Â Ã¢ÂÂÃ¢ÂÂ
+    # ÃªÂ¸Â°Ã¬Â¤Â 1 (ÃªÂµÂÃ¬Â°Â¨Ã¬Â¤ÂÃ«Â³Âµ): KPAÃ¢ÂÂÃ­ÂÂÃ¬ÂÂ¬ ÃªÂ°ÂÃ¬ÂÂ Ã¬ÂÂ/ÃªÂµÂ° Ã¬Â£Â¼Ã¬ÂÂ
+    # ÃªÂ¸Â°Ã¬Â¤Â 2 (Ã«ÂÂ´Ã«Â¶ÂÃ¬Â¤ÂÃ«Â³Âµ): ÃªÂ°ÂÃ¬ÂÂ Ã¬ÂÂ¬Ã¬ÂÂ´Ã­ÂÂ¸ Ã«ÂÂ´ Ã¬Â ÂÃ­ÂÂÃ«Â²ÂÃ­ÂÂ¸+Ã¬Â§ÂÃ¬ÂÂ­ Ã«ÂÂÃ¬ÂÂ¼
     def _norm_phone(p):
         return re.sub(r'\D', '', str(p or ''))
 
-    active_list = [(k, v) for k, v in items.items() if v.get("status") != "ì­ì "]
+    active_list = [(k, v) for k, v in items.items() if v.get("status") != "Ã¬ÂÂ­Ã¬Â Â"]
     uf = {}
     def _find(x):
         while uf.get(x, x) != x:
@@ -192,12 +192,12 @@ def crawl():
             loc2 = str(v2.get("location") or '').strip()
             ph2  = _norm_phone(v2.get("phone"))
             reg2 = str(v2.get("region") or '').strip()
-            # ê¸°ì¤ 1: êµì°¨ì¤ë³µ - ìë¡ ë¤ë¥¸ ì¬ì´í¸, ê°ì ì/êµ° ì£¼ì
+            # ÃªÂ¸Â°Ã¬Â¤Â 1: ÃªÂµÂÃ¬Â°Â¨Ã¬Â¤ÂÃ«Â³Âµ - Ã¬ÂÂÃ«Â¡Â Ã«ÂÂ¤Ã«Â¥Â¸ Ã¬ÂÂ¬Ã¬ÂÂ´Ã­ÂÂ¸, ÃªÂ°ÂÃ¬ÂÂ Ã¬ÂÂ/ÃªÂµÂ° Ã¬Â£Â¼Ã¬ÂÂ
             if is_pm1 != is_pm2 and len(ph1) >= 8 and ph1 == ph2:
                 _union(k1, k2)
                 continue
-            # ê¸°ì¤ 2: ë´ë¶ì¤ë³µ - ê°ì ì¬ì´í¸, ì íë²í¸+ì§ì­ ëì¼
-            if src1 == src2 and len(ph1) >= 8 and ph1 == ph2 and reg1 and reg1 == reg2:
+            # ÃªÂ¸Â°Ã¬Â¤Â 2: Ã«ÂÂ´Ã«Â¶ÂÃ¬Â¤ÂÃ«Â³Âµ - ÃªÂ°ÂÃ¬ÂÂ Ã¬ÂÂ¬Ã¬ÂÂ´Ã­ÂÂ¸, Ã¬Â ÂÃ­ÂÂÃ«Â²ÂÃ­ÂÂ¸+Ã¬Â§ÂÃ¬ÂÂ­ Ã«ÂÂÃ¬ÂÂ¼
+            if src1 == src2 and len(ph1) >= 8 and ph1 == ph2 and loc1 and loc1 == loc2:
                 _union(k1, k2)
 
     group_map = {}
@@ -213,25 +213,25 @@ def crawl():
         root = _find(k)
         if root in group_map:
             gid, members = group_map[root]
-            srcs = set('íì¬' if str(kk).startswith('pm_') else 'KPA' for kk in members)
+            srcs = set('Ã­ÂÂÃ¬ÂÂ¬' if str(kk).startswith('pm_') else 'KPA' for kk in members)
             kind = 'cross' if len(srcs) > 1 else ('kpa' if 'KPA' in srcs else 'pm')
             v["possible_duplicate"] = True
             v["dup_group"] = gid
             v["dup_kind"] = kind
     for root, (gid, members) in group_map.items():
         titles = [str(items[m].get('title',''))[:15] for m in members]
-        srcs = set('íì¬' if str(m).startswith('pm_') else 'KPA' for m in members)
+        srcs = set('Ã­ÂÂÃ¬ÂÂ¬' if str(m).startswith('pm_') else 'KPA' for m in members)
         kind = 'cross' if len(srcs) > 1 else ('kpa' if 'KPA' in srcs else 'pm')
-        log.info(f"  â ï¸  ì¤ë³µìì¬[{kind}] {len(members)}ê±´: {', '.join(titles)}")
-    log.info(f"ì¤ë³µìì¬ ì´ {dup_group_counter}ê·¸ë£¹")
+        log.info(f"  Ã¢ÂÂ Ã¯Â¸Â  Ã¬Â¤ÂÃ«Â³ÂµÃ¬ÂÂÃ¬ÂÂ¬[{kind}] {len(members)}ÃªÂ±Â´: {', '.join(titles)}")
+    log.info(f"Ã¬Â¤ÂÃ«Â³ÂµÃ¬ÂÂÃ¬ÂÂ¬ Ã¬Â´Â {dup_group_counter}ÃªÂ·Â¸Ã«Â£Â¹")
     save_items(items)
-    log.info(f"items.json ì ì¥ ìë£ (ì´ {len(items)}ê±´)")
+    log.info(f"items.json Ã¬Â ÂÃ¬ÂÂ¥ Ã¬ÂÂÃ«Â£Â (Ã¬Â´Â {len(items)}ÃªÂ±Â´)")
     return items
 
 def build(items):
-    active = [v for v in items.values() if v.get("status") != "ì­ì "]
+    active = [v for v in items.values() if v.get("status") != "Ã¬ÂÂ­Ã¬Â Â"]
 
-    # ë ì§ ê¸°ì¤ ì ë ¬ (ë ìì¤ íµí©)
+    # Ã«ÂÂ Ã¬Â§Â ÃªÂ¸Â°Ã¬Â¤Â Ã¬Â ÂÃ«Â Â¬ (Ã«ÂÂ Ã¬ÂÂÃ¬ÂÂ¤ Ã­ÂÂµÃ­ÂÂ©)
     def sort_key(x):
         d = str(x.get("date") or "")
         return d if d else "0000.00.00"
@@ -244,17 +244,17 @@ def build(items):
             if t: all_tags.add(t)
     tags = sorted(all_tags)
 
-    # UTC+9 íêµ­ ìê°ì¼ë¡ ë³í
+    # UTC+9 Ã­ÂÂÃªÂµÂ­ Ã¬ÂÂÃªÂ°ÂÃ¬ÂÂ¼Ã«Â¡Â Ã«Â³ÂÃ­ÂÂ
     KST = timezone(timedelta(hours=9))
     updated_at = datetime.now(KST).strftime("%Y.%m.%d %H:%M KST")
 
-    # ìì¤ë³ ì¹´ì´í¸
+    # Ã¬ÂÂÃ¬ÂÂ¤Ã«Â³Â Ã¬Â¹Â´Ã¬ÂÂ´Ã­ÂÂ¸
     kpa_count      = sum(1 for x in active if x.get("source") == "kpa")
     pharmall_count = sum(1 for x in active if x.get("source") == "pharmall")
     dup_count      = sum(1 for x in active if x.get("possible_duplicate"))
     non_dup_count  = len(active) - dup_count
-    broker_count   = sum(1 for x in active if x.get("seller_type") == "ì¤ê°ë§¤ë¬¼")
-    direct_count   = sum(1 for x in active if x.get("seller_type") == "ì½ì¬ì§ê±°ë")
+    broker_count   = sum(1 for x in active if x.get("seller_type") == "Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼")
+    direct_count   = sum(1 for x in active if x.get("seller_type") == "Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ")
 
     list_html = []
     for x in active:
@@ -263,44 +263,44 @@ def build(items):
         thumb    = esc(x.get("thumb_url") or "")
         thumb_tag = f'<img src="{thumb}" style="width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px;" onerror="this.style.display=\'none\'">' if thumb else ""
 
-        # ìì¤ ë±ì§
+        # Ã¬ÂÂÃ¬ÂÂ¤ Ã«Â±ÂÃ¬Â§Â
         src = x.get("source", "kpa")
         if src == "pharmall":
-            src_badge = '<span class="src-badge src-pharmall">íì¬</span>'
+            src_badge = '<span class="src-badge src-pharmall">Ã­ÂÂÃ¬ÂÂ¬</span>'
         else:
-            src_badge = '<span class="src-badge src-kpa">ì½ì¬ê³µë¡ </span>'
+            src_badge = '<span class="src-badge src-kpa">Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â </span>'
 
-        # ë§¤ë¬¼ ì í ë°°ì§ (ì¤ê°ë§¤ë¬¼ / ì½ì¬ì§ê±°ë)
+        # Ã«Â§Â¤Ã«Â¬Â¼ Ã¬ÂÂ Ã­ÂÂ Ã«Â°Â°Ã¬Â§Â (Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼ / Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ)
         seller = x.get("seller_type", "")
-        if seller == "ì¤ê°ë§¤ë¬¼":
-            seller_badge = '<span class="src-badge src-broker">ì¤ê°ë§¤ë¬¼</span>'
-        elif seller == "ì½ì¬ì§ê±°ë":
-            seller_badge = '<span class="src-badge src-direct">ì½ì¬ì§ê±°ë</span>'
+        if seller == "Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼":
+            seller_badge = '<span class="src-badge src-broker">Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼</span>'
+        elif seller == "Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ":
+            seller_badge = '<span class="src-badge src-direct">Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ</span>'
         else:
             seller_badge = ""
 
-        # ì¤ë³µ ìì¬ ë±ì§
-        dup_badge = '<span class="src-badge src-dup">ì¤ë³µìì¬</span>' if x.get("possible_duplicate") else ""
+        # Ã¬Â¤ÂÃ«Â³Âµ Ã¬ÂÂÃ¬ÂÂ¬ Ã«Â±ÂÃ¬Â§Â
+        dup_badge = '<span class="src-badge src-dup">Ã¬Â¤ÂÃ«Â³ÂµÃ¬ÂÂÃ¬ÂÂ¬</span>' if x.get("possible_duplicate") else ""
 
         is_dup = '1' if x.get("possible_duplicate") else ''
         list_html.append(f"""<button class="item-card" type="button" data-item="{payload}" data-source="{esc(src)}" data-dup="{is_dup}">
   {thumb_tag}
-  <div class="item-top"><strong>{esc(x.get("title") or "(ì ëª©ìì)")}</strong><span>{src_badge}{seller_badge}{dup_badge}</span></div>
+  <div class="item-top"><strong>{esc(x.get("title") or "(Ã¬Â ÂÃ«ÂªÂ©Ã¬ÂÂÃ¬ÂÂ)")}</strong><span>{src_badge}{seller_badge}{dup_badge}</span></div>
   <div class="item-meta">{esc(" / ".join([v for v in [x.get("region",""), x.get("location",""), x.get("date","")] if v]))}</div>
   <div class="item-price">{esc(x.get("price",""))}</div>
-  <div class="item-phone">ð {esc(x.get("phone",""))}</div>
+  <div class="item-phone">Ã°ÂÂÂ {esc(x.get("phone",""))}</div>
   <div class="item-summary">{esc(summary)}</div>
 </button>""")
 
     tag_html = "".join(f'<button class="chip chip-filter" type="button" data-tag="{esc(t)}">{esc(t)}</button>' for t in tags)
-    deleted_count = len([v for v in items.values() if v.get("status") == "ì­ì "])
+    deleted_count = len([v for v in items.values() if v.get("status") == "Ã¬ÂÂ­Ã¬Â Â"])
 
     html_out = f"""<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ì½êµ­ ë§¤ë¬¼ ëìë³´ë</title>
+<title>Ã¬ÂÂ½ÃªÂµÂ­ Ã«Â§Â¤Ã«Â¬Â¼ Ã«ÂÂÃ¬ÂÂÃ«Â³Â´Ã«ÂÂ</title>
 <style>
 :root{{--text:#eef3ff;--muted:#aebce6;--accent:#69a3ff}}
 *{{box-sizing:border-box}}
@@ -365,96 +365,96 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 <div class="wrap">
   <aside class="panel sidebar">
     <div class="stack">
-      <input id="q" class="search" placeholder="ð ì ëª©, ì£¼ì, ì¤ëª ê²ì">
+      <input id="q" class="search" placeholder="Ã°ÂÂÂ Ã¬Â ÂÃ«ÂªÂ©, Ã¬Â£Â¼Ã¬ÂÂ, Ã¬ÂÂ¤Ã«ÂªÂ ÃªÂ²ÂÃ¬ÂÂ">
       <select id="sel-region">
-        <option value="">ì ì²´ ì§ì­</option>
+        <option value="">Ã¬Â ÂÃ¬Â²Â´ Ã¬Â§ÂÃ¬ÂÂ­</option>
         {"".join(f'<option value="{esc(r)}">{esc(r)}</option>' for r in regions)}
       </select>
       <div class="row">
-        <button class="chip active sort-btn" data-sort="desc" type="button">ìµì ì</button>
-        <button class="chip sort-btn" data-sort="asc" type="button">ì¤ëëì</button>
+        <button class="chip active sort-btn" data-sort="desc" type="button">Ã¬ÂµÂÃ¬ÂÂ Ã¬ÂÂ</button>
+        <button class="chip sort-btn" data-sort="asc" type="button">Ã¬ÂÂ¤Ã«ÂÂÃ«ÂÂÃ¬ÂÂ</button>
       </div>
-      <h2>ì¶ì² íí°</h2>
+      <h2>Ã¬Â¶ÂÃ¬Â²Â Ã­ÂÂÃ­ÂÂ°</h2>
       <div class="row">
-        <button class="chip active src-btn" data-src="" type="button">ì ì²´ ({len(active)})</button>
-        <button class="chip src-btn" data-src="kpa" type="button">ì½ì¬ê³µë¡  ({kpa_count})</button>
-        <button class="chip src-btn" data-src="pharmall" type="button">íì¬ ({pharmall_count})</button>
+        <button class="chip active src-btn" data-src="" type="button">Ã¬Â ÂÃ¬Â²Â´ ({len(active)})</button>
+        <button class="chip src-btn" data-src="kpa" type="button">Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  ({kpa_count})</button>
+        <button class="chip src-btn" data-src="pharmall" type="button">Ã­ÂÂÃ¬ÂÂ¬ ({pharmall_count})</button>
       </div>
-      <h2>ê±°ë ì í</h2>
+      <h2>ÃªÂ±Â°Ã«ÂÂ Ã¬ÂÂ Ã­ÂÂ</h2>
       <div class="row">
-        <button class="chip active type-btn" data-type="" type="button">ì ì²´ ({len(active)})</button>
-        <button class="chip type-btn" data-type="ì¤ê°ë§¤ë¬¼" type="button">ð¢ ì¤ê°ë§¤ë¬¼ ({broker_count})</button>
-        <button class="chip type-btn" data-type="ì½ì¬ì§ê±°ë" type="button">ð¤ ì½ì¬ì§ê±°ë ({direct_count})</button>
+        <button class="chip active type-btn" data-type="" type="button">Ã¬Â ÂÃ¬Â²Â´ ({len(active)})</button>
+        <button class="chip type-btn" data-type="Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼" type="button">Ã°ÂÂÂ¢ Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼ ({broker_count})</button>
+        <button class="chip type-btn" data-type="Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ" type="button">Ã°ÂÂ¤Â Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ ({direct_count})</button>
       </div>
-      <h2>ì¤ë³µ íí°</h2>
+      <h2>Ã¬Â¤ÂÃ«Â³Âµ Ã­ÂÂÃ­ÂÂ°</h2>
       <div class="row">
-        <button class="chip dup-btn" data-dup="show" type="button">â ï¸ ì¤ë³µìì¬ ({dup_count})</button>
-        <button class="chip dup-btn" data-dup="hide" type="button">â ì¤ë³µ ì ì¸ ({non_dup_count}ê±´)</button>
+        <button class="chip dup-btn" data-dup="show" type="button">Ã¢ÂÂ Ã¯Â¸Â Ã¬Â¤ÂÃ«Â³ÂµÃ¬ÂÂÃ¬ÂÂ¬ ({dup_count})</button>
+        <button class="chip dup-btn" data-dup="hide" type="button">Ã¢ÂÂ Ã¬Â¤ÂÃ«Â³Âµ Ã¬Â ÂÃ¬ÂÂ¸ ({non_dup_count}ÃªÂ±Â´)</button>
       </div>
-      <h2>ì¡°ì /ì²ë°© ê±´ì</h2>
+      <h2>Ã¬Â¡Â°Ã¬Â Â/Ã¬Â²ÂÃ«Â°Â© ÃªÂ±Â´Ã¬ÂÂ</h2>
       <div style="padding:2px 0 6px">
         <div class="row" style="gap:6px;align-items:center;flex-wrap:nowrap">
-          <input type="number" id="sale-min" placeholder="ìµì" min="0" step="10" style="width:64px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+          <input type="number" id="sale-min" placeholder="Ã¬ÂµÂÃ¬ÂÂ" min="0" step="10" style="width:64px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
           <span style="color:var(--muted)">~</span>
-          <input type="number" id="sale-max" placeholder="ìµë" min="0" step="10" style="width:64px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
-          <button class="chip" id="sale-apply" type="button">ì ì©</button>
-          <button class="chip" id="sale-reset" type="button">ì´ê¸°í</button>
+          <input type="number" id="sale-max" placeholder="Ã¬ÂµÂÃ«ÂÂ" min="0" step="10" style="width:64px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+          <button class="chip" id="sale-apply" type="button">Ã¬Â ÂÃ¬ÂÂ©</button>
+          <button class="chip" id="sale-reset" type="button">Ã¬Â´ÂÃªÂ¸Â°Ã­ÂÂ</button>
         </div>
-        <p style="margin:4px 0 0;font-size:11px;color:var(--muted)">â» ê±´ì ë¯¸ê¸°ì¬ ë§¤ë¬¼ì í­ì í¬í¨</p>
+        <p style="margin:4px 0 0;font-size:11px;color:var(--muted)">Ã¢ÂÂ» ÃªÂ±Â´Ã¬ÂÂ Ã«Â¯Â¸ÃªÂ¸Â°Ã¬ÂÂ¬ Ã«Â§Â¤Ã«Â¬Â¼Ã¬ÂÂ Ã­ÂÂ­Ã¬ÂÂ Ã­ÂÂ¬Ã­ÂÂ¨</p>
       </div>
-      <h2>íê·¸ íí°</h2>
+      <h2>Ã­ÂÂÃªÂ·Â¸ Ã­ÂÂÃ­ÂÂ°</h2>
       <div class="row">{tag_html}</div>
     </div>
-    <p style="margin-top:20px;font-size:13px;color:var(--muted)">íì± <strong>{len(active)}</strong>ê±´ Â· ì­ì  {deleted_count}ê±´ Â· ì¤ë³µìì¬ {dup_count}ê±´</p>
-    <p class="update-time">ìµì¢ ê°±ì : {updated_at}</p>
+    <p style="margin-top:20px;font-size:13px;color:var(--muted)">Ã­ÂÂÃ¬ÂÂ± <strong>{len(active)}</strong>ÃªÂ±Â´ ÃÂ· Ã¬ÂÂ­Ã¬Â Â {deleted_count}ÃªÂ±Â´ ÃÂ· Ã¬Â¤ÂÃ«Â³ÂµÃ¬ÂÂÃ¬ÂÂ¬ {dup_count}ÃªÂ±Â´</p>
+    <p class="update-time">Ã¬ÂµÂÃ¬Â¢Â ÃªÂ°Â±Ã¬ÂÂ : {updated_at}</p>
   </aside>
 
   <section class="content">
     <div class="panel hero">
       <div class="hero-main">
-        <h1>ð ì½êµ­ ë§¤ë¬¼<br>ëìë³´ë</h1>
-        <p>ì½ì¬ê³µë¡  + íì¬ ë¶ëì° ë§¤ë¬¼ íµí© ëª¨ëí°ë§</p>
+        <h1>Ã°ÂÂÂ Ã¬ÂÂ½ÃªÂµÂ­ Ã«Â§Â¤Ã«Â¬Â¼<br>Ã«ÂÂÃ¬ÂÂÃ«Â³Â´Ã«ÂÂ</h1>
+        <p>Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  + Ã­ÂÂÃ¬ÂÂ¬ Ã«Â¶ÂÃ«ÂÂÃ¬ÂÂ° Ã«Â§Â¤Ã«Â¬Â¼ Ã­ÂÂµÃ­ÂÂ© Ã«ÂªÂ¨Ã«ÂÂÃ­ÂÂ°Ã«Â§Â</p>
         <div class="row" style="margin-top:14px">
-          <span class="chip">ì´ <strong id="hero-count">{len(active)}</strong>ê±´</span>
-          <span class="chip">ì§ì­ {len(regions)}ê°</span>
-          <span class="chip">ð 1ìê°ë§ë¤ ìëê°±ì </span>
+          <span class="chip">Ã¬Â´Â <strong id="hero-count">{len(active)}</strong>ÃªÂ±Â´</span>
+          <span class="chip">Ã¬Â§ÂÃ¬ÂÂ­ {len(regions)}ÃªÂ°Â</span>
+          <span class="chip">Ã°ÂÂÂ 1Ã¬ÂÂÃªÂ°ÂÃ«Â§ÂÃ«ÂÂ¤ Ã¬ÂÂÃ«ÂÂÃªÂ°Â±Ã¬ÂÂ </span>
         </div>
       </div>
       <div class="stats">
-        <div class="stat"><div class="k">ì ê·ì½êµ­</div><div class="v" id="stat-new">0</div></div>
-        <div class="stat"><div class="k">ì­ì¸ê¶/ìì</div><div class="v" id="stat-near">0</div></div>
-        <div class="stat"><div class="k">ì°ë½ì² ë³´ì </div><div class="v" id="stat-phone">0</div></div>
-        <div class="stat"><div class="k">ì¦ì ìì£¼</div><div class="v" id="stat-fast">0</div></div>
+        <div class="stat"><div class="k">Ã¬ÂÂ ÃªÂ·ÂÃ¬ÂÂ½ÃªÂµÂ­</div><div class="v" id="stat-new">0</div></div>
+        <div class="stat"><div class="k">Ã¬ÂÂ­Ã¬ÂÂ¸ÃªÂ¶Â/Ã¬ÂÂÃ¬ÂÂ</div><div class="v" id="stat-near">0</div></div>
+        <div class="stat"><div class="k">Ã¬ÂÂ°Ã«ÂÂ½Ã¬Â²Â Ã«Â³Â´Ã¬ÂÂ </div><div class="v" id="stat-phone">0</div></div>
+        <div class="stat"><div class="k">Ã¬Â¦ÂÃ¬ÂÂ Ã¬ÂÂÃ¬Â£Â¼</div><div class="v" id="stat-fast">0</div></div>
       </div>
     </div>
 
     <div class="main">
       <div class="panel list" id="list">
-        {"".join(list_html) if list_html else '<div class="empty">ë°ì´í° ìì</div>'}
+        {"".join(list_html) if list_html else '<div class="empty">Ã«ÂÂ°Ã¬ÂÂ´Ã­ÂÂ° Ã¬ÂÂÃ¬ÂÂ</div>'}
       </div>
       <div class="panel detail" id="detail-panel">
-        <div class="empty" id="detail-empty">â ì¼ìª½ ëª©ë¡ìì ë§¤ë¬¼ì ì ííì¸ì</div>
+        <div class="empty" id="detail-empty">Ã¢ÂÂ Ã¬ÂÂ¼Ã¬ÂªÂ½ Ã«ÂªÂ©Ã«Â¡ÂÃ¬ÂÂÃ¬ÂÂ Ã«Â§Â¤Ã«Â¬Â¼Ã¬ÂÂ Ã¬ÂÂ Ã­ÂÂÃ­ÂÂÃ¬ÂÂ¸Ã¬ÂÂ</div>
         <div id="detail-content" style="display:none">
           <img id="d-img" class="detail-img" src="" alt="" style="display:none">
           <h2 id="d-title" style="margin:0 0 6px"></h2>
           <div id="d-sub" class="item-meta" style="margin-bottom:10px"></div>
           <div class="badges" id="d-badges"></div>
           <div class="grid4">
-            <div class="info"><div class="k">ë§¤ë¬¼êµ¬ë¶</div><div class="v" id="d-gubun"></div></div>
-            <div class="info"><div class="k">ìê¶</div><div class="v" id="d-trade"></div></div>
-            <div class="info"><div class="k">íí</div><div class="v" id="d-category"></div></div>
-            <div class="info"><div class="k">ë©´ì </div><div class="v" id="d-area"></div></div>
-            <div class="info"><div class="k">ìì¡°ì ë£</div><div class="v" id="d-sale-count"></div></div>
-            <div class="info"><div class="k">1ì¼ë§¤ì¶</div><div class="v" id="d-sale-amount"></div></div>
-            <div class="info"><div class="k">ìì£¼ê°ë¥ì¼</div><div class="v" id="d-move"></div></div>
-            <div class="info"><div class="k">ê´ë¦¬ë¹</div><div class="v" id="d-maint"></div></div>
-            <div class="info"><div class="k">ð ì°ë½ì²</div><div class="v" id="d-phone"></div></div>
-            <div class="info"><div class="k">ð¤ ë´ë¹ì</div><div class="v" id="d-owner"></div></div>
-            <div class="info"><div class="k">í¹ì´ì¬í­</div><div class="v" id="d-special"></div></div>
-            <div class="info"><div class="k">ð ì§ì­</div><div class="v" id="d-region"></div></div>
+            <div class="info"><div class="k">Ã«Â§Â¤Ã«Â¬Â¼ÃªÂµÂ¬Ã«Â¶Â</div><div class="v" id="d-gubun"></div></div>
+            <div class="info"><div class="k">Ã¬ÂÂÃªÂ¶Â</div><div class="v" id="d-trade"></div></div>
+            <div class="info"><div class="k">Ã­ÂÂÃ­ÂÂ</div><div class="v" id="d-category"></div></div>
+            <div class="info"><div class="k">Ã«Â©Â´Ã¬Â Â</div><div class="v" id="d-area"></div></div>
+            <div class="info"><div class="k">Ã¬ÂÂÃ¬Â¡Â°Ã¬Â ÂÃ«Â£Â</div><div class="v" id="d-sale-count"></div></div>
+            <div class="info"><div class="k">1Ã¬ÂÂ¼Ã«Â§Â¤Ã¬Â¶Â</div><div class="v" id="d-sale-amount"></div></div>
+            <div class="info"><div class="k">Ã¬ÂÂÃ¬Â£Â¼ÃªÂ°ÂÃ«ÂÂ¥Ã¬ÂÂ¼</div><div class="v" id="d-move"></div></div>
+            <div class="info"><div class="k">ÃªÂ´ÂÃ«Â¦Â¬Ã«Â¹Â</div><div class="v" id="d-maint"></div></div>
+            <div class="info"><div class="k">Ã°ÂÂÂ Ã¬ÂÂ°Ã«ÂÂ½Ã¬Â²Â</div><div class="v" id="d-phone"></div></div>
+            <div class="info"><div class="k">Ã°ÂÂÂ¤ Ã«ÂÂ´Ã«ÂÂ¹Ã¬ÂÂ</div><div class="v" id="d-owner"></div></div>
+            <div class="info"><div class="k">Ã­ÂÂ¹Ã¬ÂÂ´Ã¬ÂÂ¬Ã­ÂÂ­</div><div class="v" id="d-special"></div></div>
+            <div class="info"><div class="k">Ã°ÂÂÂ Ã¬Â§ÂÃ¬ÂÂ­</div><div class="v" id="d-region"></div></div>
           </div>
           <div id="d-pharmall-section" style="display:none;margin-top:14px">
-            <div style="font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:8px">ð¢ ê±´ì¶ë¬¼ ì ë³´</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:8px">Ã°ÂÂÂ¢ ÃªÂ±Â´Ã¬Â¶ÂÃ«Â¬Â¼ Ã¬Â ÂÃ«Â³Â´</div>
             <div class="grid4" id="d-building-grid"></div>
             <div id="d-viewcount-row" style="margin-top:10px;font-size:13px;color:var(--muted)"></div>
           </div>
@@ -477,8 +477,8 @@ function txt(v) {{ return (v == null ? '' : String(v)); }}
 function setDetail(item) {{
   document.getElementById('detail-empty').style.display = 'none';
   document.getElementById('detail-content').style.display = 'block';
-  document.getElementById('d-title').textContent = txt(item.title) || 'ì ëª©ìì';
-  document.getElementById('d-sub').textContent = [item.region, item.location, item.date ? 'ë±ë¡ì¼ ' + item.date : ''].filter(Boolean).join(' Â· ');
+  document.getElementById('d-title').textContent = txt(item.title) || 'Ã¬Â ÂÃ«ÂªÂ©Ã¬ÂÂÃ¬ÂÂ';
+  document.getElementById('d-sub').textContent = [item.region, item.location, item.date ? 'Ã«ÂÂ±Ã«Â¡ÂÃ¬ÂÂ¼ ' + item.date : ''].filter(Boolean).join(' ÃÂ· ');
   document.getElementById('d-phone').textContent = txt(item.phone) || '-';
   document.getElementById('d-owner').textContent = txt(item.owner) || '-';
   document.getElementById('d-region').textContent = txt(item.region) || '-';
@@ -490,7 +490,7 @@ function setDetail(item) {{
   document.getElementById('d-sale-amount').textContent = txt(item.sale_amount) || '-';
   document.getElementById('d-special').textContent = txt(item.special_flag) || '-';
   document.getElementById('d-maint').textContent = txt(item.maintenance_fee) || '-';
-  // ìì£¼ê°ë¥ì¼: íì¬ì move_in, ì½ì¬ê³µë¡ ì move_date
+  // Ã¬ÂÂÃ¬Â£Â¼ÃªÂ°ÂÃ«ÂÂ¥Ã¬ÂÂ¼: Ã­ÂÂÃ¬ÂÂ¬Ã¬ÂÂ move_in, Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â Ã¬ÂÂ move_date
   document.getElementById('d-move').textContent = txt(item.move_in || item.move_date) || '-';
   document.getElementById('d-memo').textContent = txt(item.memo);
   const img = document.getElementById('d-img');
@@ -498,7 +498,7 @@ function setDetail(item) {{
     img.src = item.thumb_url; img.style.display = 'block';
     img.onerror = () => {{ img.style.display = 'none'; }};
   }} else {{ img.style.display = 'none'; }}
-  // ë±ì§
+  // Ã«Â±ÂÃ¬Â§Â
   const badges = document.getElementById('d-badges');
   badges.innerHTML = '';
   [item.price, item.area_full || item.area_label, item.move_in || item.move_date, item.gubun_type].filter(Boolean).forEach(v => {{
@@ -507,30 +507,30 @@ function setDetail(item) {{
   txt(item.tags).split(',').map(s => s.trim()).filter(Boolean).forEach(v => {{
     const s = document.createElement('span'); s.className = 'badge tag'; s.textContent = v; badges.appendChild(s);
   }});
-  // íì¬ ì ì©: ê±´ì¶ë¬¼ ì ë³´ ì¹ì
+  // Ã­ÂÂÃ¬ÂÂ¬ Ã¬Â ÂÃ¬ÂÂ©: ÃªÂ±Â´Ã¬Â¶ÂÃ«Â¬Â¼ Ã¬Â ÂÃ«Â³Â´ Ã¬ÂÂ¹Ã¬ÂÂ
   const pmSection = document.getElementById('d-pharmall-section');
   if (item.source === 'pharmall') {{
     pmSection.style.display = 'block';
     const bg = document.getElementById('d-building-grid');
     bg.innerHTML = '';
     const bfields = [
-      ['ê±´ë¬¼ì©ë', item.building_usage],
-      ['ì¬ì©ì¹ì¸ì¼', item.approval_date],
-      ['ì´ì¸µ', item.total_floors ? item.total_floors + 'ì¸µ' : ''],
-      ['í´ë¹ì¸µ', item.floor_label],
-      ['ë°©ì', item.rooms ? item.rooms + 'ê°' : ''],
-      ['íì¥ì¤', item.bathroom],
-      ['ì´ì£¼ì°¨', item.parking_total ? item.parking_total + 'ë' : ''],
-      ['ê°ë¥ì£¼ì°¨', item.parking_avail ? item.parking_avail + 'ë' : ''],
-      ['ë°©í¥', item.direction],
-      ['ê´ë¦¬ë¹', item.maintenance_fee],
-      ['ìì£¼ê°ë¥ì¼', item.move_in],
-      ['ì¡°íì', item.view_count ? item.view_count + 'í' : ''],
+      ['ÃªÂ±Â´Ã«Â¬Â¼Ã¬ÂÂ©Ã«ÂÂ', item.building_usage],
+      ['Ã¬ÂÂ¬Ã¬ÂÂ©Ã¬ÂÂ¹Ã¬ÂÂ¸Ã¬ÂÂ¼', item.approval_date],
+      ['Ã¬Â´ÂÃ¬Â¸Âµ', item.total_floors ? item.total_floors + 'Ã¬Â¸Âµ' : ''],
+      ['Ã­ÂÂ´Ã«ÂÂ¹Ã¬Â¸Âµ', item.floor_label],
+      ['Ã«Â°Â©Ã¬ÂÂ', item.rooms ? item.rooms + 'ÃªÂ°Â' : ''],
+      ['Ã­ÂÂÃ¬ÂÂ¥Ã¬ÂÂ¤', item.bathroom],
+      ['Ã¬Â´ÂÃ¬Â£Â¼Ã¬Â°Â¨', item.parking_total ? item.parking_total + 'Ã«ÂÂ' : ''],
+      ['ÃªÂ°ÂÃ«ÂÂ¥Ã¬Â£Â¼Ã¬Â°Â¨', item.parking_avail ? item.parking_avail + 'Ã«ÂÂ' : ''],
+      ['Ã«Â°Â©Ã­ÂÂ¥', item.direction],
+      ['ÃªÂ´ÂÃ«Â¦Â¬Ã«Â¹Â', item.maintenance_fee],
+      ['Ã¬ÂÂÃ¬Â£Â¼ÃªÂ°ÂÃ«ÂÂ¥Ã¬ÂÂ¼', item.move_in],
+      ['Ã¬Â¡Â°Ã­ÂÂÃ¬ÂÂ', item.view_count ? item.view_count + 'Ã­ÂÂ' : ''],
     ];
     bfields.filter(f => f[1]).forEach(f => {{
       bg.innerHTML += '<div class="info"><div class="k">' + f[0] + '</div><div class="v">' + txt(f[1]) + '</div></div>';
     }});
-    document.getElementById('d-viewcount-row').textContent = item.view_count ? 'ð ì¡°íì ' + item.view_count + 'í' : '';
+    document.getElementById('d-viewcount-row').textContent = item.view_count ? 'Ã°ÂÂÂ Ã¬Â¡Â°Ã­ÂÂÃ¬ÂÂ ' + item.view_count + 'Ã­ÂÂ' : '';
   }} else {{
     pmSection.style.display = 'none';
   }}
@@ -571,10 +571,10 @@ function applyFilters() {{
   allCards.forEach(c => c.classList.remove('active'));
   if (visible.length) {{ visible[0].classList.add('active'); setDetail(JSON.parse(visible[0].dataset.item)); }}
   const all = visible.map(c => JSON.parse(c.dataset.item));
-  document.getElementById('stat-new').textContent = all.filter(x => /ì ê·/.test(txt(x.tags)+txt(x.title))).length;
-  document.getElementById('stat-near').textContent = all.filter(x => /ì­ì¸ê¶|ììì¸ê·¼|ì¢ë³|ë¬¸ì /.test(txt(x.tags)+txt(x.memo)+txt(x.title))).length;
+  document.getElementById('stat-new').textContent = all.filter(x => /Ã¬ÂÂ ÃªÂ·Â/.test(txt(x.tags)+txt(x.title))).length;
+  document.getElementById('stat-near').textContent = all.filter(x => /Ã¬ÂÂ­Ã¬ÂÂ¸ÃªÂ¶Â|Ã¬ÂÂÃ¬ÂÂÃ¬ÂÂ¸ÃªÂ·Â¼|Ã¬Â¢ÂÃ«Â³Â|Ã«Â¬Â¸Ã¬Â Â/.test(txt(x.tags)+txt(x.memo)+txt(x.title))).length;
   document.getElementById('stat-phone').textContent = all.filter(x => txt(x.phone)).length;
-  document.getElementById('stat-fast').textContent = all.filter(x => /ë°ë¡|ì¦ì/.test(txt(x.move_date)+txt(x.move_in)+txt(x.memo))).length;
+  document.getElementById('stat-fast').textContent = all.filter(x => /Ã«Â°ÂÃ«Â¡Â|Ã¬Â¦ÂÃ¬ÂÂ/.test(txt(x.move_date)+txt(x.move_in)+txt(x.memo))).length;
   document.getElementById('hero-count').textContent = visible.length;
 }}
 listEl.addEventListener('click', e => {{
@@ -629,17 +629,17 @@ applyFilters();
 </body>
 </html>"""
 
-    # ââ HTML íì¼ ì ì¥ ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    # Ã¢ÂÂÃ¢ÂÂ HTML Ã­ÂÂÃ¬ÂÂ¼ Ã¬Â ÂÃ¬ÂÂ¥ Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
     DOCS_PATH.parent.mkdir(parents=True, exist_ok=True)
     DOCS_PATH.write_text(html_out, encoding='utf-8')
-    log.info(f"HTML ì ì¥ ìë£: {DOCS_PATH}")
+    log.info(f"HTML Ã¬Â ÂÃ¬ÂÂ¥ Ã¬ÂÂÃ«Â£Â: {DOCS_PATH}")
 
 if __name__ == "__main__":
     import sys
     if "--build-only" in sys.argv:
-        log.info("ë¹ë ì ì© ëª¨ë")
+        log.info("Ã«Â¹ÂÃ«ÂÂ Ã¬Â ÂÃ¬ÂÂ© Ã«ÂªÂ¨Ã«ÂÂ")
         items = load_items()
     else:
         items = crawl()
     build(items)
-    log.info("ìë£!")
+    log.info("Ã¬ÂÂÃ«Â£Â!")
