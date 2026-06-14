@@ -16,6 +16,13 @@ try:
 except ImportError:
     HAS_PHARMALL = False
 
+# 팜플 크롤러 임포트 (없으면 경고만)
+try:
+    import crawler_pharmple
+    HAS_PHARMPLE = True
+except ImportError:
+    HAS_PHARMPLE = False
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
@@ -158,6 +165,21 @@ def crawl():
             log.error(f"Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¬ÂÂ¤Ã­ÂÂ¨ (Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  Ã«ÂÂ°Ã¬ÂÂ´Ã­ÂÂ°Ã«ÂÂ Ã¬ÂÂ Ã¬Â§Â): {e}")
     else:
         log.warning("crawler_pharmall.py Ã¬ÂÂÃ¬ÂÂ - Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¬ÂÂ¤Ã­ÂÂµ")
+
+    # ── 팜플 크롤링 ──
+    if HAS_PHARMPLE:
+        log.info("── 팜플 크롤링 시작...")
+        try:
+            pharmple_items = crawler_pharmple.crawl()
+            # 기존 팜플 항목 제거 후 최신으로 교체
+            for k in [k for k in list(items.keys()) if str(k).startswith("pp_")]:
+                del items[k]
+            items.update(pharmple_items)
+            log.info(f"팜플 {len(pharmple_items)}건 병합 완료")
+        except Exception as e:
+            log.error(f"팜플 크롤링 실패 (기존 데이터는 유지): {e}")
+    else:
+        log.warning("crawler_pharmple.py 없음 - 팜플 크롤링 스킵")
 
     # Ã¢ÂÂÃ¢ÂÂ Ã¬Â¤ÂÃ«Â³Âµ ÃªÂ°ÂÃ¬Â§Â Ã¢ÂÂÃ¢ÂÂ
     # ÃªÂ¸Â°Ã¬Â¤Â 1 (ÃªÂµÂÃ¬Â°Â¨Ã¬Â¤ÂÃ«Â³Âµ): KPAÃ¢ÂÂÃ­ÂÂÃ¬ÂÂ¬ ÃªÂ°ÂÃ¬ÂÂ Ã¬ÂÂ/ÃªÂµÂ° Ã¬Â£Â¼Ã¬ÂÂ
