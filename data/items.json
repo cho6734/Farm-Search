@@ -20,9 +20,10 @@
     "sale_amount": "1",
     "special_flag": "주차장,독점약국",
     "tags": "주차장, 독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
-    "trade_area": "역세권"
+    "trade_area": "역세권",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9794": {
     "idx": 9794,
@@ -1202,9 +1203,10 @@
     "sale_amount": "",
     "special_flag": "도로변",
     "tags": "도로변",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
-    "trade_area": "주택지역"
+    "trade_area": "주택지역",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9976": {
     "idx": 9976,
@@ -1256,12 +1258,13 @@
     "sale_amount": "100~110만원",
     "special_flag": "주차장,유동인구많음,신규약국,독점약국,도로변,시설양도,장비양도",
     "tags": "주차장, 유동인구많음, 신규약국, 독점약국, 도로변, 시설양도, 장비양도",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "아파트상가",
     "possible_duplicate": true,
     "dup_group": 1,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9979": {
     "idx": 9979,
@@ -1429,12 +1432,13 @@
     "sale_amount": "50",
     "special_flag": "도로변,대로변,시설양도",
     "tags": "도로변, 대로변, 시설양도",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "의원인근",
     "possible_duplicate": true,
     "dup_group": 13,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9987": {
     "idx": 9987,
@@ -1457,12 +1461,13 @@
     "sale_amount": "40만",
     "special_flag": "주차장,보안시설,유동인구많음,독점약국,도로변,냉방시설,난방시설,엘리베이터,시설양도,장비양도",
     "tags": "주차장, 보안시설, 유동인구많음, 독점약국, 도로변, 냉방시설, 난방시설, 엘리베이터, 시설양도, 장비양도",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "의원인근",
     "possible_duplicate": true,
     "dup_group": 19,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9988": {
     "idx": 9988,
@@ -1485,12 +1490,13 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,엘리베이터",
     "tags": "주차장, 신규약국, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "의원인근",
     "possible_duplicate": true,
     "dup_group": 2,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9989": {
     "idx": 9989,
@@ -1513,12 +1519,13 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,대로변,엘리베이터",
     "tags": "주차장, 신규약국, 독점약국, 대로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 3,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9990": {
     "idx": 9990,
@@ -1541,12 +1548,13 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,엘리베이터",
     "tags": "주차장, 신규약국, 독점약국, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 4,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9991": {
     "idx": 9991,
@@ -1569,12 +1577,13 @@
     "sale_amount": "",
     "special_flag": "주차장,유동인구많음,신규약국,독점약국,대로변,엘리베이터",
     "tags": "주차장, 유동인구많음, 신규약국, 독점약국, 대로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 5,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9992": {
     "idx": 9992,
@@ -1597,12 +1606,13 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,엘리베이터",
     "tags": "주차장, 신규약국, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 16,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9993": {
     "idx": 9993,
@@ -1625,12 +1635,13 @@
     "sale_amount": "",
     "special_flag": "주차장,문전약국,독점약국,대로변,엘리베이터",
     "tags": "주차장, 문전약국, 독점약국, 대로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "의원인근",
     "possible_duplicate": true,
     "dup_group": 6,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "9994": {
     "idx": 9994,
@@ -1653,12 +1664,13 @@
     "sale_amount": "0",
     "special_flag": "대로변,시설양도,장비양도",
     "tags": "대로변, 시설양도, 장비양도",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "메디컬센터",
     "possible_duplicate": true,
     "dup_group": 28,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10006": {
     "idx": 10006,
@@ -1819,12 +1831,13 @@
     "sale_amount": "100~110만원",
     "special_flag": "주차장,유동인구많음,신규약국,독점약국,도로변,시설양도,장비양도",
     "tags": "주차장, 유동인구많음, 신규약국, 독점약국, 도로변, 시설양도, 장비양도",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "아파트상가",
     "possible_duplicate": true,
     "dup_group": 1,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10031": {
     "idx": 10031,
@@ -1847,12 +1860,13 @@
     "sale_amount": "신규",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 5,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10032": {
     "idx": 10032,
@@ -1875,12 +1889,13 @@
     "sale_amount": "200",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 21,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10033": {
     "idx": 10033,
@@ -1903,12 +1918,13 @@
     "sale_amount": "50",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 1,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10034": {
     "idx": 10034,
@@ -1931,12 +1947,13 @@
     "sale_amount": "신규",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 2,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10035": {
     "idx": 10035,
@@ -1959,12 +1976,13 @@
     "sale_amount": "신규",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 7,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10036": {
     "idx": 10036,
@@ -1987,12 +2005,13 @@
     "sale_amount": "신규",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 7,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10037": {
     "idx": 10037,
@@ -2015,12 +2034,13 @@
     "sale_amount": "신규",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 11,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10038": {
     "idx": 10038,
@@ -2043,12 +2063,13 @@
     "sale_amount": "35",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 2,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10039": {
     "idx": 10039,
@@ -2071,12 +2092,13 @@
     "sale_amount": "40",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 9,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10040": {
     "idx": 10040,
@@ -2099,12 +2121,13 @@
     "sale_amount": "신규",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 10,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10041": {
     "idx": 10041,
@@ -2127,12 +2150,13 @@
     "sale_amount": "신규",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 1,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10042": {
     "idx": 10042,
@@ -2155,12 +2179,13 @@
     "sale_amount": "신규",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 8,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10043": {
     "idx": 10043,
@@ -2183,12 +2208,13 @@
     "sale_amount": "신규",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 10,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10044": {
     "idx": 10044,
@@ -2211,12 +2237,13 @@
     "sale_amount": "신규",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 10,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10045": {
     "idx": 10045,
@@ -2239,12 +2266,13 @@
     "sale_amount": "신규",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 8,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10046": {
     "idx": 10046,
@@ -2267,12 +2295,13 @@
     "sale_amount": "신규",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 9,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10047": {
     "idx": 10047,
@@ -2295,12 +2324,13 @@
     "sale_amount": "신규",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 5,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10048": {
     "idx": 10048,
@@ -2323,12 +2353,13 @@
     "sale_amount": "50",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 21,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10049": {
     "idx": 10049,
@@ -2351,12 +2382,13 @@
     "sale_amount": "30",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 8,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10050": {
     "idx": 10050,
@@ -2379,12 +2411,13 @@
     "sale_amount": "30",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 1,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10051": {
     "idx": 10051,
@@ -2407,12 +2440,13 @@
     "sale_amount": "신규",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 21,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10052": {
     "idx": 10052,
@@ -2464,12 +2498,13 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,엘리베이터",
     "tags": "주차장, 신규약국, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "의원인근",
     "possible_duplicate": true,
     "dup_group": 2,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10055": {
     "idx": 10055,
@@ -2492,12 +2527,13 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,대로변,엘리베이터",
     "tags": "주차장, 신규약국, 독점약국, 대로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 3,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10056": {
     "idx": 10056,
@@ -2520,12 +2556,13 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,엘리베이터",
     "tags": "주차장, 신규약국, 독점약국, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 4,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10062": {
     "idx": 10062,
@@ -2548,12 +2585,13 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,냉방시설,엘리베이터",
     "tags": "주차장, 신규약국, 냉방시설, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 10,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10063": {
     "idx": 10063,
@@ -2576,12 +2614,13 @@
     "sale_amount": "",
     "special_flag": "주차장,유동인구많음,신규약국,엘리베이터",
     "tags": "주차장, 유동인구많음, 신규약국, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "의원인근",
     "possible_duplicate": true,
     "dup_group": 9,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10067": {
     "idx": 10067,
@@ -2604,12 +2643,13 @@
     "sale_amount": "",
     "special_flag": "주차장,독점약국,도로변,냉방시설,난방시설,엘리베이터",
     "tags": "주차장, 독점약국, 도로변, 냉방시설, 난방시설, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "의원인근",
     "possible_duplicate": true,
     "dup_group": 20,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10068": {
     "idx": 10068,
@@ -2632,12 +2672,13 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,도로변",
     "tags": "주차장, 신규약국, 독점약국, 도로변",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 11,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10069": {
     "idx": 10069,
@@ -2660,12 +2701,13 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,엘리베이터",
     "tags": "주차장, 신규약국, 독점약국, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 21,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10072": {
     "idx": 10072,
@@ -2717,12 +2759,13 @@
     "sale_amount": "40",
     "special_flag": "독점약국",
     "tags": "독점약국",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "",
     "possible_duplicate": true,
     "dup_group": 1,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10076": {
     "idx": 10076,
@@ -2745,12 +2788,13 @@
     "sale_amount": "100~110만원",
     "special_flag": "주차장,유동인구많음,신규약국,독점약국,도로변,시설양도,장비양도",
     "tags": "주차장, 유동인구많음, 신규약국, 독점약국, 도로변, 시설양도, 장비양도",
-    "status": "active",
+    "status": "삭제",
     "source": "kpa",
     "trade_area": "아파트상가",
     "possible_duplicate": true,
     "dup_group": 1,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10078": {
     "idx": 10078,
@@ -2770,14 +2814,15 @@
     "sale_amount": "",
     "special_flag": "주차장,유동인구많음,문전약국,대로변,시설양도,장비양도",
     "tags": "주차장, 유동인구많음, 문전약국, 대로변, 시설양도, 장비양도",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 서울 강동구 동남로 733 (길동)\n면적: 20평 (66㎡)\n준공: 2017년 10월\n입주: 협의\n특이사항: 주차장,유동인구많음,문전약국,대로변,시설양도,장비양도\n상세: 서울 동남부 기존약국 \n 종병 문전 \n 조제 1300 \n 일매 40-50 \n 약가 1억 \n 순수익 1500 이상 \n 1억3천/380 관리비 포함 \n 자세한 사항은 문의 \n 약사님만 문의 주세요 \n 010-9176-8644",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 22,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10080": {
     "idx": 10080,
@@ -2797,14 +2842,15 @@
     "sale_amount": "",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 부천시 원미구 계남로 106-1 (중동)\n면적: 18평 (60㎡)\n준공: 2002년 00월\n입주: 입주협의\n상세: ▶▶ 부천 조제 1400 + 일매약\n \n\n - 아파트 대단지 건너 횡단보도앞 코너건물로 입지 좋음\n - 공실 층에 임대인 메디칼건물로 의지확고하여 추가 병원 유치중 \n - 현재 약국장은 육아케어로 평일 6시 토는 1시퇴근 함\n - 액티브한 약사님은 조제와 일매 상승 확실하게 될 수 있음\n \n\n &#45;&#45;- 문의 010&#45;&#45;6687&#45;&#45;0820",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "메디컬센터",
     "possible_duplicate": true,
     "dup_group": 8,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10084": {
     "idx": 10084,
@@ -2824,14 +2870,15 @@
     "sale_amount": "",
     "special_flag": "",
     "tags": "",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 충남 천안시 서북구 개목1길 35 (성정동, 그랜드빌)\n면적: 21평 (69㎡)\n준공: 2015년 00월\n입주: 입주협의\n상세: ▶▶ 충청 조제4300 + 일매 \n - 메인과 분양받은 40대 원장 연합입니다\n - 매매19억(수이률8.7%) ,임대(보2억/1200) 진행 가능합니다\n - 입지 좋은 곳으로 기타 층 추가 병원 유치중입니다\n \n\n &#45;&#45; 문의 010&#45;&#45;6687&#45;&#45;0820",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "메디컬센터",
     "possible_duplicate": true,
     "dup_group": 8,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10085": {
     "idx": 10085,
@@ -2851,14 +2898,15 @@
     "sale_amount": "",
     "special_flag": "주차장,유동인구많음,신규약국,독점약국,대로변,엘리베이터",
     "tags": "주차장, 유동인구많음, 신규약국, 독점약국, 대로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 서울 관악구 과천대로 867 (남현동)\n면적: 8평 (26㎡)\n준공: 2012년 02월\n입주: 즉시\n특이사항: 주차장,유동인구많음,신규약국,독점약국,대로변,엘리베이터\n상세: -처방 발행중 \n -유동인구 많아 해당 입지 공실이였던적 없음 \n -주변 경쟁약국 없음\n -무권리, 1층 독점 약국",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 5,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10086": {
     "idx": 10086,
@@ -2878,14 +2926,15 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,냉방시설,엘리베이터",
     "tags": "주차장, 신규약국, 냉방시설, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 남양주시 덕릉로 1087 (별내동)\n면적: 26평 (86㎡)\n준공: 2022년 05월\n입주: 즉시\n특이사항: 주차장,신규약국,냉방시설,엘리베이터\n상세: -출퇴근 편리\n -간단한 처방위주\n -추가 의원 입점 호실 있음",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 10,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10087": {
     "idx": 10087,
@@ -2905,14 +2954,15 @@
     "sale_amount": "",
     "special_flag": "주차장,문전약국,독점약국,대로변,엘리베이터",
     "tags": "주차장, 문전약국, 독점약국, 대로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 용인시 처인구 경안천로 2-7 (마평동)\n면적: 10평 (33㎡)\n준공: 2015년 03월\n입주: 즉시\n특이사항: 주차장,문전약국,독점약국,대로변,엘리베이터\n상세: -처방 간단하여 조제 편함\n -기존약국 양도\n -1층 독점",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "의원인근",
     "possible_duplicate": true,
     "dup_group": 6,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10088": {
     "idx": 10088,
@@ -2932,14 +2982,15 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,대로변,엘리베이터",
     "tags": "주차장, 신규약국, 독점약국, 대로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 성남시 수정구 고등로 15 (고등동)\n면적: 12평 (40㎡)\n준공: 2014년 02월\n입주: 즉시\n특이사항: 주차장,신규약국,독점약국,대로변,엘리베이터\n상세: -조제 간단하여 운영편리\n -처방 발행중\n -출퇴근 편리",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 15,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10089": {
     "idx": 10089,
@@ -2959,14 +3010,15 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,대로변,엘리베이터",
     "tags": "주차장, 신규약국, 대로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 광명시 가락골길 31-9 (노온사동)\n면적: 15평 (50㎡)\n준공: 2022년 02월\n입주: 즉시\n특이사항: 주차장,신규약국,대로변,엘리베이터\n상세: -신규 의원 입점으로 오픈하는 약국자리\n -권리 및 지원금 없음\n -추가 의원 입점할 호실 있음",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 16,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10090": {
     "idx": 10090,
@@ -2986,14 +3038,15 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,대로변,엘리베이터",
     "tags": "주차장, 신규약국, 독점약국, 대로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 울산 북구 가대서길 56-6 (가대동)\n면적: 15평 (50㎡)\n준공: 2023년 04월\n입주: 즉시\n특이사항: 주차장,신규약국,독점약국,대로변,엘리베이터\n상세: -신규 의원 입점\n -1층 무권리\n -건물 내 프랜차이즈 업체들 입점해있음",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "의원인근",
     "possible_duplicate": true,
     "dup_group": 17,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10091": {
     "idx": 10091,
@@ -3013,14 +3066,15 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,엘리베이터",
     "tags": "주차장, 신규약국, 독점약국, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 안성시 가사길 13 (가사동)\n면적: 6평 (20㎡)\n준공: 2016년 03월\n입주: 즉시\n특이사항: 주차장,신규약국,독점약국,엘리베이터\n상세: -이용객 많은 상가\n -주변 처방 흡수 가능\n -권리 없음",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "의원인근",
     "possible_duplicate": true,
     "dup_group": 18,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10092": {
     "idx": 10092,
@@ -3040,14 +3094,15 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,냉방시설,엘리베이터",
     "tags": "주차장, 신규약국, 독점약국, 냉방시설, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 남양주시 덕릉로 967 (별내동)\n면적: 20평 (66㎡)\n준공: 2023년 09월\n입주: 즉시\n특이사항: 주차장,신규약국,독점약국,냉방시설,엘리베이터\n상세: -건물 독점 층약국\n -주처방과 처방\n -권리 없음",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 8,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10093": {
     "idx": 10093,
@@ -3067,14 +3122,15 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,독점약국,도로변",
     "tags": "주차장, 신규약국, 독점약국, 도로변",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 하남시 감북로 19 (감북동)\n면적: 12평 (40㎡)\n준공: 2015년 08월\n입주: 즉시\n특이사항: 주차장,신규약국,독점약국,도로변\n상세: -현재 처방 발행중\n\r\n\r\n -권리없음\n\r\n\r\n -건물 독점 약국",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 11,
-    "dup_kind": "internal"
+    "dup_kind": "internal",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10094": {
     "idx": 10094,
@@ -3094,14 +3150,15 @@
     "sale_amount": "",
     "special_flag": "주차장,신규약국,엘리베이터",
     "tags": "주차장, 신규약국, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 안산시 단원구 갈마지길 5-6 (대부북동)\n면적: 17평 (56㎡)\n준공: 2011년 06월\n입주: 즉시\n특이사항: 주차장,신규약국,엘리베이터\n상세: -무권리\n\r\n\r\n -감기, 만성질환 처방 위주\n\r\n\r\n -층약국 월세저렴",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 9,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10095": {
     "idx": 10095,
@@ -3121,14 +3178,15 @@
     "sale_amount": "",
     "special_flag": "주차장,유동인구많음,신규약국,독점약국,도로변,엘리베이터",
     "tags": "주차장, 유동인구많음, 신규약국, 독점약국, 도로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 서울 중랑구 사가정로 지하 393 (면목동)\n면적: 11평 (36㎡)\n준공: 2021년 00월\n입주: 즉시입주가능\n특이사항: 주차장,유동인구많음,신규약국,독점약국,도로변,엘리베이터\n상세: ◎ 사가정역 인근 신규 독점 약국\n ◎ 렌프 3개월\n ◎ 3000/200 \n ◎ 해당 건물 2~4층 통증의학과 운영중 처방 25건 \n 5~9층 내과 분양 입점 예정 \n ◎ 대형 재래시장 초입이라 유동 인구 매우 많음",
     "collected_at": "2026-06-15 18:01 UTC",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 4,
-    "dup_kind": "kpa"
+    "dup_kind": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10096": {
     "idx": 10096,
@@ -3148,14 +3206,15 @@
     "sale_amount": "",
     "special_flag": "신규약국",
     "tags": "신규약국",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 김포시 돌문로 99 (사우동)\n면적: 22평 (73㎡)\n준공: 2016년 00월\n입주: 즉시입주가능\n특이사항: 신규약국\n상세: 병원급 출입구 인근 1번자리? 권리2억??",
     "collected_at": "2026-06-15 18:02 UTC",
     "source": "kpa",
     "trade_area": "병원인근",
     "possible_duplicate": true,
     "dup_group": 10,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10097": {
     "idx": 10097,
@@ -3175,14 +3234,15 @@
     "sale_amount": "",
     "special_flag": "주차장,유동인구많음,신규약국,독점약국,도로변,엘리베이터",
     "tags": "주차장, 유동인구많음, 신규약국, 독점약국, 도로변, 엘리베이터",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 의정부시 용현로 148 (민락동)\n면적: 12평 (40㎡)\n준공: 2010년 00월\n입주: 즉시입주가능\n처방조제: 50\n특이사항: 주차장,유동인구많음,신규약국,독점약국,도로변,엘리베이터\n상세: 정형외과 평균 40~50장 치과 5~7장 \n\r\n\r\n 독점약국 권리 3000",
     "collected_at": "2026-06-15 18:02 UTC",
     "source": "kpa",
     "trade_area": "역세권",
     "possible_duplicate": true,
     "dup_group": 12,
-    "dup_kind": "cross"
+    "dup_kind": "cross",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10124": {
     "idx": 10124,
@@ -3203,10 +3263,11 @@
     "special_flag": "보안시설,문전약국,대로변,냉방시설,난방시설",
     "tags": "보안시설, 문전약국, 대로변, 냉방시설, 난방시설",
     "trade_area": "의원인근",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 충남 서천군\n면적: 10평 (33㎡)\n준공: 1993년 01월\n입주: 협의가능\n특이사항: 보안시설,문전약국,대로변,냉방시설,난방시설",
     "collected_at": "2026-06-15 18:02 UTC",
-    "source": "kpa"
+    "source": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "10128": {
     "idx": 10128,
@@ -3227,10 +3288,11 @@
     "special_flag": "독점약국,대로변",
     "tags": "독점약국, 대로변",
     "trade_area": "주상복합상가",
-    "status": "active",
+    "status": "삭제",
     "memo": "주소: 경기 평택시 진위면 가곡길 36\n면적: 20평 (60㎡)\n준공: 1997년 08월\n입주: 즉시\n특이사항: 독점약국,대로변\n상세: ★ 무 권리 // 분엄 예외\n\r\n\r\n \n\r\n\r\n 일매약 : 70~100만원\n\r\n\r\n \n\r\n\r\n 약국 20평\n\r\n\r\n 보중금 : 700만 / 월세 60만원\n\r\n\r\n 권리금 : 무\n\r\n\r\n \n\r\n\r\n 개업과 동시에 70~100 할 수 있는 자리\n\r\n\r\n \n\r\n\r\n 연락처 010-3798-9451\n\r\n\r\n \n\r\n\r\n 비앤엠공인 중개사 사무실\n\r\n\r\n 등록번호 41111-2017-00062\n\r\n\r\n 경기 수원 장안구 창훈로 52번길 3",
     "collected_at": "2026-06-15 18:02 UTC",
-    "source": "kpa"
+    "source": "kpa",
+    "deleted_at": "2026-06-15 19:00 UTC"
   },
   "pm_760": {
     "idx": "pm_760",
@@ -3253,7 +3315,7 @@
     "sale_amount": "",
     "thumb_url": "",
     "tags": "중개매물, 신규약국, 분양, 조제 + 매약, 로컬",
-    "memo": "주소: 경기 성남시 중원구 둔촌대로 283\n면적: 전용 66.12㎡ (20.0평) / 공용 112.40㎡ (약 34.00평)\n건물용도: 제 1종 근린시설\n사용승인일: 1986-08-18\n총층: 4층\n해당층: 지상 1층\n방수: 1개 / 화장실: 공용, 1개\n주차: 총 0대 / 가능 0대\n방향: 동\n입주가능일: 2026-06-30 / 즉시입주가능 / 입주일 조율가능\n조회수: 238\n상세: 성남 중원구 소재약국\n\n조제 : 2000~2200 + 비급여마진 100~150\n일매 : 150만~160만\n월매 : 3900~4000만\n보증 : 1억 / 월세 500 (부가세 별도)\n근무시간 : 평일 9 - 8시 / 토 9 - 7시 / 일, 공휴일 휴무\n\n의사\n- (주처방) 60대 초중, 가정의학과 의원 / 내과(위주) + 동네처방(통증, 감기,위장,두드러기 등)\n- 치과2곳 일 5~6건\n- 근처 의원(통증, 정형 위주)에서 일 5~10건\n- 동네상권이라 주위 병원 처방도 들어옴\n\n병원과 관계 좋고, 소통원활\n동네상권 + 주병원 업력이 있어, 비수기 없이 꾸준한 처방(조제료+일매 정리표 보면 납득)\n주위 약국에서 규모 가장 크고, 자리가 좋음",
+    "memo": "주소: 경기 성남시 중원구 둔촌대로 283\n면적: 전용 66.12㎡ (20.0평) / 공용 112.40㎡ (약 34.00평)\n건물용도: 제 1종 근린시설\n사용승인일: 1986-08-18\n총층: 4층\n해당층: 지상 1층\n방수: 1개 / 화장실: 공용, 1개\n주차: 총 0대 / 가능 0대\n방향: 동\n입주가능일: 2026-06-30 / 즉시입주가능 / 입주일 조율가능\n조회수: 240\n상세: 성남 중원구 소재약국\n\n조제 : 2000~2200 + 비급여마진 100~150\n일매 : 150만~160만\n월매 : 3900~4000만\n보증 : 1억 / 월세 500 (부가세 별도)\n근무시간 : 평일 9 - 8시 / 토 9 - 7시 / 일, 공휴일 휴무\n\n의사\n- (주처방) 60대 초중, 가정의학과 의원 / 내과(위주) + 동네처방(통증, 감기,위장,두드러기 등)\n- 치과2곳 일 5~6건\n- 근처 의원(통증, 정형 위주)에서 일 5~10건\n- 동네상권이라 주위 병원 처방도 들어옴\n\n병원과 관계 좋고, 소통원활\n동네상권 + 주병원 업력이 있어, 비수기 없이 꾸준한 처방(조제료+일매 정리표 보면 납득)\n주위 약국에서 규모 가장 크고, 자리가 좋음",
     "building_usage": "제 1종 근린시설",
     "approval_date": "1986-08-18",
     "total_floors": 4,
@@ -3264,12 +3326,12 @@
     "parking_avail": "",
     "direction": "동",
     "move_in": "2026-06-30 / 즉시입주가능 / 입주일 조율가능",
-    "view_count": 238,
+    "view_count": 240,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC",
+    "collected_at": "2026-06-15 19:29 UTC",
     "possible_duplicate": true,
-    "dup_group": 13,
+    "dup_group": 1,
     "dup_kind": "cross"
   },
   "pm_759": {
@@ -3293,7 +3355,7 @@
     "sale_amount": "60만원/일",
     "thumb_url": "",
     "tags": "중개매물, 독점, 기존약국, 임대, 조제 + 매약, 로컬",
-    "memo": "주소: 경기 김포시 유현로 19\n면적: 전용 82.64㎡ (25.0평) / 공용 165.29㎡ (약 50.00평)\n관리비: 30만원\n월조제료: 1,500만원/월\n일반약일매출: 60만원/일\n건물용도: 제 1종 근린시설\n사용승인일: 1999-09-25\n총층: 3층\n해당층: 지상 1층\n방수: 1개 / 화장실: 공용, 1개\n주차: 총 25대 / 가능 1대\n방향: 남서\n입주가능일: 2026-07-31 / 즉시입주가능 / 입주일 조율가능\n조회수: 358\n상세: 1층 독점 조항 있는 약국\n병원 분양으로 이전염려 없음\n순익 1000이상 알짜약국\n조제, 매약 꾸준해 안정적인 약국\n조제 간편하고 근무시간 짧은 편한 1인 약국",
+    "memo": "주소: 경기 김포시 유현로 19\n면적: 전용 82.64㎡ (25.0평) / 공용 165.29㎡ (약 50.00평)\n관리비: 30만원\n월조제료: 1,500만원/월\n일반약일매출: 60만원/일\n건물용도: 제 1종 근린시설\n사용승인일: 1999-09-25\n총층: 3층\n해당층: 지상 1층\n방수: 1개 / 화장실: 공용, 1개\n주차: 총 25대 / 가능 1대\n방향: 남서\n입주가능일: 2026-07-31 / 즉시입주가능 / 입주일 조율가능\n조회수: 359\n상세: 1층 독점 조항 있는 약국\n병원 분양으로 이전염려 없음\n순익 1000이상 알짜약국\n조제, 매약 꾸준해 안정적인 약국\n조제 간편하고 근무시간 짧은 편한 1인 약국",
     "building_usage": "제 1종 근린시설",
     "approval_date": "1999-09-25",
     "total_floors": 3,
@@ -3304,10 +3366,10 @@
     "parking_avail": 1,
     "direction": "남서",
     "move_in": "2026-07-31 / 즉시입주가능 / 입주일 조율가능",
-    "view_count": 358,
+    "view_count": 359,
     "maintenance_fee": "30만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_754": {
     "idx": "pm_754",
@@ -3344,7 +3406,7 @@
     "view_count": 253,
     "maintenance_fee": "20만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_753": {
     "idx": "pm_753",
@@ -3381,7 +3443,7 @@
     "view_count": 567,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_752": {
     "idx": "pm_752",
@@ -3418,7 +3480,7 @@
     "view_count": 259,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_751": {
     "idx": "pm_751",
@@ -3455,7 +3517,7 @@
     "view_count": 267,
     "maintenance_fee": "40만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_748": {
     "idx": "pm_748",
@@ -3492,7 +3554,7 @@
     "view_count": 251,
     "maintenance_fee": "20만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_747": {
     "idx": "pm_747",
@@ -3529,7 +3591,7 @@
     "view_count": 458,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_744": {
     "idx": "pm_744",
@@ -3566,7 +3628,7 @@
     "view_count": 394,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_743": {
     "idx": "pm_743",
@@ -3603,7 +3665,7 @@
     "view_count": 223,
     "maintenance_fee": "20만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_741": {
     "idx": "pm_741",
@@ -3640,7 +3702,7 @@
     "view_count": 242,
     "maintenance_fee": "30만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_739": {
     "idx": "pm_739",
@@ -3677,7 +3739,7 @@
     "view_count": 555,
     "maintenance_fee": "40만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_737": {
     "idx": "pm_737",
@@ -3714,7 +3776,7 @@
     "view_count": 333,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_735": {
     "idx": "pm_735",
@@ -3751,7 +3813,7 @@
     "view_count": 229,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_732": {
     "idx": "pm_732",
@@ -3788,7 +3850,7 @@
     "view_count": 256,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_731": {
     "idx": "pm_731",
@@ -3825,7 +3887,7 @@
     "view_count": 248,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_730": {
     "idx": "pm_730",
@@ -3862,7 +3924,7 @@
     "view_count": 595,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_723": {
     "idx": "pm_723",
@@ -3899,7 +3961,7 @@
     "view_count": 341,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_717": {
     "idx": "pm_717",
@@ -3936,10 +3998,7 @@
     "view_count": 238,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC",
-    "possible_duplicate": true,
-    "dup_group": 9,
-    "dup_kind": "cross"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_716": {
     "idx": "pm_716",
@@ -3976,9 +4035,9 @@
     "view_count": 347,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC",
+    "collected_at": "2026-06-15 19:29 UTC",
     "possible_duplicate": true,
-    "dup_group": 14,
+    "dup_group": 2,
     "dup_kind": "internal"
   },
   "pm_713": {
@@ -4016,9 +4075,9 @@
     "view_count": 327,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:03 UTC",
+    "collected_at": "2026-06-15 19:29 UTC",
     "possible_duplicate": true,
-    "dup_group": 15,
+    "dup_group": 3,
     "dup_kind": "internal"
   },
   "pm_711": {
@@ -4056,10 +4115,7 @@
     "view_count": 380,
     "maintenance_fee": "15만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC",
-    "possible_duplicate": true,
-    "dup_group": 12,
-    "dup_kind": "cross"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_707": {
     "idx": "pm_707",
@@ -4096,10 +4152,7 @@
     "view_count": 345,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC",
-    "possible_duplicate": true,
-    "dup_group": 8,
-    "dup_kind": "cross"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_706": {
     "idx": "pm_706",
@@ -4136,7 +4189,7 @@
     "view_count": 266,
     "maintenance_fee": "50만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_705": {
     "idx": "pm_705",
@@ -4173,7 +4226,7 @@
     "view_count": 243,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_687": {
     "idx": "pm_687",
@@ -4210,10 +4263,7 @@
     "view_count": 502,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC",
-    "possible_duplicate": true,
-    "dup_group": 3,
-    "dup_kind": "cross"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_680": {
     "idx": "pm_680",
@@ -4250,7 +4300,7 @@
     "view_count": 383,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_679": {
     "idx": "pm_679",
@@ -4287,7 +4337,7 @@
     "view_count": 382,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_678": {
     "idx": "pm_678",
@@ -4324,9 +4374,9 @@
     "view_count": 555,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC",
+    "collected_at": "2026-06-15 19:29 UTC",
     "possible_duplicate": true,
-    "dup_group": 14,
+    "dup_group": 2,
     "dup_kind": "internal"
   },
   "pm_670": {
@@ -4364,7 +4414,7 @@
     "view_count": 431,
     "maintenance_fee": "20만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_667": {
     "idx": "pm_667",
@@ -4401,7 +4451,7 @@
     "view_count": 285,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_659": {
     "idx": "pm_659",
@@ -4438,7 +4488,7 @@
     "view_count": 521,
     "maintenance_fee": "5만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_658": {
     "idx": "pm_658",
@@ -4475,7 +4525,7 @@
     "view_count": 340,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_654": {
     "idx": "pm_654",
@@ -4512,7 +4562,7 @@
     "view_count": 381,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_652": {
     "idx": "pm_652",
@@ -4549,7 +4599,7 @@
     "view_count": 452,
     "maintenance_fee": "20만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:29 UTC"
   },
   "pm_636": {
     "idx": "pm_636",
@@ -4586,7 +4636,7 @@
     "view_count": 447,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_627": {
     "idx": "pm_627",
@@ -4623,7 +4673,7 @@
     "view_count": 535,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_595": {
     "idx": "pm_595",
@@ -4660,7 +4710,7 @@
     "view_count": 412,
     "maintenance_fee": "1만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_586": {
     "idx": "pm_586",
@@ -4697,7 +4747,7 @@
     "view_count": 486,
     "maintenance_fee": "5만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_581": {
     "idx": "pm_581",
@@ -4734,7 +4784,7 @@
     "view_count": 258,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_579": {
     "idx": "pm_579",
@@ -4771,7 +4821,7 @@
     "view_count": 446,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_578": {
     "idx": "pm_578",
@@ -4808,7 +4858,7 @@
     "view_count": 272,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_573": {
     "idx": "pm_573",
@@ -4845,9 +4895,9 @@
     "view_count": 384,
     "maintenance_fee": "200,000만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC",
+    "collected_at": "2026-06-15 19:30 UTC",
     "possible_duplicate": true,
-    "dup_group": 15,
+    "dup_group": 3,
     "dup_kind": "internal"
   },
   "pm_572": {
@@ -4885,7 +4935,7 @@
     "view_count": 381,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_571": {
     "idx": "pm_571",
@@ -4922,7 +4972,7 @@
     "view_count": 332,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_567": {
     "idx": "pm_567",
@@ -4959,7 +5009,7 @@
     "view_count": 493,
     "maintenance_fee": "45만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_560": {
     "idx": "pm_560",
@@ -4996,7 +5046,7 @@
     "view_count": 608,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_537": {
     "idx": "pm_537",
@@ -5033,7 +5083,7 @@
     "view_count": 379,
     "maintenance_fee": "30만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_534": {
     "idx": "pm_534",
@@ -5070,7 +5120,7 @@
     "view_count": 326,
     "maintenance_fee": "5만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_521": {
     "idx": "pm_521",
@@ -5107,7 +5157,7 @@
     "view_count": 504,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_509": {
     "idx": "pm_509",
@@ -5144,7 +5194,7 @@
     "view_count": 673,
     "maintenance_fee": "5만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_504": {
     "idx": "pm_504",
@@ -5181,7 +5231,7 @@
     "view_count": 304,
     "maintenance_fee": "2만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_483": {
     "idx": "pm_483",
@@ -5218,7 +5268,7 @@
     "view_count": 279,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_476": {
     "idx": "pm_476",
@@ -5255,7 +5305,7 @@
     "view_count": 495,
     "maintenance_fee": "20만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_466": {
     "idx": "pm_466",
@@ -5292,9 +5342,9 @@
     "view_count": 369,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC",
+    "collected_at": "2026-06-15 19:30 UTC",
     "possible_duplicate": true,
-    "dup_group": 16,
+    "dup_group": 4,
     "dup_kind": "internal"
   },
   "pm_449": {
@@ -5332,7 +5382,7 @@
     "view_count": 818,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_427": {
     "idx": "pm_427",
@@ -5369,7 +5419,7 @@
     "view_count": 555,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_426": {
     "idx": "pm_426",
@@ -5406,7 +5456,7 @@
     "view_count": 326,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_394": {
     "idx": "pm_394",
@@ -5443,7 +5493,7 @@
     "view_count": 606,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_379": {
     "idx": "pm_379",
@@ -5480,7 +5530,7 @@
     "view_count": 721,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_362": {
     "idx": "pm_362",
@@ -5517,7 +5567,7 @@
     "view_count": 417,
     "maintenance_fee": "25만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_354": {
     "idx": "pm_354",
@@ -5554,7 +5604,7 @@
     "view_count": 657,
     "maintenance_fee": "30만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_336": {
     "idx": "pm_336",
@@ -5591,7 +5641,7 @@
     "view_count": 217,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_322": {
     "idx": "pm_322",
@@ -5628,7 +5678,7 @@
     "view_count": 523,
     "maintenance_fee": "5만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_320": {
     "idx": "pm_320",
@@ -5665,7 +5715,7 @@
     "view_count": 858,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_318": {
     "idx": "pm_318",
@@ -5702,7 +5752,7 @@
     "view_count": 966,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_308": {
     "idx": "pm_308",
@@ -5739,7 +5789,7 @@
     "view_count": 484,
     "maintenance_fee": "3만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_278": {
     "idx": "pm_278",
@@ -5776,7 +5826,7 @@
     "view_count": 748,
     "maintenance_fee": "20만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_255": {
     "idx": "pm_255",
@@ -5813,7 +5863,7 @@
     "view_count": 941,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_245": {
     "idx": "pm_245",
@@ -5850,9 +5900,9 @@
     "view_count": 587,
     "maintenance_fee": "24만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC",
+    "collected_at": "2026-06-15 19:30 UTC",
     "possible_duplicate": true,
-    "dup_group": 17,
+    "dup_group": 5,
     "dup_kind": "internal"
   },
   "pm_243": {
@@ -5890,7 +5940,7 @@
     "view_count": 822,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_241": {
     "idx": "pm_241",
@@ -5927,7 +5977,7 @@
     "view_count": 648,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_239": {
     "idx": "pm_239",
@@ -5964,7 +6014,7 @@
     "view_count": 350,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_227": {
     "idx": "pm_227",
@@ -6001,7 +6051,7 @@
     "view_count": 582,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_204": {
     "idx": "pm_204",
@@ -6038,7 +6088,7 @@
     "view_count": 533,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_195": {
     "idx": "pm_195",
@@ -6075,9 +6125,9 @@
     "view_count": 1021,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC",
+    "collected_at": "2026-06-15 19:30 UTC",
     "possible_duplicate": true,
-    "dup_group": 17,
+    "dup_group": 5,
     "dup_kind": "internal"
   },
   "pm_193": {
@@ -6115,9 +6165,9 @@
     "view_count": 596,
     "maintenance_fee": "15만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC",
+    "collected_at": "2026-06-15 19:30 UTC",
     "possible_duplicate": true,
-    "dup_group": 16,
+    "dup_group": 4,
     "dup_kind": "internal"
   },
   "pm_133": {
@@ -6155,7 +6205,7 @@
     "view_count": 632,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_116": {
     "idx": "pm_116",
@@ -6192,7 +6242,7 @@
     "view_count": 684,
     "maintenance_fee": "65만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_78": {
     "idx": "pm_78",
@@ -6229,7 +6279,7 @@
     "view_count": 714,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_61": {
     "idx": "pm_61",
@@ -6266,7 +6316,7 @@
     "view_count": 795,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_57": {
     "idx": "pm_57",
@@ -6303,7 +6353,7 @@
     "view_count": 825,
     "maintenance_fee": "10만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_20": {
     "idx": "pm_20",
@@ -6340,7 +6390,7 @@
     "view_count": 247,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_17": {
     "idx": "pm_17",
@@ -6377,7 +6427,7 @@
     "view_count": 832,
     "maintenance_fee": "20만원",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_14": {
     "idx": "pm_14",
@@ -6414,7 +6464,7 @@
     "view_count": 576,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pm_12": {
     "idx": "pm_12",
@@ -6451,7 +6501,7 @@
     "view_count": 217,
     "maintenance_fee": "",
     "status": "active",
-    "collected_at": "2026-06-15 18:04 UTC"
+    "collected_at": "2026-06-15 19:30 UTC"
   },
   "pp_19235": {
     "idx": "pp_19235",
@@ -6478,7 +6528,7 @@
     "memo": "지역: 서울 은평구\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 100만원\n가격: 6,000만원 / 320만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMzU=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMzU=",
     "is_premium": false
   },
@@ -6507,7 +6557,7 @@
     "memo": "지역: 충북 청주시\n상권: 로컬의원\n월조제: 2,500~3,000\n일매: 90만원\n가격: 25,000만원 / 800만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNzU=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNzU=",
     "is_premium": false
   },
@@ -6536,7 +6586,7 @@
     "memo": "지역: 전북특별자치도 익산시\n상권: 로컬의원\n월조제: 500~1,000\n일매: 35만원\n가격: 3,000만원 / 99만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNzM=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNzM=",
     "is_premium": false
   },
@@ -6565,7 +6615,7 @@
     "memo": "지역: 대전 서구\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 5,000만원 / 50만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMzM=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMzM=",
     "is_premium": false
   },
@@ -6594,7 +6644,7 @@
     "memo": "지역: 경남 사천시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 40만원\n가격: 10,000만원 / 220만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNzI=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNzI=",
     "is_premium": false
   },
@@ -6623,7 +6673,7 @@
     "memo": "지역: 부산 사하구\n상권: 종합병원\n월조제: 신규약국\n일매: 신규약국\n가격: 5,000만원 / 400만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNzE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNzE=",
     "is_premium": false
   },
@@ -6652,7 +6702,7 @@
     "memo": "지역: 인천 계양구\n상권: 로컬의원\n월조제: 1,500~2,000\n일매: 20만원\n가격: 10,000만원 / 320만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNDU=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNDU=",
     "is_premium": false
   },
@@ -6681,7 +6731,7 @@
     "memo": "지역: 경기 의정부시\n상권: 로컬의원\n월조제: 1,500~2,000\n일매: 60만원\n가격: 30,000만원 / 500만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNzA=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNzA=",
     "is_premium": false
   },
@@ -6710,7 +6760,7 @@
     "memo": "지역: 경기 용인시\n상권: 로컬의원\n월조제: 2,500~3,000\n일매: 180만원\n가격: 190,000만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNjg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNjg=",
     "is_premium": false
   },
@@ -6739,7 +6789,7 @@
     "memo": "지역: 경기 고양시\n상권: 로컬의원\n월조제: 500~1,000\n일매: 13만원\n가격: 6,000만원 / 200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNjc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNjc=",
     "is_premium": false
   },
@@ -6768,7 +6818,7 @@
     "memo": "지역: 충남 아산시\n상권: 대형쇼핑몰\n월조제: 500 미만\n일매: 100만원\n가격: 5,000만원 / 230만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDc=",
     "is_premium": false
   },
@@ -6797,7 +6847,7 @@
     "memo": "지역: 서울 강동구\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 5,000만원 / 250만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTE=",
     "is_premium": false
   },
@@ -6826,7 +6876,7 @@
     "memo": "지역: 경기 동두천시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 20만원\n가격: 4,000만원 / 135만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNjM=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNjM=",
     "is_premium": false
   },
@@ -6855,7 +6905,7 @@
     "memo": "지역: 전북특별자치도 익산시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNjY=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNjY=",
     "is_premium": false
   },
@@ -6884,7 +6934,7 @@
     "memo": "지역: 부산 해운대구\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 10,000만원 / 550만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNjQ=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNjQ=",
     "is_premium": false
   },
@@ -6913,7 +6963,7 @@
     "memo": "지역: 경기 광주시\n상권: 로컬의원\n월조제: 1,500~2,000\n일매: 80만원\n가격: 10,000만원 / 560만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTk=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTk=",
     "is_premium": false
   },
@@ -6942,7 +6992,7 @@
     "memo": "지역: 서울 중구\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 10,000만원 / 150만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTQ=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTQ=",
     "is_premium": false
   },
@@ -6971,7 +7021,7 @@
     "memo": "지역: 경기 부천시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 20만원\n가격: 10,000만원 / 350만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTg=",
     "is_premium": false
   },
@@ -7000,7 +7050,7 @@
     "memo": "지역: 서울 서초구\n상권: 로컬의원\n월조제: 1,500~2,000\n일매: 40만원\n가격: 5,000만원 / 290만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTc=",
     "is_premium": false
   },
@@ -7029,7 +7079,7 @@
     "memo": "지역: 서울 용산구\n상권: 로컬의원\n월조제: 500~1,000\n일매: 30만원\n가격: 5,000만원 / 200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTY=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:04 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNTY=",
     "is_premium": false
   },
@@ -7058,7 +7108,7 @@
     "memo": "지역: 충남 당진시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 30만원\n가격: 6,000만원 / 220만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMjQ=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMjQ=",
     "is_premium": false
   },
@@ -7087,7 +7137,7 @@
     "memo": "지역: 서울 송파구\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 1,500만원 / 125만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNDg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNDg=",
     "is_premium": false
   },
@@ -7116,7 +7166,7 @@
     "memo": "지역: 경북 상주시\n상권: 기타\n월조제: 500 미만\n일매: 240만원\n가격: 3,000만원 / 280만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMzY=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMzY=",
     "is_premium": false
   },
@@ -7145,7 +7195,7 @@
     "memo": "지역: 인천 연수구\n상권: 기타\n월조제: 500~1,000\n일매: 40만원\n가격: 3,000만원 / 260만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNDc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNDc=",
     "is_premium": false
   },
@@ -7174,7 +7224,7 @@
     "memo": "지역: 전남 완도군\n상권: 로컬의원\n월조제: 500~1,000\n일매: 80만원\n가격: 2,000만원 / 132만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMzI=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMzI=",
     "is_premium": false
   },
@@ -7203,7 +7253,7 @@
     "memo": "지역: 전북특별자치도 전주시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 20만원\n가격: 3,000만원 / 130만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDE=",
     "is_premium": false
   },
@@ -7232,7 +7282,7 @@
     "memo": "지역: 경기 안산시\n상권: 로컬의원\n월조제: 500~1,000\n일매: 20만원\n가격: 3,000만원 / 240만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxOTQ=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxOTQ=",
     "is_premium": false
   },
@@ -7261,7 +7311,7 @@
     "memo": "지역: 대구 달서구\n상권: 로컬의원\n월조제: 2,500~3,000\n일매: 35만원\n가격: 50,000만원 / 600만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNDk=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNDk=",
     "is_premium": false
   },
@@ -7290,7 +7340,7 @@
     "memo": "지역: 서울 동작구\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 100만원\n가격: 10,000만원 / 360만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMjY=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMjY=",
     "is_premium": false
   },
@@ -7319,7 +7369,7 @@
     "memo": "지역: 경기 동두천시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 20만원\n가격: 4,000만원 / 130만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMjA=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMjA=",
     "is_premium": false
   },
@@ -7348,7 +7398,7 @@
     "memo": "지역: 서울 영등포구\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 10만원\n가격: 1,000만원 / 150만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxOTc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxOTc=",
     "is_premium": false
   },
@@ -7377,7 +7427,7 @@
     "memo": "지역: 강원 삼척시\n상권: 종합병원\n월조제: 2,500~3,000\n일매: 70만원\n가격: 20,000만원 / 조제료 23%\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMjc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMjc=",
     "is_premium": false
   },
@@ -7406,7 +7456,7 @@
     "memo": "지역: 서울 동작구\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 100만원\n가격: 10,000만원 / 350만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNDI=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyNDI=",
     "is_premium": false
   },
@@ -7435,7 +7485,7 @@
     "memo": "지역: 인천 서구\n상권: 로컬의원\n월조제: 4,000~5,000\n일매: 60만원\n가격: 10,000만원 / 1,200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxOTk=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxOTk=",
     "is_premium": false
   },
@@ -7464,7 +7514,7 @@
     "memo": "지역: 경기 김포시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 40만원\n가격: 20,000만원 / 조제료 25%\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMTI=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMTI=",
     "is_premium": false
   },
@@ -7493,7 +7543,7 @@
     "memo": "지역: 서울 성북구\n상권: 로컬의원\n월조제: 500~1,000\n일매: 15만원\n가격: 4,000만원 / 230만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMTA=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMTA=",
     "is_premium": false
   },
@@ -7522,7 +7572,7 @@
     "memo": "지역: 서울 중랑구\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 10,000만원 / 500만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxODU=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxODU=",
     "is_premium": false
   },
@@ -7551,7 +7601,7 @@
     "memo": "지역: 서울 서초구\n상권: 로컬의원\n월조제: 500~1,000\n일매: 60만원\n가격: 10,000만원 / 250만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMjg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMjg=",
     "is_premium": false
   },
@@ -7580,7 +7630,7 @@
     "memo": "지역: 경기 안양시\n상권: 로컬의원\n월조제: 1,500~2,000\n일매: 70만원\n가격: 12,000만원 / 300만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDQ=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDQ=",
     "is_premium": false
   },
@@ -7609,7 +7659,7 @@
     "memo": "지역: 경기 파주시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 146,000만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMTY=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMTY=",
     "is_premium": false
   },
@@ -7638,7 +7688,7 @@
     "memo": "지역: 경남 김해시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 80만원\n가격: 600만원 / 280만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDA=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDA=",
     "is_premium": false
   },
@@ -7667,7 +7717,7 @@
     "memo": "지역: 서울 동작구\n상권: 로컬의원\n월조제: 500~1,000\n일매: 25만원\n가격: 4,000만원 / 155만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMTE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMTE=",
     "is_premium": false
   },
@@ -7696,7 +7746,7 @@
     "memo": "지역: 경기 용인시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 2,000만원 / 160만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDk=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDk=",
     "is_premium": false
   },
@@ -7725,7 +7775,7 @@
     "memo": "지역: 경남 창원시\n상권: 로컬의원\n월조제: 3,000~4,000\n일매: 65만원\n가격: 10,000만원 / 1,000만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDg=",
     "is_premium": false
   },
@@ -7754,7 +7804,7 @@
     "memo": "지역: 경기 평택시\n상권: 로컬의원\n월조제: 3,000~4,000\n일매: 1,000만원\n가격: 10,000만원 / 700만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDY=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkyMDY=",
     "is_premium": false
   },
@@ -7783,7 +7833,7 @@
     "memo": "지역: 경기 안양시\n상권: 로컬의원\n월조제: 500~1,000\n일매: 16만원\n가격: 3,000만원 / 200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxODI=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxODI=",
     "is_premium": false
   },
@@ -7812,7 +7862,7 @@
     "memo": "지역: 경기 구리시\n상권: 로컬의원\n월조제: 500~1,000\n일매: 15만원\n가격: 1,500만원 / 100만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxOTg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxOTg=",
     "is_premium": false
   },
@@ -7841,7 +7891,7 @@
     "memo": "지역: 경기 의정부시\n상권: 로컬의원\n월조제: 500~1,000\n일매: 200만원\n가격: 13,000만원 / 450만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxOTY=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxOTY=",
     "is_premium": false
   },
@@ -7870,7 +7920,7 @@
     "memo": "지역: 서울 성동구\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 5,000만원 / 150만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNzY=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNzY=",
     "is_premium": false
   },
@@ -7899,7 +7949,7 @@
     "memo": "지역: 경남 창원시\n상권: 종합병원\n월조제: 1,500~2,000\n일매: 30만원\n가격: 105,000만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNzk=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNzk=",
     "is_premium": false
   },
@@ -7928,7 +7978,7 @@
     "memo": "지역: 전북특별자치도 전주시\n상권: 로컬의원\n월조제: 500 미만\n일매: 100만원\n가격: 13,000만원 / 280만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNzU=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNzU=",
     "is_premium": false
   },
@@ -7957,7 +8007,7 @@
     "memo": "지역: 경남 밀양시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 30,000만원 / 조제료 22%\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNjQ=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNjQ=",
     "is_premium": false
   },
@@ -7986,7 +8036,7 @@
     "memo": "지역: 서울 동대문구\n상권: 로컬의원\n월조제: 2,000~2,500\n일매: 80만원\n가격: 35,000만원 / 620만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNzE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNzE=",
     "is_premium": false
   },
@@ -8015,7 +8065,7 @@
     "memo": "지역: 경기 의정부시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 5,000만원 / 200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNjY=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNjY=",
     "is_premium": false
   },
@@ -8044,7 +8094,7 @@
     "memo": "지역: 인천 연수구\n상권: 로컬의원\n월조제: 500~1,000\n일매: 10만원\n가격: 1,000만원 / 50만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNzI=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNzI=",
     "is_premium": false
   },
@@ -8073,7 +8123,7 @@
     "memo": "지역: 경기 양주시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 67만원\n가격: 10,000만원 / 450만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNjA=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNjA=",
     "is_premium": false
   },
@@ -8102,7 +8152,7 @@
     "memo": "지역: 대구 동구\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 10만원\n가격: 4,000만원 / 200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNjE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNjE=",
     "is_premium": false
   },
@@ -8131,7 +8181,7 @@
     "memo": "지역: 인천 부평구\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 40,000만원 / 1,300만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNTc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNTc=",
     "is_premium": false
   },
@@ -8160,7 +8210,7 @@
     "memo": "지역: 서울 마포구\n상권: 로컬의원\n월조제: 500 미만\n일매: 80만원\n가격: 6,000만원 / 300만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNTM=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNTM=",
     "is_premium": false
   },
@@ -8189,7 +8239,7 @@
     "memo": "지역: 경기 시흥시\n상권: 종합병원\n월조제: 신규약국\n일매: 신규약국\n가격: 15,000만원 / 650만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNTA=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxNTA=",
     "is_premium": false
   },
@@ -8218,7 +8268,7 @@
     "memo": "지역: 경기 고양시\n상권: 로컬의원\n월조제: 500~1,000\n일매: 45만원\n가격: 5,000만원 / 200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMjE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMjE=",
     "is_premium": false
   },
@@ -8247,7 +8297,7 @@
     "memo": "지역: 경기 부천시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 20,000만원 / 550만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMjA=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMjA=",
     "is_premium": false
   },
@@ -8276,7 +8326,7 @@
     "memo": "지역: 경기 이천시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 8,000만원 / 600만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMTk=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMTk=",
     "is_premium": false
   },
@@ -8305,7 +8355,7 @@
     "memo": "지역: 경기 군포시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 50만원\n가격: 10,000만원 / 420만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwOTg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwOTg=",
     "is_premium": false
   },
@@ -8334,7 +8384,7 @@
     "memo": "지역: 경남 밀양시\n상권: 종합병원\n월조제: 신규약국\n일매: 신규약국\n가격: 5,000만원 / 170만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMDc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMDc=",
     "is_premium": false
   },
@@ -8363,7 +8413,7 @@
     "memo": "지역: 경북 포항시\n상권: 기타\n월조제: 500 미만\n일매: 80만원\n가격: 3,000만원 / 150만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMTE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMTE=",
     "is_premium": false
   },
@@ -8392,7 +8442,7 @@
     "memo": "지역: 경남 밀양시\n상권: 종합병원\n월조제: 신규약국\n일매: 신규약국\n가격: 100,000만원 / 400만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMDY=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMDY=",
     "is_premium": false
   },
@@ -8421,7 +8471,7 @@
     "memo": "지역: 서울 중랑구\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 45만원\n가격: 10,000만원 / 430만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMDM=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkxMDM=",
     "is_premium": false
   },
@@ -8450,7 +8500,7 @@
     "memo": "지역: 충북 충주시\n상권: 로컬의원\n월조제: 2,000~2,500\n일매: 40만원\n가격: 10,000만원 / 400만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwOTQ=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwOTQ=",
     "is_premium": false
   },
@@ -8479,7 +8529,7 @@
     "memo": "지역: 충남 논산시\n상권: 로컬의원\n월조제: 500~1,000\n일매: 100만원\n가격: 30,000만원 / 150만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNjc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNjc=",
     "is_premium": false
   },
@@ -8508,7 +8558,7 @@
     "memo": "지역: 경기 안성시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 10,000만원 / 600만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNzg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNzg=",
     "is_premium": false
   },
@@ -8537,7 +8587,7 @@
     "memo": "지역: 경기 화성시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 30,000만원 / 550만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNzc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNzc=",
     "is_premium": false
   },
@@ -8566,7 +8616,7 @@
     "memo": "지역: 전북특별자치도 군산시\n상권: 종합병원\n월조제: 신규약국\n일매: 신규약국\n가격: 600,000만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNzU=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNzU=",
     "is_premium": false
   },
@@ -8595,7 +8645,7 @@
     "memo": "지역: 강원 동해시\n상권: 종합병원\n월조제: 3,000~4,000\n일매: 100만원\n가격: 10,000만원 / 조제료 25%\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNzM=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNzM=",
     "is_premium": false
   },
@@ -8624,7 +8674,7 @@
     "memo": "지역: 경북 문경시\n상권: 로컬의원\n월조제: 500~1,000\n일매: 130만원\n가격: 1,000만원 / 120만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNjg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNjg=",
     "is_premium": false
   },
@@ -8653,7 +8703,7 @@
     "memo": "지역: 경기 용인시\n상권: 로컬의원\n월조제: 1,500~2,000\n일매: 50만원\n가격: 100,000만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNTA=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNTA=",
     "is_premium": false
   },
@@ -8682,7 +8732,7 @@
     "memo": "지역: 경기 의정부시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 30,000만원 / 900만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNTc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNTc=",
     "is_premium": false
   },
@@ -8711,7 +8761,7 @@
     "memo": "지역: 대전 중구\n상권: 기타\n월조제: 신규약국\n일매: 신규약국\n가격: 30,000만원 / 400만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNDk=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTkwNDk=",
     "is_premium": false
   },
@@ -8740,7 +8790,7 @@
     "memo": "지역: 서울 동대문구\n상권: 기타\n월조제: 500 미만\n일매: 60만원\n가격: 10,000만원 / 200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMjg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMjg=",
     "is_premium": false
   },
@@ -8769,7 +8819,7 @@
     "memo": "지역: 서울 중구\n상권: 로컬의원\n월조제: 500 미만\n일매: 40만원\n가격: 6,000만원 / 320만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMTQ=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMTQ=",
     "is_premium": false
   },
@@ -8798,7 +8848,7 @@
     "memo": "지역: 서울 노원구\n상권: 로컬의원\n월조제: 500~1,000\n일매: 35만원\n가격: 5,000만원 / 200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMTI=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMTI=",
     "is_premium": false
   },
@@ -8827,7 +8877,7 @@
     "memo": "지역: 충북 청주시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 10,000만원 / 170만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgxODA=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgxODA=",
     "is_premium": false
   },
@@ -8856,7 +8906,7 @@
     "memo": "지역: 서울 성동구\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 10만원\n가격: 1,000만원 / 100만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMzg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMzg=",
     "is_premium": false
   },
@@ -8885,7 +8935,7 @@
     "memo": "지역: 충남 아산시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 40만원\n가격: 3,000만원 / 200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMzc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMzc=",
     "is_premium": false
   },
@@ -8914,7 +8964,7 @@
     "memo": "지역: 전북특별자치도 전주시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 10,000만원 / 60만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyNDg=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyNDg=",
     "is_premium": false
   },
@@ -8943,7 +8993,7 @@
     "memo": "지역: 서울 강동구\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 1,500만원 / 130만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyNDc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyNDc=",
     "is_premium": false
   },
@@ -8972,7 +9022,7 @@
     "memo": "지역: 충남 아산시\n상권: 로컬의원\n월조제: 1,000~1,500\n일매: 40만원\n가격: 5,000만원 / 250만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyNDE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyNDE=",
     "is_premium": false
   },
@@ -9001,7 +9051,7 @@
     "memo": "지역: 경기 파주시\n상권: 로컬의원\n월조제: 신규약국\n일매: 신규약국\n가격: 5,000만원 / 270만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMzU=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMzU=",
     "is_premium": false
   },
@@ -9030,7 +9080,7 @@
     "memo": "지역: 경기 안양시\n상권: 로컬의원\n월조제: 1,500~2,000\n일매: 50만원\n가격: 12,000만원 / 300만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMzM=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMzM=",
     "is_premium": false
   },
@@ -9059,7 +9109,7 @@
     "memo": "지역: 서울 동작구\n상권: 로컬의원\n월조제: 500~1,000\n일매: 25만원\n가격: 4,000만원 / 130만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgxODc=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgxODc=",
     "is_premium": false
   },
@@ -9088,7 +9138,7 @@
     "memo": "지역: 강원 강릉시\n상권: 종합병원\n월조제: 3,000~4,000\n일매: 70만원\n가격: 10,000만원 / 조제료 25%\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMzE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgyMzE=",
     "is_premium": false
   },
@@ -9117,7 +9167,7 @@
     "memo": "지역: 서울 용산구\n상권: 종합병원\n월조제: 4,000~5,000\n일매: 40만원\n가격: 30,000만원 / 1,200만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgxOTE=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgxOTE=",
     "is_premium": false
   },
@@ -9146,7 +9196,7 @@
     "memo": "지역: 인천 연수구\n상권: 로컬의원\n월조제: 1,500~2,000\n일매: 50만원\n가격: 11,000만원 / 260만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgxODQ=",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/view?idx=MTgxODQ=",
     "is_premium": false
   },
@@ -9175,7 +9225,7 @@
     "memo": "지역: 경기도\n월조제: 1,200만원\n일매: 30만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/pview?idx=MzA4",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/pview?idx=MzA4",
     "is_premium": true
   },
@@ -9204,7 +9254,7 @@
     "memo": "지역: 강원도\n월조제: 1,000만원\n일매: 25만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/pview?idx=MzA3",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/pview?idx=MzA3",
     "is_premium": true
   },
@@ -9233,7 +9283,7 @@
     "memo": "지역: 경기도\n월조제: 1,800만원\n일매: 70만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/pview?idx=MzA0",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/pview?idx=MzA0",
     "is_premium": true
   },
@@ -9262,7 +9312,7 @@
     "memo": "지역: 경기도\n월조제: 1,800만원\n일매: 40만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/pview?idx=MjM0",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/pview?idx=MjM0",
     "is_premium": true
   },
@@ -9291,7 +9341,7 @@
     "memo": "지역: 경기도\n월조제: 1,500만원\n일매: 30만원\n링크: https://pharmple.co.kr/membership/login?login_go=/sale/pview?idx=MTk1",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:30 KST",
     "link": "https://pharmple.co.kr/membership/login?login_go=/sale/pview?idx=MTk1",
     "is_premium": true
   },
@@ -9320,10 +9370,10 @@
     "memo": "지역: 경기 성남시 분당구\n면적: 66 m2(19.97평)\n유형: 매매\n거래: 중개거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28591",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28591",
     "possible_duplicate": true,
-    "dup_group": 13,
+    "dup_group": 1,
     "dup_kind": "cross"
   },
   "dp_28588": {
@@ -9351,7 +9401,7 @@
     "memo": "지역: 부산 부산진구\n면적: 122.1 m2(36.94평)\n유형: 임대\n거래: 중개거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28588",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28588"
   },
   "dp_28573": {
@@ -9379,7 +9429,7 @@
     "memo": "지역: 서울 성동구\n면적: 28.43 m2(8.60평)\n유형: 매매\n거래: 약사거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28573",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28573"
   },
   "dp_28580": {
@@ -9407,7 +9457,7 @@
     "memo": "지역: 경기 시흥시\n면적: 113.57 m2(34.35평)\n유형: 임대\n거래: 중개거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28580",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28580"
   },
   "dp_28579": {
@@ -9435,7 +9485,7 @@
     "memo": "지역: 충북 충주시\n면적: 165 m2(49.91평)\n유형: 임대\n거래: 중개거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28579",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28579"
   },
   "dp_28552": {
@@ -9463,7 +9513,7 @@
     "memo": "지역: 서울 동대문구\n면적: 56.34 m2(17.04평)\n유형: 임대\n거래: 중개거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28552",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28552"
   },
   "dp_28548": {
@@ -9491,7 +9541,7 @@
     "memo": "지역: 서울 도봉구\n면적: 10.59 m2(3.20평)\n유형: 임대\n거래: 약사거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28548",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28548"
   },
   "dp_28547": {
@@ -9519,7 +9569,7 @@
     "memo": "지역: 충남 서산시\n면적: 59.13 m2(17.89평)\n유형: 임대\n거래: 약사거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28547",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28547"
   },
   "dp_28540": {
@@ -9547,7 +9597,7 @@
     "memo": "지역: 서울 도봉구\n면적: 10.59 m2(3.20평)\n유형: 임대\n거래: 약사거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28540",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28540"
   },
   "dp_28535": {
@@ -9575,7 +9625,7 @@
     "memo": "지역: 충북 진천군\n면적: 10 m2(3.03평)\n유형: 임대\n거래: 약사거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28535",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28535"
   },
   "dp_28537": {
@@ -9603,7 +9653,7 @@
     "memo": "지역: 대구 북구\n면적: 212 m2(64.13평)\n유형: 임대\n거래: 약사거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28537",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28537"
   },
   "dp_28534": {
@@ -9631,7 +9681,7 @@
     "memo": "지역: 서울 양천구\n면적: 40.25 m2(12.18평)\n유형: 매매\n거래: 중개거래\n링크: https://realty.dailypharm.com/Main/Realty/View.html?ID=28534",
     "special_flag": "",
     "status": "active",
-    "collected_at": "2026-06-16 03:05 KST",
+    "collected_at": "2026-06-16 04:31 KST",
     "link": "https://realty.dailypharm.com/Main/Realty/View.html?ID=28534"
   }
 }
