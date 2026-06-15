@@ -9,7 +9,7 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "requests", "-q"])
     import requests
 
-# Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«ÂÂ¬ Ã¬ÂÂÃ­ÂÂ¬Ã­ÂÂ¸ (Ã¬ÂÂÃ¬ÂÂ¼Ã«Â©Â´ ÃªÂ²Â½ÃªÂ³Â Ã«Â§Â)
+# 팜올 크롤러 임포트 (없으면 경고만)
 try:
     import crawler_pharmall
     HAS_PHARMALL = True
@@ -43,7 +43,7 @@ def load_items():
         return {}
 
 def save_items(items):
-    # Ã¬ÂÂÃ¬ÂÂÃ¬Â Â Ã¬ÂÂ°ÃªÂ¸Â°: Ã¬ÂÂÃ¬ÂÂ Ã­ÂÂÃ¬ÂÂ¼Ã¬ÂÂ Ã¬Â ÂÃ¬ÂÂ¥ Ã­ÂÂ ÃªÂµÂÃ¬Â²Â´ (Ã¬ÂÂ°ÃªÂ¸Â° Ã«ÂÂÃ¬Â¤Â Ã¬ÂÂÃ«Â¦Â¼ Ã«Â°Â©Ã¬Â§Â)
+    # 원자적 쓰기: 임시 파일에 저장 후 교체 (쓰기 도중 잘림 방지)
     ITEMS_PATH.parent.mkdir(parents=True, exist_ok=True)
     tmp = ITEMS_PATH.with_suffix('.tmp')
     tmp.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding='utf-8')
@@ -70,7 +70,7 @@ def fetch_detail(idx):
         if j.get("rs_code") == "succ" and j.get("data") and j["data"].get("idx"):
             return j["data"]
     except Exception as e:
-        log.warning(f"  idx={idx} Ã¬ÂÂÃ¬Â²Â­ Ã¬ÂÂ¤Ã­ÂÂ¨: {e}")
+        log.warning(f"  idx={idx} 요청 실패: {e}")
     return None
 
 def enrich(item, d):
@@ -85,7 +85,7 @@ def enrich(item, d):
     item["built"]        = d.get("built_label") or item.get("built","")
     item["owner"]        = d.get("owner_label") or d.get("charge_name") or item.get("owner","")
     item["gubun_type"]   = d.get("gubun_type_label") or d.get("gubun_label") or item.get("gubun_type","")
-    # Ã¬ÂÂÃ«ÂÂÃªÂ²Â½Ã«Â¡ÂÃ«Â¥Â¼ Ã¬Â ÂÃ«ÂÂÃªÂ²Â½Ã«Â¡ÂÃ«Â¡Â Ã«Â³ÂÃ­ÂÂ (Ã¬ÂÂ´Ã«Â¯Â¸Ã¬Â§Â Ã­ÂÂÃ¬ÂÂ Ã«Â¬Â¸Ã¬Â Â Ã­ÂÂ´ÃªÂ²Â°)
+    # 상대경로를 절대경로로 변환 (이미지 표시 문제 해결)
     _thumb = d.get("thumb_url") or item.get("thumb_url","")
     if _thumb and _thumb.startswith("/"):
         _thumb = "https://svc.kpanews.co.kr" + _thumb
@@ -97,23 +97,23 @@ def enrich(item, d):
     item["trade_area"]   = d.get("trade_flag_label") or d.get("category_label") or item.get("trade_area","")
     item["status"]       = "active"
     parts = []
-    if item["location"]:     parts.append(f"Ã¬Â£Â¼Ã¬ÂÂ: {item['location']}")
-    if item["area_label"]:   parts.append(f"Ã«Â©Â´Ã¬Â Â: {item['area_label']}")
-    if item["built"]:        parts.append(f"Ã¬Â¤ÂÃªÂ³Âµ: {item['built']}")
-    if item["move_date"]:    parts.append(f"Ã¬ÂÂÃ¬Â£Â¼: {item['move_date']}")
-    if item["sale_count"]:   parts.append(f"Ã¬Â²ÂÃ«Â°Â©Ã¬Â¡Â°Ã¬Â Â: {item['sale_count']}")
-    if item["sale_amount"]:  parts.append(f"Ã¬ÂÂ¼Ã«Â§Â¤Ã¬Â¶Â: {item['sale_amount']}")
-    if item["special_flag"]: parts.append(f"Ã­ÂÂ¹Ã¬ÂÂ´Ã¬ÂÂ¬Ã­ÂÂ­: {item['special_flag']}")
+    if item["location"]:     parts.append(f"주소: {item['location']}")
+    if item["area_label"]:   parts.append(f"면적: {item['area_label']}")
+    if item["built"]:        parts.append(f"준공: {item['built']}")
+    if item["move_date"]:    parts.append(f"입주: {item['move_date']}")
+    if item["sale_count"]:   parts.append(f"처방조제: {item['sale_count']}")
+    if item["sale_amount"]:  parts.append(f"일매출: {item['sale_amount']}")
+    if item["special_flag"]: parts.append(f"특이사항: {item['special_flag']}")
     cp = html_to_text(d.get("content") or "")
-    if cp: parts.append(f"Ã¬ÂÂÃ¬ÂÂ¸: {cp}")
+    if cp: parts.append(f"상세: {cp}")
     item["memo"] = "\n".join(parts)
     item["collected_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     return item
 
 def crawl():
-    # Ã¢ÂÂÃ¢ÂÂ Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¢ÂÂÃ¢ÂÂ
+    # ── 약사공론 크롤링 ──
     items = load_items()
-    # ÃªÂ¸Â°Ã¬Â¡Â´ Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  Ã­ÂÂ­Ã«ÂªÂ©Ã¬ÂÂ source Ã­ÂÂÃ«ÂÂ Ã¬Â¶ÂÃªÂ°Â
+    # 기존 약사공론 항목에 source 필드 추가
     for k, v in items.items():
         if not str(k).startswith("pm_") and "source" not in v:
             v["source"] = "kpa"
@@ -121,25 +121,25 @@ def crawl():
     now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     kpa_idxs = sorted(int(k) for k in items.keys() if not str(k).startswith("pm_"))
     max_idx = kpa_idxs[-1] if kpa_idxs else 9792
-    log.info(f"ÃªÂ¸Â°Ã¬Â¡Â´ Ã­ÂÂ­Ã«ÂªÂ©: {len(items)}ÃªÂ±Â´ | Ã¬ÂµÂÃ«ÂÂ idx: {max_idx}")
+    log.info(f"기존 항목: {len(items)}건 | 최대 idx: {max_idx}")
 
-    log.info("Ã¢ÂÂÃ¢ÂÂ Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  ÃªÂ¸Â°Ã¬Â¡Â´ Ã­ÂÂ­Ã«ÂªÂ© ÃªÂ°Â±Ã¬ÂÂ  Ã¬Â¤Â...")
+    log.info("── 약사공론 기존 항목 갱신 중...")
     for idx in kpa_idxs:
         key = str(idx)
-        if items[key].get("status") == "Ã¬ÂÂ­Ã¬Â Â":
+        if items[key].get("status") == "삭제":
             continue
         d = fetch_detail(idx)
         if d:
             items[key] = enrich(items[key], d)
             items[key]["source"] = "kpa"
-            log.info(f"  Ã¢ÂÂ [{idx}] {items[key]['title']}")
+            log.info(f"  ✅ [{idx}] {items[key]['title']}")
         else:
-            items[key]["status"] = "Ã¬ÂÂ­Ã¬Â Â"
+            items[key]["status"] = "삭제"
             items[key]["deleted_at"] = now_str
-            log.info(f"  Ã°ÂÂÂÃ¯Â¸Â  [{idx}] Ã¬ÂÂ­Ã¬Â Â ÃªÂ°ÂÃ¬Â§Â")
+            log.info(f"  🗑️  [{idx}] 삭제 감지")
         time.sleep(DELAY)
 
-    log.info(f"Ã¢ÂÂÃ¢ÂÂ Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  Ã¬ÂÂ ÃªÂ·Â Ã¬ÂÂ¤Ã¬ÂºÂ: {max_idx+1} ~ {max_idx+SCAN_AHEAD}")
+    log.info(f"── 약사공론 신규 스캔: {max_idx+1} ~ {max_idx+SCAN_AHEAD}")
     for idx in range(max_idx + 1, max_idx + SCAN_AHEAD + 1):
         key = str(idx)
         if key in items:
@@ -148,30 +148,29 @@ def crawl():
         if d:
             items[key] = enrich({"idx": idx}, d)
             items[key]["source"] = "kpa"
-            log.info(f"  Ã°ÂÂÂ [{idx}] {items[key]['title']} Ã¬ÂÂ ÃªÂ·Â Ã¬Â¶ÂÃªÂ°Â!")
+            log.info(f"  🆕 [{idx}] {items[key]['title']} 신규 추가!")
         time.sleep(DELAY)
 
-    # Ã¢ÂÂÃ¢ÂÂ Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¢ÂÂÃ¢ÂÂ
+    # ── 팜올 크롤링 ──
     if HAS_PHARMALL:
-        log.info("Ã¢ÂÂÃ¢ÂÂ Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¬ÂÂÃ¬ÂÂ...")
+        log.info("── 팜올 크롤링 시작...")
         try:
             pharmall_items = crawler_pharmall.crawl()
-            # ÃªÂ¸Â°Ã¬Â¡Â´ Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ­Ã«ÂªÂ© Ã¬Â ÂÃªÂ±Â° Ã­ÂÂ Ã¬ÂµÂÃ¬ÂÂ Ã¬ÂÂ¼Ã«Â¡Â ÃªÂµÂÃ¬Â²Â´
+            # 기존 팜올 항목 제거 후 최신으로 교체
             for k in [k for k in list(items.keys()) if str(k).startswith("pm_")]:
                 del items[k]
             items.update(pharmall_items)
-            log.info(f"Ã­ÂÂÃ¬ÂÂ¬ {len(pharmall_items)}ÃªÂ±Â´ Ã«Â³ÂÃ­ÂÂ© Ã¬ÂÂÃ«Â£Â")
+            log.info(f"팜올 {len(pharmall_items)}건 병합 완료")
         except Exception as e:
-            log.error(f"Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¬ÂÂ¤Ã­ÂÂ¨ (Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  Ã«ÂÂ°Ã¬ÂÂ´Ã­ÂÂ°Ã«ÂÂ Ã¬ÂÂ Ã¬Â§Â): {e}")
+            log.error(f"팜올 크롤링 실패 (약사공론 데이터는 유지): {e}")
     else:
-        log.warning("crawler_pharmall.py Ã¬ÂÂÃ¬ÂÂ - Ã­ÂÂÃ¬ÂÂ¬ Ã­ÂÂ¬Ã«Â¡Â¤Ã«Â§Â Ã¬ÂÂ¤Ã­ÂÂµ")
+        log.warning("crawler_pharmall.py 없음 - 팜올 크롤링 스킵")
 
     # ── 팜플 크롤링 ──
     if HAS_PHARMPLE:
         log.info("── 팜플 크롤링 시작...")
         try:
             pharmple_items = crawler_pharmple.crawl()
-            # 기존 팜플 항목 제거 후 최신으로 교체
             for k in [k for k in list(items.keys()) if str(k).startswith("pp_")]:
                 del items[k]
             items.update(pharmple_items)
@@ -181,13 +180,13 @@ def crawl():
     else:
         log.warning("crawler_pharmple.py 없음 - 팜플 크롤링 스킵")
 
-    # Ã¢ÂÂÃ¢ÂÂ Ã¬Â¤ÂÃ«Â³Âµ ÃªÂ°ÂÃ¬Â§Â Ã¢ÂÂÃ¢ÂÂ
-    # ÃªÂ¸Â°Ã¬Â¤Â 1 (ÃªÂµÂÃ¬Â°Â¨Ã¬Â¤ÂÃ«Â³Âµ): KPAÃ¢ÂÂÃ­ÂÂÃ¬ÂÂ¬ ÃªÂ°ÂÃ¬ÂÂ Ã¬ÂÂ/ÃªÂµÂ° Ã¬Â£Â¼Ã¬ÂÂ
-    # ÃªÂ¸Â°Ã¬Â¤Â 2 (Ã«ÂÂ´Ã«Â¶ÂÃ¬Â¤ÂÃ«Â³Âµ): ÃªÂ°ÂÃ¬ÂÂ Ã¬ÂÂ¬Ã¬ÂÂ´Ã­ÂÂ¸ Ã«ÂÂ´ Ã¬Â ÂÃ­ÂÂÃ«Â²ÂÃ­ÂÂ¸+Ã¬Â§ÂÃ¬ÂÂ­ Ã«ÂÂÃ¬ÂÂ¼
+    # ── 중복 감지 ──
+    # 기준 1 (교차중복): KPA↔팜올 같은 시/군 주소
+    # 기준 2 (내부중복): 같은 사이트 내 전화번호+지역 동일
     def _norm_phone(p):
         return re.sub(r'\D', '', str(p or ''))
 
-    active_list = [(k, v) for k, v in items.items() if v.get("status") != "Ã¬ÂÂ­Ã¬Â Â"]
+    active_list = [(k, v) for k, v in items.items() if v.get("status") != "삭제"]
     uf = {}
     def _find(x):
         while uf.get(x, x) != x:
@@ -214,11 +213,11 @@ def crawl():
             loc2 = str(v2.get("location") or '').strip()
             ph2  = _norm_phone(v2.get("phone"))
             reg2 = str(v2.get("region") or '').strip()
-            # ÃªÂ¸Â°Ã¬Â¤Â 1: ÃªÂµÂÃ¬Â°Â¨Ã¬Â¤ÂÃ«Â³Âµ - Ã¬ÂÂÃ«Â¡Â Ã«ÂÂ¤Ã«Â¥Â¸ Ã¬ÂÂ¬Ã¬ÂÂ´Ã­ÂÂ¸, ÃªÂ°ÂÃ¬ÂÂ Ã¬ÂÂ/ÃªÂµÂ° Ã¬Â£Â¼Ã¬ÂÂ
+            # 기준 1: 교차중복 - 서로 다른 사이트, 같은 시/군 주소
             if is_pm1 != is_pm2 and len(ph1) >= 8 and ph1 == ph2:
                 _union(k1, k2)
                 continue
-            # ÃªÂ¸Â°Ã¬Â¤Â 2: Ã«ÂÂ´Ã«Â¶ÂÃ¬Â¤ÂÃ«Â³Âµ - ÃªÂ°ÂÃ¬ÂÂ Ã¬ÂÂ¬Ã¬ÂÂ´Ã­ÂÂ¸, Ã¬Â ÂÃ­ÂÂÃ«Â²ÂÃ­ÂÂ¸+Ã¬Â§ÂÃ¬ÂÂ­ Ã«ÂÂÃ¬ÂÂ¼
+            # 기준 2: 내부중복 - 같은 사이트, 전화번호+지역 동일
             if src1 == src2 and len(ph1) >= 8 and ph1 == ph2 and loc1 and loc1 == loc2:
                 _union(k1, k2)
 
@@ -235,25 +234,25 @@ def crawl():
         root = _find(k)
         if root in group_map:
             gid, members = group_map[root]
-            srcs = set('Ã­ÂÂÃ¬ÂÂ¬' if str(kk).startswith('pm_') else 'KPA' for kk in members)
+            srcs = set('팜올' if str(kk).startswith('pm_') else 'KPA' for kk in members)
             kind = 'cross' if len(srcs) > 1 else ('kpa' if 'KPA' in srcs else 'pm')
             v["possible_duplicate"] = True
             v["dup_group"] = gid
             v["dup_kind"] = kind
     for root, (gid, members) in group_map.items():
         titles = [str(items[m].get('title',''))[:15] for m in members]
-        srcs = set('Ã­ÂÂÃ¬ÂÂ¬' if str(m).startswith('pm_') else 'KPA' for m in members)
+        srcs = set('팜올' if str(m).startswith('pm_') else 'KPA' for m in members)
         kind = 'cross' if len(srcs) > 1 else ('kpa' if 'KPA' in srcs else 'pm')
-        log.info(f"  Ã¢ÂÂ Ã¯Â¸Â  Ã¬Â¤ÂÃ«Â³ÂµÃ¬ÂÂÃ¬ÂÂ¬[{kind}] {len(members)}ÃªÂ±Â´: {', '.join(titles)}")
-    log.info(f"Ã¬Â¤ÂÃ«Â³ÂµÃ¬ÂÂÃ¬ÂÂ¬ Ã¬Â´Â {dup_group_counter}ÃªÂ·Â¸Ã«Â£Â¹")
+        log.info(f"  ⚠️  중복의심[{kind}] {len(members)}건: {', '.join(titles)}")
+    log.info(f"중복의심 총 {dup_group_counter}그룹")
     save_items(items)
-    log.info(f"items.json Ã¬Â ÂÃ¬ÂÂ¥ Ã¬ÂÂÃ«Â£Â (Ã¬Â´Â {len(items)}ÃªÂ±Â´)")
+    log.info(f"items.json 저장 완료 (총 {len(items)}건)")
     return items
 
 def build(items):
-    active = [v for v in items.values() if v.get("status") != "Ã¬ÂÂ­Ã¬Â Â"]
+    active = [v for v in items.values() if v.get("status") != "삭제"]
 
-    # Ã«ÂÂ Ã¬Â§Â ÃªÂ¸Â°Ã¬Â¤Â Ã¬Â ÂÃ«Â Â¬ (Ã«ÂÂ Ã¬ÂÂÃ¬ÂÂ¤ Ã­ÂÂµÃ­ÂÂ©)
+    # 날짜 기준 정렬 (두 소스 통합)
     def sort_key(x):
         d = str(x.get("date") or "")
         return d if d else "0000.00.00"
@@ -266,17 +265,18 @@ def build(items):
             if t: all_tags.add(t)
     tags = sorted(all_tags)
 
-    # UTC+9 Ã­ÂÂÃªÂµÂ­ Ã¬ÂÂÃªÂ°ÂÃ¬ÂÂ¼Ã«Â¡Â Ã«Â³ÂÃ­ÂÂ
+    # UTC+9 한국 시간으로 변환
     KST = timezone(timedelta(hours=9))
     updated_at = datetime.now(KST).strftime("%Y.%m.%d %H:%M KST")
 
-    # Ã¬ÂÂÃ¬ÂÂ¤Ã«Â³Â Ã¬Â¹Â´Ã¬ÂÂ´Ã­ÂÂ¸
+    # 소스별 카운트
     kpa_count      = sum(1 for x in active if x.get("source") == "kpa")
     pharmall_count = sum(1 for x in active if x.get("source") == "pharmall")
+    pharmple_count = sum(1 for x in active if x.get("source") == "pharmple")
     dup_count      = sum(1 for x in active if x.get("possible_duplicate"))
     non_dup_count  = len(active) - dup_count
-    broker_count   = sum(1 for x in active if x.get("seller_type") == "Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼")
-    direct_count   = sum(1 for x in active if x.get("seller_type") == "Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ")
+    broker_count   = sum(1 for x in active if x.get("seller_type") == "중개매물")
+    direct_count   = sum(1 for x in active if x.get("seller_type") == "약사직거래")
 
     list_html = []
     for x in active:
@@ -285,44 +285,46 @@ def build(items):
         thumb    = esc(x.get("thumb_url") or "")
         thumb_tag = f'<img src="{thumb}" style="width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px;" onerror="this.style.display=\'none\'">' if thumb else ""
 
-        # Ã¬ÂÂÃ¬ÂÂ¤ Ã«Â±ÂÃ¬Â§Â
+        # 소스 뱃지
         src = x.get("source", "kpa")
         if src == "pharmall":
-            src_badge = '<span class="src-badge src-pharmall">Ã­ÂÂÃ¬ÂÂ¬</span>'
+            src_badge = '<span class="src-badge src-pharmall">팜올</span>'
+        elif src == "pharmple":
+            src_badge = '<span class="src-badge src-pharmple">팜플</span>'
         else:
-            src_badge = '<span class="src-badge src-kpa">Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â </span>'
+            src_badge = '<span class="src-badge src-kpa">약사공론</span>'
 
-        # Ã«Â§Â¤Ã«Â¬Â¼ Ã¬ÂÂ Ã­ÂÂ Ã«Â°Â°Ã¬Â§Â (Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼ / Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ)
+        # 매물 유형 배지 (중개매물 / 약사직거래)
         seller = x.get("seller_type", "")
-        if seller == "Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼":
-            seller_badge = '<span class="src-badge src-broker">Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼</span>'
-        elif seller == "Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ":
-            seller_badge = '<span class="src-badge src-direct">Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ</span>'
+        if seller == "중개매물":
+            seller_badge = '<span class="src-badge src-broker">중개매물</span>'
+        elif seller == "약사직거래":
+            seller_badge = '<span class="src-badge src-direct">약사직거래</span>'
         else:
             seller_badge = ""
 
-        # Ã¬Â¤ÂÃ«Â³Âµ Ã¬ÂÂÃ¬ÂÂ¬ Ã«Â±ÂÃ¬Â§Â
-        dup_badge = '<span class="src-badge src-dup">Ã¬Â¤ÂÃ«Â³ÂµÃ¬ÂÂÃ¬ÂÂ¬</span>' if x.get("possible_duplicate") else ""
+        # 중복 의심 뱃지
+        dup_badge = '<span class="src-badge src-dup">중복의심</span>' if x.get("possible_duplicate") else ""
 
         is_dup = '1' if x.get("possible_duplicate") else ''
         list_html.append(f"""<button class="item-card" type="button" data-item="{payload}" data-source="{esc(src)}" data-dup="{is_dup}">
   {thumb_tag}
-  <div class="item-top"><strong>{esc(x.get("title") or "(Ã¬Â ÂÃ«ÂªÂ©Ã¬ÂÂÃ¬ÂÂ)")}</strong><span>{src_badge}{seller_badge}{dup_badge}</span></div>
+  <div class="item-top"><strong>{esc(x.get("title") or "(제목없음)")}</strong><span>{src_badge}{seller_badge}{dup_badge}</span></div>
   <div class="item-meta">{esc(" / ".join([v for v in [x.get("region",""), x.get("location",""), x.get("date","")] if v]))}</div>
   <div class="item-price">{esc(x.get("price",""))}</div>
-  <div class="item-phone">Ã°ÂÂÂ {esc(x.get("phone",""))}</div>
+  <div class="item-phone">📞 {esc(x.get("phone",""))}</div>
   <div class="item-summary">{esc(summary)}</div>
 </button>""")
 
     tag_html = "".join(f'<button class="chip chip-filter" type="button" data-tag="{esc(t)}">{esc(t)}</button>' for t in tags)
-    deleted_count = len([v for v in items.values() if v.get("status") == "Ã¬ÂÂ­Ã¬Â Â"])
+    deleted_count = len([v for v in items.values() if v.get("status") == "삭제"])
 
     html_out = f"""<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ã¬ÂÂ½ÃªÂµÂ­ Ã«Â§Â¤Ã«Â¬Â¼ Ã«ÂÂÃ¬ÂÂÃ«Â³Â´Ã«ÂÂ</title>
+<title>약국 매물 대시보드</title>
 <style>
 :root{{--text:#eef3ff;--muted:#aebce6;--accent:#69a3ff}}
 *{{box-sizing:border-box}}
@@ -369,6 +371,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 .src-badge{{font-size:11px;padding:2px 7px;border-radius:999px;font-weight:600;margin-left:4px}}
 .src-kpa{{background:#1a3a6b;color:#7ab4ff;border:1px solid rgba(120,180,255,.4)}}
 .src-pharmall{{background:#1a4a2a;color:#7adf9a;border:1px solid rgba(100,220,120,.4)}}
+.src-pharmple{{background:#3a1a5a;color:#c87aff;border:1px solid rgba(180,100,255,.4)}}
 .src-dup{{background:#4a2a00;color:#ffb84d;border:1px solid rgba(255,180,60,.4)}}
 .src-broker{{background:#3a1a00;color:#ffaa55;border:1px solid rgba(255,150,50,.4)}}
 .src-direct{{background:#0a2a4a;color:#55aaff;border:1px solid rgba(60,150,255,.4)}}
@@ -387,96 +390,97 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 <div class="wrap">
   <aside class="panel sidebar">
     <div class="stack">
-      <input id="q" class="search" placeholder="Ã°ÂÂÂ Ã¬Â ÂÃ«ÂªÂ©, Ã¬Â£Â¼Ã¬ÂÂ, Ã¬ÂÂ¤Ã«ÂªÂ ÃªÂ²ÂÃ¬ÂÂ">
+      <input id="q" class="search" placeholder="🔍 제목, 주소, 설명 검색">
       <select id="sel-region">
-        <option value="">Ã¬Â ÂÃ¬Â²Â´ Ã¬Â§ÂÃ¬ÂÂ­</option>
+        <option value="">전체 지역</option>
         {"".join(f'<option value="{esc(r)}">{esc(r)}</option>' for r in regions)}
       </select>
       <div class="row">
-        <button class="chip active sort-btn" data-sort="desc" type="button">Ã¬ÂµÂÃ¬ÂÂ Ã¬ÂÂ</button>
-        <button class="chip sort-btn" data-sort="asc" type="button">Ã¬ÂÂ¤Ã«ÂÂÃ«ÂÂÃ¬ÂÂ</button>
+        <button class="chip active sort-btn" data-sort="desc" type="button">최신순</button>
+        <button class="chip sort-btn" data-sort="asc" type="button">오래된순</button>
       </div>
-      <h2>Ã¬Â¶ÂÃ¬Â²Â Ã­ÂÂÃ­ÂÂ°</h2>
+      <h2>출처 필터</h2>
       <div class="row">
-        <button class="chip active src-btn" data-src="" type="button">Ã¬Â ÂÃ¬Â²Â´ ({len(active)})</button>
-        <button class="chip src-btn" data-src="kpa" type="button">Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  ({kpa_count})</button>
-        <button class="chip src-btn" data-src="pharmall" type="button">Ã­ÂÂÃ¬ÂÂ¬ ({pharmall_count})</button>
+        <button class="chip active src-btn" data-src="" type="button">전체 ({len(active)})</button>
+        <button class="chip src-btn" data-src="kpa" type="button">약사공론 ({kpa_count})</button>
+        <button class="chip src-btn" data-src="pharmall" type="button">팜올 ({pharmall_count})</button>
+        <button class="chip src-btn" data-src="pharmple" type="button">팜플 ({pharmple_count})</button>
       </div>
-      <h2>ÃªÂ±Â°Ã«ÂÂ Ã¬ÂÂ Ã­ÂÂ</h2>
+      <h2>거래 유형</h2>
       <div class="row">
-        <button class="chip active type-btn" data-type="" type="button">Ã¬Â ÂÃ¬Â²Â´ ({len(active)})</button>
-        <button class="chip type-btn" data-type="Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼" type="button">Ã°ÂÂÂ¢ Ã¬Â¤ÂÃªÂ°ÂÃ«Â§Â¤Ã«Â¬Â¼ ({broker_count})</button>
-        <button class="chip type-btn" data-type="Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ" type="button">Ã°ÂÂ¤Â Ã¬ÂÂ½Ã¬ÂÂ¬Ã¬Â§ÂÃªÂ±Â°Ã«ÂÂ ({direct_count})</button>
+        <button class="chip active type-btn" data-type="" type="button">전체 ({len(active)})</button>
+        <button class="chip type-btn" data-type="중개매물" type="button">🏢 중개매물 ({broker_count})</button>
+        <button class="chip type-btn" data-type="약사직거래" type="button">🤝 약사직거래 ({direct_count})</button>
       </div>
-      <h2>Ã¬Â¤ÂÃ«Â³Âµ Ã­ÂÂÃ­ÂÂ°</h2>
+      <h2>중복 필터</h2>
       <div class="row">
-        <button class="chip dup-btn" data-dup="show" type="button">Ã¢ÂÂ Ã¯Â¸Â Ã¬Â¤ÂÃ«Â³ÂµÃ¬ÂÂÃ¬ÂÂ¬ ({dup_count})</button>
-        <button class="chip dup-btn" data-dup="hide" type="button">Ã¢ÂÂ Ã¬Â¤ÂÃ«Â³Âµ Ã¬Â ÂÃ¬ÂÂ¸ ({non_dup_count}ÃªÂ±Â´)</button>
+        <button class="chip dup-btn" data-dup="show" type="button">⚠️ 중복의심 ({dup_count})</button>
+        <button class="chip dup-btn" data-dup="hide" type="button">✅ 중복 제외 ({non_dup_count}건)</button>
       </div>
-      <h2>Ã¬Â¡Â°Ã¬Â Â/Ã¬Â²ÂÃ«Â°Â© ÃªÂ±Â´Ã¬ÂÂ</h2>
+      <h2>조제/처방 건수</h2>
       <div style="padding:2px 0 6px">
         <div class="row" style="gap:6px;align-items:center;flex-wrap:nowrap">
-          <input type="number" id="sale-min" placeholder="Ã¬ÂµÂÃ¬ÂÂ" min="0" step="10" style="width:64px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+          <input type="number" id="sale-min" placeholder="최소" min="0" step="10" style="width:64px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
           <span style="color:var(--muted)">~</span>
-          <input type="number" id="sale-max" placeholder="Ã¬ÂµÂÃ«ÂÂ" min="0" step="10" style="width:64px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
-          <button class="chip" id="sale-apply" type="button">Ã¬Â ÂÃ¬ÂÂ©</button>
-          <button class="chip" id="sale-reset" type="button">Ã¬Â´ÂÃªÂ¸Â°Ã­ÂÂ</button>
+          <input type="number" id="sale-max" placeholder="최대" min="0" step="10" style="width:64px;padding:4px 6px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+          <button class="chip" id="sale-apply" type="button">적용</button>
+          <button class="chip" id="sale-reset" type="button">초기화</button>
         </div>
-        <p style="margin:4px 0 0;font-size:11px;color:var(--muted)">Ã¢ÂÂ» ÃªÂ±Â´Ã¬ÂÂ Ã«Â¯Â¸ÃªÂ¸Â°Ã¬ÂÂ¬ Ã«Â§Â¤Ã«Â¬Â¼Ã¬ÂÂ Ã­ÂÂ­Ã¬ÂÂ Ã­ÂÂ¬Ã­ÂÂ¨</p>
+        <p style="margin:4px 0 0;font-size:11px;color:var(--muted)">※ 건수 미기재 매물은 항상 포함</p>
       </div>
-      <h2>Ã­ÂÂÃªÂ·Â¸ Ã­ÂÂÃ­ÂÂ°</h2>
+      <h2>태그 필터</h2>
       <div class="row">{tag_html}</div>
     </div>
-    <p style="margin-top:20px;font-size:13px;color:var(--muted)">Ã­ÂÂÃ¬ÂÂ± <strong>{len(active)}</strong>ÃªÂ±Â´ ÃÂ· Ã¬ÂÂ­Ã¬Â Â {deleted_count}ÃªÂ±Â´ ÃÂ· Ã¬Â¤ÂÃ«Â³ÂµÃ¬ÂÂÃ¬ÂÂ¬ {dup_count}ÃªÂ±Â´</p>
-    <p class="update-time">Ã¬ÂµÂÃ¬Â¢Â ÃªÂ°Â±Ã¬ÂÂ : {updated_at}</p>
+    <p style="margin-top:20px;font-size:13px;color:var(--muted)">활성 <strong>{len(active)}</strong>건 · 삭제 {deleted_count}건 · 중복의심 {dup_count}건</p>
+    <p class="update-time">최종 갱신: {updated_at}</p>
   </aside>
 
   <section class="content">
     <div class="panel hero">
       <div class="hero-main">
-        <h1>Ã°ÂÂÂ Ã¬ÂÂ½ÃªÂµÂ­ Ã«Â§Â¤Ã«Â¬Â¼<br>Ã«ÂÂÃ¬ÂÂÃ«Â³Â´Ã«ÂÂ</h1>
-        <p>Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â  + Ã­ÂÂÃ¬ÂÂ¬ Ã«Â¶ÂÃ«ÂÂÃ¬ÂÂ° Ã«Â§Â¤Ã«Â¬Â¼ Ã­ÂÂµÃ­ÂÂ© Ã«ÂªÂ¨Ã«ÂÂÃ­ÂÂ°Ã«Â§Â</p>
+        <h1>💊 약국 매물<br>대시보드</h1>
+        <p>약사공론 + 팜올 부동산 매물 통합 모니터링</p>
         <div class="row" style="margin-top:14px">
-          <span class="chip">Ã¬Â´Â <strong id="hero-count">{len(active)}</strong>ÃªÂ±Â´</span>
-          <span class="chip">Ã¬Â§ÂÃ¬ÂÂ­ {len(regions)}ÃªÂ°Â</span>
-          <span class="chip">Ã°ÂÂÂ 1Ã¬ÂÂÃªÂ°ÂÃ«Â§ÂÃ«ÂÂ¤ Ã¬ÂÂÃ«ÂÂÃªÂ°Â±Ã¬ÂÂ </span>
+          <span class="chip">총 <strong id="hero-count">{len(active)}</strong>건</span>
+          <span class="chip">지역 {len(regions)}개</span>
+          <span class="chip">🆕 1시간마다 자동갱신</span>
         </div>
       </div>
       <div class="stats">
-        <div class="stat"><div class="k">Ã¬ÂÂ ÃªÂ·ÂÃ¬ÂÂ½ÃªÂµÂ­</div><div class="v" id="stat-new">0</div></div>
-        <div class="stat"><div class="k">Ã¬ÂÂ­Ã¬ÂÂ¸ÃªÂ¶Â/Ã¬ÂÂÃ¬ÂÂ</div><div class="v" id="stat-near">0</div></div>
-        <div class="stat"><div class="k">Ã¬ÂÂ°Ã«ÂÂ½Ã¬Â²Â Ã«Â³Â´Ã¬ÂÂ </div><div class="v" id="stat-phone">0</div></div>
-        <div class="stat"><div class="k">Ã¬Â¦ÂÃ¬ÂÂ Ã¬ÂÂÃ¬Â£Â¼</div><div class="v" id="stat-fast">0</div></div>
+        <div class="stat"><div class="k">신규약국</div><div class="v" id="stat-new">0</div></div>
+        <div class="stat"><div class="k">역세권/의원</div><div class="v" id="stat-near">0</div></div>
+        <div class="stat"><div class="k">연락처 보유</div><div class="v" id="stat-phone">0</div></div>
+        <div class="stat"><div class="k">즉시 입주</div><div class="v" id="stat-fast">0</div></div>
       </div>
     </div>
 
     <div class="main">
       <div class="panel list" id="list">
-        {"".join(list_html) if list_html else '<div class="empty">Ã«ÂÂ°Ã¬ÂÂ´Ã­ÂÂ° Ã¬ÂÂÃ¬ÂÂ</div>'}
+        {"".join(list_html) if list_html else '<div class="empty">데이터 없음</div>'}
       </div>
       <div class="panel detail" id="detail-panel">
-        <div class="empty" id="detail-empty">Ã¢ÂÂ Ã¬ÂÂ¼Ã¬ÂªÂ½ Ã«ÂªÂ©Ã«Â¡ÂÃ¬ÂÂÃ¬ÂÂ Ã«Â§Â¤Ã«Â¬Â¼Ã¬ÂÂ Ã¬ÂÂ Ã­ÂÂÃ­ÂÂÃ¬ÂÂ¸Ã¬ÂÂ</div>
+        <div class="empty" id="detail-empty">← 왼쪽 목록에서 매물을 선택하세요</div>
         <div id="detail-content" style="display:none">
           <img id="d-img" class="detail-img" src="" alt="" style="display:none">
           <h2 id="d-title" style="margin:0 0 6px"></h2>
           <div id="d-sub" class="item-meta" style="margin-bottom:10px"></div>
           <div class="badges" id="d-badges"></div>
           <div class="grid4">
-            <div class="info"><div class="k">Ã«Â§Â¤Ã«Â¬Â¼ÃªÂµÂ¬Ã«Â¶Â</div><div class="v" id="d-gubun"></div></div>
-            <div class="info"><div class="k">Ã¬ÂÂÃªÂ¶Â</div><div class="v" id="d-trade"></div></div>
-            <div class="info"><div class="k">Ã­ÂÂÃ­ÂÂ</div><div class="v" id="d-category"></div></div>
-            <div class="info"><div class="k">Ã«Â©Â´Ã¬Â Â</div><div class="v" id="d-area"></div></div>
-            <div class="info"><div class="k">Ã¬ÂÂÃ¬Â¡Â°Ã¬Â ÂÃ«Â£Â</div><div class="v" id="d-sale-count"></div></div>
-            <div class="info"><div class="k">1Ã¬ÂÂ¼Ã«Â§Â¤Ã¬Â¶Â</div><div class="v" id="d-sale-amount"></div></div>
-            <div class="info"><div class="k">Ã¬ÂÂÃ¬Â£Â¼ÃªÂ°ÂÃ«ÂÂ¥Ã¬ÂÂ¼</div><div class="v" id="d-move"></div></div>
-            <div class="info"><div class="k">ÃªÂ´ÂÃ«Â¦Â¬Ã«Â¹Â</div><div class="v" id="d-maint"></div></div>
-            <div class="info"><div class="k">Ã°ÂÂÂ Ã¬ÂÂ°Ã«ÂÂ½Ã¬Â²Â</div><div class="v" id="d-phone"></div></div>
-            <div class="info"><div class="k">Ã°ÂÂÂ¤ Ã«ÂÂ´Ã«ÂÂ¹Ã¬ÂÂ</div><div class="v" id="d-owner"></div></div>
-            <div class="info"><div class="k">Ã­ÂÂ¹Ã¬ÂÂ´Ã¬ÂÂ¬Ã­ÂÂ­</div><div class="v" id="d-special"></div></div>
-            <div class="info"><div class="k">Ã°ÂÂÂ Ã¬Â§ÂÃ¬ÂÂ­</div><div class="v" id="d-region"></div></div>
+            <div class="info"><div class="k">매물구분</div><div class="v" id="d-gubun"></div></div>
+            <div class="info"><div class="k">상권</div><div class="v" id="d-trade"></div></div>
+            <div class="info"><div class="k">형태</div><div class="v" id="d-category"></div></div>
+            <div class="info"><div class="k">면적</div><div class="v" id="d-area"></div></div>
+            <div class="info"><div class="k">월조제료</div><div class="v" id="d-sale-count"></div></div>
+            <div class="info"><div class="k">1일매출</div><div class="v" id="d-sale-amount"></div></div>
+            <div class="info"><div class="k">입주가능일</div><div class="v" id="d-move"></div></div>
+            <div class="info"><div class="k">관리비</div><div class="v" id="d-maint"></div></div>
+            <div class="info"><div class="k">📞 연락처</div><div class="v" id="d-phone"></div></div>
+            <div class="info"><div class="k">👤 담당자</div><div class="v" id="d-owner"></div></div>
+            <div class="info"><div class="k">특이사항</div><div class="v" id="d-special"></div></div>
+            <div class="info"><div class="k">📍 지역</div><div class="v" id="d-region"></div></div>
           </div>
           <div id="d-pharmall-section" style="display:none;margin-top:14px">
-            <div style="font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:8px">Ã°ÂÂÂ¢ ÃªÂ±Â´Ã¬Â¶ÂÃ«Â¬Â¼ Ã¬Â ÂÃ«Â³Â´</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:8px">🏢 건축물 정보</div>
             <div class="grid4" id="d-building-grid"></div>
             <div id="d-viewcount-row" style="margin-top:10px;font-size:13px;color:var(--muted)"></div>
           </div>
@@ -499,8 +503,8 @@ function txt(v) {{ return (v == null ? '' : String(v)); }}
 function setDetail(item) {{
   document.getElementById('detail-empty').style.display = 'none';
   document.getElementById('detail-content').style.display = 'block';
-  document.getElementById('d-title').textContent = txt(item.title) || 'Ã¬Â ÂÃ«ÂªÂ©Ã¬ÂÂÃ¬ÂÂ';
-  document.getElementById('d-sub').textContent = [item.region, item.location, item.date ? 'Ã«ÂÂ±Ã«Â¡ÂÃ¬ÂÂ¼ ' + item.date : ''].filter(Boolean).join(' ÃÂ· ');
+  document.getElementById('d-title').textContent = txt(item.title) || '제목없음';
+  document.getElementById('d-sub').textContent = [item.region, item.location, item.date ? '등록일 ' + item.date : ''].filter(Boolean).join(' · ');
   document.getElementById('d-phone').textContent = txt(item.phone) || '-';
   document.getElementById('d-owner').textContent = txt(item.owner) || '-';
   document.getElementById('d-region').textContent = txt(item.region) || '-';
@@ -512,7 +516,7 @@ function setDetail(item) {{
   document.getElementById('d-sale-amount').textContent = txt(item.sale_amount) || '-';
   document.getElementById('d-special').textContent = txt(item.special_flag) || '-';
   document.getElementById('d-maint').textContent = txt(item.maintenance_fee) || '-';
-  // Ã¬ÂÂÃ¬Â£Â¼ÃªÂ°ÂÃ«ÂÂ¥Ã¬ÂÂ¼: Ã­ÂÂÃ¬ÂÂ¬Ã¬ÂÂ move_in, Ã¬ÂÂ½Ã¬ÂÂ¬ÃªÂ³ÂµÃ«Â¡Â Ã¬ÂÂ move_date
+  // 입주가능일: 팜올은 move_in, 약사공론은 move_date
   document.getElementById('d-move').textContent = txt(item.move_in || item.move_date) || '-';
   document.getElementById('d-memo').textContent = txt(item.memo);
   const img = document.getElementById('d-img');
@@ -520,7 +524,7 @@ function setDetail(item) {{
     img.src = item.thumb_url; img.style.display = 'block';
     img.onerror = () => {{ img.style.display = 'none'; }};
   }} else {{ img.style.display = 'none'; }}
-  // Ã«Â±ÂÃ¬Â§Â
+  // 뱃지
   const badges = document.getElementById('d-badges');
   badges.innerHTML = '';
   [item.price, item.area_full || item.area_label, item.move_in || item.move_date, item.gubun_type].filter(Boolean).forEach(v => {{
@@ -529,30 +533,30 @@ function setDetail(item) {{
   txt(item.tags).split(',').map(s => s.trim()).filter(Boolean).forEach(v => {{
     const s = document.createElement('span'); s.className = 'badge tag'; s.textContent = v; badges.appendChild(s);
   }});
-  // Ã­ÂÂÃ¬ÂÂ¬ Ã¬Â ÂÃ¬ÂÂ©: ÃªÂ±Â´Ã¬Â¶ÂÃ«Â¬Â¼ Ã¬Â ÂÃ«Â³Â´ Ã¬ÂÂ¹Ã¬ÂÂ
+  // 팜올 전용: 건축물 정보 섹션
   const pmSection = document.getElementById('d-pharmall-section');
   if (item.source === 'pharmall') {{
     pmSection.style.display = 'block';
     const bg = document.getElementById('d-building-grid');
     bg.innerHTML = '';
     const bfields = [
-      ['ÃªÂ±Â´Ã«Â¬Â¼Ã¬ÂÂ©Ã«ÂÂ', item.building_usage],
-      ['Ã¬ÂÂ¬Ã¬ÂÂ©Ã¬ÂÂ¹Ã¬ÂÂ¸Ã¬ÂÂ¼', item.approval_date],
-      ['Ã¬Â´ÂÃ¬Â¸Âµ', item.total_floors ? item.total_floors + 'Ã¬Â¸Âµ' : ''],
-      ['Ã­ÂÂ´Ã«ÂÂ¹Ã¬Â¸Âµ', item.floor_label],
-      ['Ã«Â°Â©Ã¬ÂÂ', item.rooms ? item.rooms + 'ÃªÂ°Â' : ''],
-      ['Ã­ÂÂÃ¬ÂÂ¥Ã¬ÂÂ¤', item.bathroom],
-      ['Ã¬Â´ÂÃ¬Â£Â¼Ã¬Â°Â¨', item.parking_total ? item.parking_total + 'Ã«ÂÂ' : ''],
-      ['ÃªÂ°ÂÃ«ÂÂ¥Ã¬Â£Â¼Ã¬Â°Â¨', item.parking_avail ? item.parking_avail + 'Ã«ÂÂ' : ''],
-      ['Ã«Â°Â©Ã­ÂÂ¥', item.direction],
-      ['ÃªÂ´ÂÃ«Â¦Â¬Ã«Â¹Â', item.maintenance_fee],
-      ['Ã¬ÂÂÃ¬Â£Â¼ÃªÂ°ÂÃ«ÂÂ¥Ã¬ÂÂ¼', item.move_in],
-      ['Ã¬Â¡Â°Ã­ÂÂÃ¬ÂÂ', item.view_count ? item.view_count + 'Ã­ÂÂ' : ''],
+      ['건물용도', item.building_usage],
+      ['사용승인일', item.approval_date],
+      ['총층', item.total_floors ? item.total_floors + '층' : ''],
+      ['해당층', item.floor_label],
+      ['방수', item.rooms ? item.rooms + '개' : ''],
+      ['화장실', item.bathroom],
+      ['총주차', item.parking_total ? item.parking_total + '대' : ''],
+      ['가능주차', item.parking_avail ? item.parking_avail + '대' : ''],
+      ['방향', item.direction],
+      ['관리비', item.maintenance_fee],
+      ['입주가능일', item.move_in],
+      ['조회수', item.view_count ? item.view_count + '회' : ''],
     ];
     bfields.filter(f => f[1]).forEach(f => {{
       bg.innerHTML += '<div class="info"><div class="k">' + f[0] + '</div><div class="v">' + txt(f[1]) + '</div></div>';
     }});
-    document.getElementById('d-viewcount-row').textContent = item.view_count ? 'Ã°ÂÂÂ Ã¬Â¡Â°Ã­ÂÂÃ¬ÂÂ ' + item.view_count + 'Ã­ÂÂ' : '';
+    document.getElementById('d-viewcount-row').textContent = item.view_count ? '👁 조회수 ' + item.view_count + '회' : '';
   }} else {{
     pmSection.style.display = 'none';
   }}
@@ -593,10 +597,10 @@ function applyFilters() {{
   allCards.forEach(c => c.classList.remove('active'));
   if (visible.length) {{ visible[0].classList.add('active'); setDetail(JSON.parse(visible[0].dataset.item)); }}
   const all = visible.map(c => JSON.parse(c.dataset.item));
-  document.getElementById('stat-new').textContent = all.filter(x => /Ã¬ÂÂ ÃªÂ·Â/.test(txt(x.tags)+txt(x.title))).length;
-  document.getElementById('stat-near').textContent = all.filter(x => /Ã¬ÂÂ­Ã¬ÂÂ¸ÃªÂ¶Â|Ã¬ÂÂÃ¬ÂÂÃ¬ÂÂ¸ÃªÂ·Â¼|Ã¬Â¢ÂÃ«Â³Â|Ã«Â¬Â¸Ã¬Â Â/.test(txt(x.tags)+txt(x.memo)+txt(x.title))).length;
+  document.getElementById('stat-new').textContent = all.filter(x => /신규/.test(txt(x.tags)+txt(x.title))).length;
+  document.getElementById('stat-near').textContent = all.filter(x => /역세권|의원인근|종병|문전/.test(txt(x.tags)+txt(x.memo)+txt(x.title))).length;
   document.getElementById('stat-phone').textContent = all.filter(x => txt(x.phone)).length;
-  document.getElementById('stat-fast').textContent = all.filter(x => /Ã«Â°ÂÃ«Â¡Â|Ã¬Â¦ÂÃ¬ÂÂ/.test(txt(x.move_date)+txt(x.move_in)+txt(x.memo))).length;
+  document.getElementById('stat-fast').textContent = all.filter(x => /바로|즉시/.test(txt(x.move_date)+txt(x.move_in)+txt(x.memo))).length;
   document.getElementById('hero-count').textContent = visible.length;
 }}
 listEl.addEventListener('click', e => {{
@@ -651,17 +655,17 @@ applyFilters();
 </body>
 </html>"""
 
-    # Ã¢ÂÂÃ¢ÂÂ HTML Ã­ÂÂÃ¬ÂÂ¼ Ã¬Â ÂÃ¬ÂÂ¥ Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+    # ── HTML 파일 저장 ──────────────────────────────────────────────────────
     DOCS_PATH.parent.mkdir(parents=True, exist_ok=True)
     DOCS_PATH.write_text(html_out, encoding='utf-8')
-    log.info(f"HTML Ã¬Â ÂÃ¬ÂÂ¥ Ã¬ÂÂÃ«Â£Â: {DOCS_PATH}")
+    log.info(f"HTML 저장 완료: {DOCS_PATH}")
 
 if __name__ == "__main__":
     import sys
     if "--build-only" in sys.argv:
-        log.info("Ã«Â¹ÂÃ«ÂÂ Ã¬Â ÂÃ¬ÂÂ© Ã«ÂªÂ¨Ã«ÂÂ")
+        log.info("빌드 전용 모드")
         items = load_items()
     else:
         items = crawl()
     build(items)
-    log.info("Ã¬ÂÂÃ«Â£Â!")
+    log.info("완료!")
