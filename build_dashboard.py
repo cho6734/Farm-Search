@@ -23,6 +23,13 @@ try:
 except ImportError:
     HAS_PHARMPLE = False
 
+# 데일리팜 크롤러 임포트 (없으면 경고만)
+try:
+    import crawler_dailypharm
+    HAS_DAILYPHARM = True
+except ImportError:
+    HAS_DAILYPHARM = False
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
@@ -180,6 +187,20 @@ def crawl():
     else:
         log.warning("crawler_pharmple.py 없음 - 팜플 크롤링 스킵")
 
+    # ── 데일리팜 크롤링 ──
+    if HAS_DAILYPHARM:
+        log.info("── 데일리팜 크롤링 시작...")
+        try:
+            dailypharm_items = crawler_dailypharm.crawl()
+            for k in [k for k in list(items.keys()) if str(k).startswith("dp_")]:
+                del items[k]
+            items.update(dailypharm_items)
+            log.info(f"데일리팜 {len(dailypharm_items)}건 병합 완료")
+        except Exception as e:
+            log.error(f"데일리팜 크롤링 실패 (기존 데이터는 유지): {e}")
+    else:
+        log.warning("crawler_dailypharm.py 없음 - 데일리팜 크롤링 스킵")
+
     # ── 중복 감지 ──
     # 기준 1 (교차중복): KPA↔팜올 같은 시/군 주소
     # 기준 2 (내부중복): 같은 사이트 내 전화번호+지역 동일
@@ -273,6 +294,7 @@ def build(items):
     kpa_count      = sum(1 for x in active if x.get("source") == "kpa")
     pharmall_count = sum(1 for x in active if x.get("source") == "pharmall")
     pharmple_count = sum(1 for x in active if x.get("source") == "pharmple")
+    dailypharm_count = sum(1 for x in active if x.get("source") == "dailypharm")
     dup_count      = sum(1 for x in active if x.get("possible_duplicate"))
     non_dup_count  = len(active) - dup_count
     broker_count   = sum(1 for x in active if x.get("seller_type") == "중개매물")
@@ -291,6 +313,8 @@ def build(items):
             src_badge = '<span class="src-badge src-pharmall">팜올</span>'
         elif src == "pharmple":
             src_badge = '<span class="src-badge src-pharmple">팜플</span>'
+        elif src == "dailypharm":
+            src_badge = '<span class="src-badge src-dailypharm">데일리팜</span>'
         else:
             src_badge = '<span class="src-badge src-kpa">약사공론</span>'
 
@@ -372,6 +396,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 .src-kpa{{background:#1a3a6b;color:#7ab4ff;border:1px solid rgba(120,180,255,.4)}}
 .src-pharmall{{background:#1a4a2a;color:#7adf9a;border:1px solid rgba(100,220,120,.4)}}
 .src-pharmple{{background:#3a1a5a;color:#c87aff;border:1px solid rgba(180,100,255,.4)}}
+.src-dailypharm{{background:#0a3a4a;color:#5ad6e0;border:1px solid rgba(90,210,230,.4)}}
 .src-dup{{background:#4a2a00;color:#ffb84d;border:1px solid rgba(255,180,60,.4)}}
 .src-broker{{background:#3a1a00;color:#ffaa55;border:1px solid rgba(255,150,50,.4)}}
 .src-direct{{background:#0a2a4a;color:#55aaff;border:1px solid rgba(60,150,255,.4)}}
@@ -405,6 +430,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
         <button class="chip src-btn" data-src="kpa" type="button">약사공론 ({kpa_count})</button>
         <button class="chip src-btn" data-src="pharmall" type="button">팜올 ({pharmall_count})</button>
         <button class="chip src-btn" data-src="pharmple" type="button">팜플 ({pharmple_count})</button>
+        <button class="chip src-btn" data-src="dailypharm" type="button">데일리팜 ({dailypharm_count})</button>
       </div>
       <h2>거래 유형</h2>
       <div class="row">
