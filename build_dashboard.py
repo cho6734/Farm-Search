@@ -115,11 +115,11 @@ def crawl():
     items = load_items()
     # 기존 약사공론 항목에 source 필드 추가
     for k, v in items.items():
-        if not str(k).startswith("pm_") and "source" not in v:
+        if str(k).isdigit() and "source" not in v:
             v["source"] = "kpa"
 
     now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    kpa_idxs = sorted(int(k) for k in items.keys() if not str(k).startswith("pm_"))
+    kpa_idxs = sorted(int(k) for k in items.keys() if str(k).isdigit())
     max_idx = kpa_idxs[-1] if kpa_idxs else 9792
     log.info(f"기존 항목: {len(items)}건 | 최대 idx: {max_idx}")
 
