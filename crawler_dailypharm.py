@@ -19,6 +19,7 @@ API:
   - 응답 크기 상한, 페이지 수 상한, 중복 페이지 감지로 무한루프/과대응답을 방지한다.
 """
 
+import os
 import re
 import time
 import logging
@@ -48,6 +49,10 @@ BASE_URL     = "https://realty.dailypharm.com"
 ALLOWED_HOST = "dailypharm.com"          # 보안: 허용 도메인(서브도메인 포함)
 SITE_ENCODING = "euc-kr"                 # 데일리팜 인코딩(중요)
 
+# 로그인(회원 전용 PLUS 프리미엄 매물 수집용). 계정은 .env / GitHub Secrets로만 주입.
+LOGIN_PAGE   = "https://www.dailypharm.com/user/login"
+LOGIN_SUBMIT = "https://www.dailypharm.com/user/login/submit"
+
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -58,10 +63,11 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
 }
 
-REQUEST_DELAY   = 1.0    # 페이지당 딜레이(초) - 서버 부하 방지
-MAX_EMPTY_PAGES = 2      # 빈/중복 페이지 연속 N회면 종료
-MAX_PAGES       = 50     # 보안: 페이지 수 상한 (무한루프 방지)
-MAX_BYTES       = 5_000_000   # 보안: 응답 크기 상한 (5MB)
+REQUEST_DELAY      = 0.7    # 페이지당 딜레이(초) - 서버 부하 방지
+PAGES_PER_ROUND    = 3      # 한 라운드에서 가져올 페이지 수 (1~3페이지)
+MAX_ROUNDS         = 15     # 회전(프리미엄) 매물 수집을 위한 최대 반복 라운드 (보안: 무한루프 방지)
+NO_NEW_ROUNDS_STOP = 4      # 연속 N라운드 신규 0건이면 종료
+MAX_BYTES          = 5_000_000   # 보안: 응답 크기 상한 (5MB)
 
 
 # ── 유틸리티 / 보안 살균 ──────────────────────────────────────────────────────
@@ -280,7 +286,8 @@ def parse_html_response(html_text):
 
 def fetch_page(session, page):
     """GET 요청 → EUC-KR 디코딩한 HTML 텍스트. 실패 시 None. (응답 크기 상한 적용)"""
-    params = {"page": str(page)}
+    # TypeView=P: PLUS(프리미엄 포함) 전체 목록. keyword 빈값 (사이트와 동일 형식)
+    params = {"TypeView": "P", "page": str(page), "keyword": ""}
     try:
         resp = session.get(LIST_API, params=params, headers=HEADERS, timeout=20)
         resp.raise_for_status()
@@ -300,38 +307,103 @@ def fetch_page(session, page):
     return None
 
 
+def load_env():
+    """.env 파일에서 환경변수 로드 (로컬 실행용; GitHub Actions는 env로 주입). 실패해도 무시."""
+    try:
+        env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+        if not os.path.exists(env_path):
+            return
+        for line in open(env_path, encoding="utf-8").read().splitlines():
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                k, _, v = line.partition("=")
+                os.environ.setdefault(k.strip(), v.strip())
+    except Exception as e:
+        log.warning("[데일리팜] .env 로드 실패(무시): %s", e)
+
+
+def login(session):
+    """데일리팜 로그인 시도.
+    - DAILYPHARM_EMAIL(또는 DAILYPHARM_ID) / DAILYPHARM_PASSWORD 가 있으면 로그인 → 세션에 인증쿠키.
+    - 계정이 없거나 실패하면 False 반환 → 비로그인(공개 매물 약 12건)으로 안전하게 진행.
+    - 비밀번호는 절대 로그로 출력하지 않는다(마스킹).
+    """
+    load_env()
+    member_id = (os.environ.get("DAILYPHARM_EMAIL", "").strip()
+                 or os.environ.get("DAILYPHARM_ID", "").strip())
+    password  = os.environ.get("DAILYPHARM_PASSWORD", "").strip()
+    if not member_id or not password:
+        log.info("[데일리팜] 계정정보 없음 → 비로그인 수집(공개 매물만, 약 12건)")
+        return False
+    try:
+        # 1) 로그인 페이지 GET → CSRF 토큰(_token) + 세션쿠키 확보
+        r = session.get(LOGIN_PAGE, headers=HEADERS, timeout=20)
+        r.raise_for_status()
+        m = re.search(r'name=["\']_token["\'][^>]*value=["\']([^"\']+)["\']', r.text) \
+            or re.search(r'value=["\']([^"\']+)["\'][^>]*name=["\']_token["\']', r.text)
+        if not m:
+            log.warning("[데일리팜] CSRF 토큰 못 찾음 → 비로그인 진행")
+            return False
+        token = m.group(1)
+        # 2) 로그인 제출 (member_id / password / _token)
+        post_headers = dict(HEADERS)
+        post_headers["Content-Type"] = "application/x-www-form-urlencoded"
+        post_headers["Origin"]  = "https://www.dailypharm.com"
+        post_headers["Referer"] = LOGIN_PAGE
+        data = {"_token": token, "member_id": member_id, "password": password, "remember": "on"}
+        resp = session.post(LOGIN_SUBMIT, data=data, headers=post_headers,
+                            timeout=20, allow_redirects=True)
+        # 3) 성공 판정: 로그아웃 노출 또는 로그인 페이지로 되돌아가지 않음 (비밀번호는 로그 금지)
+        body = resp.text or ""
+        ok = ("로그아웃" in body) or ("logout" in body.lower()) \
+             or (bool(resp.url) and "login" not in str(resp.url).lower())
+        if ok:
+            log.info("[데일리팜] 로그인 성공 → 프리미엄 포함 전체 수집")
+            return True
+        log.warning("[데일리팜] 로그인 실패(자격증명 확인 필요) → 비로그인 진행")
+        return False
+    except Exception as e:
+        log.error("[데일리팜] 로그인 중 오류 → 비로그인 진행: %s", e)
+        return False
+
+
 def crawl():
-    """데일리팜 약국 매물 전체 수집 → {dp_id: item} dict"""
+    """데일리팜 약국 매물 전체 수집 → {dp_id: item} dict
+
+    [중요] 데일리팜 목록 1페이지에는 PLUS(프리미엄) 매물이 '매 요청마다 회전'하여
+    노출된다. 한 번 요청하면 10건만 보이지만, 같은 페이지를 여러 번 요청하면
+    매번 다른 프리미엄 매물이 섞여 나온다(전체 약 23건). 그래서 페이지를 여러 라운드
+    반복 요청해 더 이상 새 매물이 안 나올 때까지(연속 NO_NEW_ROUNDS_STOP 라운드) 누적 수집한다.
+    """
     session = requests.Session()
     session.headers.update({"User-Agent": HEADERS["User-Agent"],
                             "Referer": HEADERS["Referer"]})
+    logged_in = login(session)  # 계정 있으면 로그인(프리미엄 포함), 없으면 비로그인
+    log.info("[데일리팜] 로그인 상태: %s", "로그인" if logged_in else "비로그인(공개 매물만)")
     items = {}
-    page = 1
-    empty = 0
+    no_new_rounds = 0
     log.info("[데일리팜] 수집 시작 - %s", LIST_API)
-    while page <= MAX_PAGES:
-        html_text = fetch_page(session, page)
-        if html_text is None:
-            log.warning("[데일리팜] p%d 응답 없음 → 중단", page)
-            break
-        page_items = parse_html_response(html_text)
-        new = 0
-        for it in page_items:
-            if it["idx"] not in items:
-                items[it["idx"]] = it
-                new += 1
-        # 빈 페이지 또는 새 항목 0(중복 페이지) → 종료 카운트
-        if not page_items or new == 0:
-            empty += 1
-            log.info("[데일리팜] p%d 신규 0 (%d/%d)", page, empty, MAX_EMPTY_PAGES)
-            if empty >= MAX_EMPTY_PAGES:
-                log.info("[데일리팜] 종료 (누적 %d건)", len(items))
+    for rnd in range(1, MAX_ROUNDS + 1):
+        before = len(items)
+        for page in range(1, PAGES_PER_ROUND + 1):
+            html_text = fetch_page(session, page)
+            if html_text is None:
+                log.warning("[데일리팜] r%d p%d 응답 없음 -> 스킵", rnd, page)
+                continue
+            for it in parse_html_response(html_text):
+                if it["idx"] not in items:
+                    items[it["idx"]] = it
+            time.sleep(REQUEST_DELAY)
+        gained = len(items) - before
+        log.info("[데일리팜] 라운드 %d: 신규 %d건 (누적 %d건)", rnd, gained, len(items))
+        # 회전 매물이 더 이상 안 나오면(연속 N라운드 신규 0건) 종료
+        if gained == 0:
+            no_new_rounds += 1
+            if no_new_rounds >= NO_NEW_ROUNDS_STOP:
+                log.info("[데일리팜] 연속 %d라운드 신규 없음 -> 종료", NO_NEW_ROUNDS_STOP)
                 break
         else:
-            empty = 0
-            log.info("[데일리팜] p%d 신규 %d건 (누적 %d건)", page, new, len(items))
-        page += 1
-        time.sleep(REQUEST_DELAY)
+            no_new_rounds = 0
 
     log.info("데일리팜 크롤링 완료: 총 %d건", len(items))
     return items

@@ -202,12 +202,46 @@ def crawl():
         log.warning("crawler_dailypharm.py 없음 - 데일리팜 크롤링 스킵")
 
     # ── 중복 감지 ──
-    # 기준 1 (교차중복): KPA↔팜올 같은 시/군 주소
+    # 기준 1 (교차중복): 전화번호 동일 (KPA↔팜올 등)
     # 기준 2 (내부중복): 같은 사이트 내 전화번호+지역 동일
+    # 기준 3 (교차중복·4사 전체): 다른 사이트 + 같은 지역(구)+면적(평) — 팜플·데일리팜 포함
     def _norm_phone(p):
         return re.sub(r'\D', '', str(p or ''))
 
+    # 교차중복(4사 전체)용: 지역(시도+시군구) 키 / 면적(평) 추출
+    def _region_key(v):
+        loc = re.sub(r'\s+', ' ', str(v.get('location') or v.get('region') or '')).strip()
+        toks = loc.split()
+        return ''.join(toks[:2]) if toks else ''
+
+    def _area_pyeong(v):
+        for f in ('area_full', 'area_label', 'area'):
+            s = str(v.get(f) or '')
+            m = re.search(r'([\d,]+(?:\.\d+)?)\s*평', s)
+            if m:
+                try:
+                    return int(round(float(m.group(1).replace(',', ''))))
+                except Exception:
+                    pass
+            m2 = re.search(r'([\d,]+(?:\.\d+)?)\s*(?:m2|\u33a1|m\u00b2)', s)
+            if m2:
+                try:
+                    return int(round(float(m2.group(1).replace(',', '')) / 3.3058))
+                except Exception:
+                    pass
+        return None
+
+    def _src_label(k, v):
+        s = str(v.get('source') or '')
+        if s:
+            return s
+        kk = str(k)
+        return 'pm' if kk.startswith('pm_') else ('pp' if kk.startswith('pp_') else ('dp' if kk.startswith('dp_') else 'kpa'))
+
     active_list = [(k, v) for k, v in items.items() if v.get("status") != "삭제"]
+    # 교차중복용 키 사전 계산 (지역구 + 면적평)
+    _rk = {k: _region_key(v) for k, v in active_list}
+    _pa = {k: _area_pyeong(v) for k, v in active_list}
     uf = {}
     def _find(x):
         while uf.get(x, x) != x:
@@ -241,6 +275,14 @@ def crawl():
             # 기준 2: 내부중복 - 같은 사이트, 전화번호+지역 동일
             if src1 == src2 and len(ph1) >= 8 and ph1 == ph2 and loc1 and loc1 == loc2:
                 _union(k1, k2)
+                continue
+            # 기준 3: 교차중복(4사 전체) - 다른 사이트 + 같은 지역(구)+면적(평)
+            #   전화번호 없는 팜플·데일리팜도 잡기 위함 (지역구+평수 동일 시 동일매물로 간주)
+            if src1 != src2:
+                rk1, rk2 = _rk.get(k1, ''), _rk.get(k2, '')
+                pa1, pa2 = _pa.get(k1), _pa.get(k2)
+                if rk1 and rk1 == rk2 and pa1 is not None and pa1 == pa2:
+                    _union(k1, k2)
 
     group_map = {}
     dup_group_counter = 0
@@ -255,15 +297,15 @@ def crawl():
         root = _find(k)
         if root in group_map:
             gid, members = group_map[root]
-            srcs = set('팜올' if str(kk).startswith('pm_') else 'KPA' for kk in members)
-            kind = 'cross' if len(srcs) > 1 else ('kpa' if 'KPA' in srcs else 'pm')
+            srcs = set(_src_label(kk, items[kk]) for kk in members)
+            kind = 'cross' if len(srcs) > 1 else 'internal'
             v["possible_duplicate"] = True
             v["dup_group"] = gid
             v["dup_kind"] = kind
     for root, (gid, members) in group_map.items():
         titles = [str(items[m].get('title',''))[:15] for m in members]
-        srcs = set('팜올' if str(m).startswith('pm_') else 'KPA' for m in members)
-        kind = 'cross' if len(srcs) > 1 else ('kpa' if 'KPA' in srcs else 'pm')
+        srcs = set(_src_label(m, items[m]) for m in members)
+        kind = 'cross' if len(srcs) > 1 else 'internal'
         log.info(f"  ⚠️  중복의심[{kind}] {len(members)}건: {', '.join(titles)}")
     log.info(f"중복의심 총 {dup_group_counter}그룹")
     save_items(items)
