@@ -63,11 +63,10 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
 }
 
-REQUEST_DELAY      = 0.7    # 페이지당 딜레이(초) - 서버 부하 방지
-PAGES_PER_ROUND    = 3      # 한 라운드에서 가져올 페이지 수 (1~3페이지)
-MAX_ROUNDS         = 15     # 회전(프리미엄) 매물 수집을 위한 최대 반복 라운드 (보안: 무한루프 방지)
-NO_NEW_ROUNDS_STOP = 4      # 연속 N라운드 신규 0건이면 종료
-MAX_BYTES          = 5_000_000   # 보안: 응답 크기 상한 (5MB)
+REQUEST_DELAY   = 0.7      # 페이지당 딜레이(초) - 서버 부하 방지
+MAX_EMPTY_PAGES = 2        # 빈 페이지 연속 N회면 종료
+MAX_PAGES       = 50       # 보안: 페이지 수 상한 (무한루프 방지)
+MAX_BYTES       = 5_000_000   # 보안: 응답 크기 상한 (5MB)
 
 
 # ── 유틸리티 / 보안 살균 ──────────────────────────────────────────────────────
@@ -370,40 +369,42 @@ def login(session):
 def crawl():
     """데일리팜 약국 매물 전체 수집 → {dp_id: item} dict
 
-    [중요] 데일리팜 목록 1페이지에는 PLUS(프리미엄) 매물이 '매 요청마다 회전'하여
-    노출된다. 한 번 요청하면 10건만 보이지만, 같은 페이지를 여러 번 요청하면
-    매번 다른 프리미엄 매물이 섞여 나온다(전체 약 23건). 그래서 페이지를 여러 라운드
-    반복 요청해 더 이상 새 매물이 안 나올 때까지(연속 NO_NEW_ROUNDS_STOP 라운드) 누적 수집한다.
+    [매우 중요] 데일리팜 목록 페이저는 **0부터 시작**한다.
+      화면의 "1페이지" = page=0, "2페이지" = page=1 ...
+      (1부터 돌리면 첫 페이지 page=0 을 통째로 건너뛰어 매물 절반을 놓친다 — 과거 버그)
+    page=0,1,2... 순차로 돌며 빈 페이지가 MAX_EMPTY_PAGES회 연속이면 종료.
+    로그인은 필수 아님(비로그인도 전체 수집됨). 단, login()은 무해하게 유지(향후 대비).
     """
     session = requests.Session()
     session.headers.update({"User-Agent": HEADERS["User-Agent"],
                             "Referer": HEADERS["Referer"]})
-    logged_in = login(session)  # 계정 있으면 로그인(프리미엄 포함), 없으면 비로그인
-    log.info("[데일리팜] 로그인 상태: %s", "로그인" if logged_in else "비로그인(공개 매물만)")
+    logged_in = login(session)  # 선택적: 계정 있으면 로그인, 없으면 비로그인(둘 다 전체 수집)
+    log.info("[데일리팜] 로그인 상태: %s", "로그인" if logged_in else "비로그인")
     items = {}
-    no_new_rounds = 0
+    empty = 0
     log.info("[데일리팜] 수집 시작 - %s", LIST_API)
-    for rnd in range(1, MAX_ROUNDS + 1):
-        before = len(items)
-        for page in range(1, PAGES_PER_ROUND + 1):
-            html_text = fetch_page(session, page)
-            if html_text is None:
-                log.warning("[데일리팜] r%d p%d 응답 없음 -> 스킵", rnd, page)
-                continue
-            for it in parse_html_response(html_text):
-                if it["idx"] not in items:
-                    items[it["idx"]] = it
-            time.sleep(REQUEST_DELAY)
-        gained = len(items) - before
-        log.info("[데일리팜] 라운드 %d: 신규 %d건 (누적 %d건)", rnd, gained, len(items))
-        # 회전 매물이 더 이상 안 나오면(연속 N라운드 신규 0건) 종료
-        if gained == 0:
-            no_new_rounds += 1
-            if no_new_rounds >= NO_NEW_ROUNDS_STOP:
-                log.info("[데일리팜] 연속 %d라운드 신규 없음 -> 종료", NO_NEW_ROUNDS_STOP)
+    page = 0  # ★ 0부터 시작 (데일리팜 페이저 0-인덱스)
+    while page < MAX_PAGES:
+        html_text = fetch_page(session, page)
+        if html_text is None:
+            log.warning("[데일리팜] page=%d 응답 없음 → 종료", page)
+            break
+        page_items = parse_html_response(html_text)
+        new = 0
+        for it in page_items:
+            if it["idx"] not in items:
+                items[it["idx"]] = it
+                new += 1
+        if not page_items:
+            empty += 1
+            log.info("[데일리팜] page=%d 빈 페이지 (%d/%d)", page, empty, MAX_EMPTY_PAGES)
+            if empty >= MAX_EMPTY_PAGES:
                 break
         else:
-            no_new_rounds = 0
+            empty = 0
+            log.info("[데일리팜] page=%d 신규 %d건 (누적 %d건)", page, new, len(items))
+        page += 1
+        time.sleep(REQUEST_DELAY)
 
     log.info("데일리팜 크롤링 완료: 총 %d건", len(items))
     return items
