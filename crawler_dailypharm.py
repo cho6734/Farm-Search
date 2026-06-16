@@ -390,14 +390,26 @@ def parse_detail(html):
     soup = BeautifulSoup(html, "html.parser")
     for bad in soup(["script", "style", "iframe", "object", "embed", "link"]):
         bad.decompose()
-    # 매물 스펙: div.cont_info_Row( .cont_info_Tit / .cont_info_Cont )
+    # 매물 스펙: div.cont_info_Row( 라벨 / .cont_info_Cont )
+    #   대부분 라벨은 .cont_info_Tit 이지만, '상세내역' 행은 라벨이 클래스 없는 div라
+    #   .cont_info_Tit 가 없으면 cont_info_Cont 외의 첫 자식을 라벨로 사용한다.
     for row in soup.select("div.cont_info_Row"):
-        tit = row.select_one(".cont_info_Tit")
         cont = row.select_one(".cont_info_Cont")
-        if tit and cont:
+        if not cont:
+            continue
+        tit = row.select_one(".cont_info_Tit")
+        if tit:
             label = clean_text(tit.get_text(), 30)
-            if label:
-                out[label] = clean_text(cont.get_text(), 1500)
+        else:
+            label = ""
+            for ch in row.find_all(recursive=False):
+                if ch is cont:
+                    continue
+                label = clean_text(ch.get_text(), 30)
+                if label:
+                    break
+        if label:
+            out[label] = clean_text(cont.get_text(), 2000)
     # 중개사 정보: table.cont_profile_table (라벨 앞에 '_' 붙여 구분)
     for tr in soup.select("table.cont_profile_table tr"):
         th = tr.find("th"); td = tr.find("td")
