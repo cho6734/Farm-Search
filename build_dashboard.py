@@ -623,27 +623,31 @@ function setDetail(item) {{
   txt(item.tags).split(',').map(s => s.trim()).filter(Boolean).forEach(v => {{
     const s = document.createElement('span'); s.className = 'badge tag'; s.textContent = v; badges.appendChild(s);
   }});
-  // 팜올 전용: 건축물 정보 섹션
+  // 건축물/상세 정보 섹션 (상세 데이터가 있는 모든 출처: 팜올·데일리팜 등)
   const pmSection = document.getElementById('d-pharmall-section');
-  if (item.source === 'pharmall') {{
+  const roomsStr = item.rooms ? (String(item.rooms).indexOf('개') >= 0 ? item.rooms : item.rooms + '개') : '';
+  const parkingStr = item.parking_label
+      ? item.parking_label
+      : (item.parking_total ? '총 ' + item.parking_total + '대' + (item.parking_avail ? ' / 가능 ' + item.parking_avail + '대' : '') : '');
+  const bfields = [
+    ['건물용도/종류', item.building_usage],
+    ['사용승인일', item.approval_date],
+    ['총층', item.total_floors ? item.total_floors + '층' : ''],
+    ['층수', item.floor_label],
+    ['방수', roomsStr],
+    ['화장실', item.bathroom],
+    ['주차', parkingStr],
+    ['방향', item.direction],
+    ['관리비', item.maintenance_fee],
+    ['입주가능일', item.move_in || item.move_date],
+    ['조회수', item.view_count ? item.view_count + '회' : ''],
+  ];
+  const shownB = bfields.filter(f => f[1]);
+  if (shownB.length) {{
     pmSection.style.display = 'block';
     const bg = document.getElementById('d-building-grid');
     bg.innerHTML = '';
-    const bfields = [
-      ['건물용도', item.building_usage],
-      ['사용승인일', item.approval_date],
-      ['총층', item.total_floors ? item.total_floors + '층' : ''],
-      ['해당층', item.floor_label],
-      ['방수', item.rooms ? item.rooms + '개' : ''],
-      ['화장실', item.bathroom],
-      ['총주차', item.parking_total ? item.parking_total + '대' : ''],
-      ['가능주차', item.parking_avail ? item.parking_avail + '대' : ''],
-      ['방향', item.direction],
-      ['관리비', item.maintenance_fee],
-      ['입주가능일', item.move_in],
-      ['조회수', item.view_count ? item.view_count + '회' : ''],
-    ];
-    bfields.filter(f => f[1]).forEach(f => {{
+    shownB.forEach(f => {{
       bg.innerHTML += '<div class="info"><div class="k">' + f[0] + '</div><div class="v">' + txt(f[1]) + '</div></div>';
     }});
     document.getElementById('d-viewcount-row').textContent = item.view_count ? '👁 조회수 ' + item.view_count + '회' : '';
