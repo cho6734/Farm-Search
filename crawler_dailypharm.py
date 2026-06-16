@@ -366,6 +366,102 @@ def login(session):
         return False
 
 
+def fetch_detail(session, item_id):
+    """데일리팜 상세 페이지 GET → EUC-KR HTML. 상세는 로그인 필요(비로그인이면 빈 내용)."""
+    if not item_id:
+        return None
+    try:
+        resp = session.get(VIEW_URL, params={"ID": str(item_id)}, headers=HEADERS, timeout=20)
+        resp.raise_for_status()
+        raw = resp.content or b""
+        if len(raw) > MAX_BYTES:
+            raw = raw[:MAX_BYTES]
+        return raw.decode(SITE_ENCODING, "ignore")
+    except Exception as e:
+        log.warning("[데일리팜] 상세 %s 조회 실패: %s", item_id, e)
+        return None
+
+
+def parse_detail(html):
+    """상세 HTML → {라벨: 값} dict. (cont_info_Row + 중개사 테이블). 로그인 안 돼 있으면 빈 dict."""
+    out = {}
+    if not html or not html.strip():
+        return out
+    soup = BeautifulSoup(html, "html.parser")
+    for bad in soup(["script", "style", "iframe", "object", "embed", "link"]):
+        bad.decompose()
+    # 매물 스펙: div.cont_info_Row( .cont_info_Tit / .cont_info_Cont )
+    for row in soup.select("div.cont_info_Row"):
+        tit = row.select_one(".cont_info_Tit")
+        cont = row.select_one(".cont_info_Cont")
+        if tit and cont:
+            label = clean_text(tit.get_text(), 30)
+            if label:
+                out[label] = clean_text(cont.get_text(), 1500)
+    # 중개사 정보: table.cont_profile_table (라벨 앞에 '_' 붙여 구분)
+    for tr in soup.select("table.cont_profile_table tr"):
+        th = tr.find("th"); td = tr.find("td")
+        if th and td:
+            out["_" + clean_text(th.get_text(), 20)] = clean_text(td.get_text(), 80)
+    return out
+
+
+def apply_detail(item, det):
+    """상세 dict의 한글 항목을 대시보드 스키마로 매핑(전화 + 메모 전문)."""
+    if not det:
+        return False
+    g = lambda k: det.get(k, "")
+    # 면적(전용/공급)
+    exc, sup = g("전용면적"), g("공급면적")
+    if exc:
+        item["area_label"] = exc
+        item["area_full"]  = exc + (f" / 공급 {sup}" if sup and sup != exc else "")
+    # 사용승인일(행정기간승인일: '사용승인일 1996-06-04')
+    appr = g("행정기간승인일") or g("사용승인일")
+    if appr:
+        item["approval_date"] = appr.replace("사용승인일", "").strip()
+    if g("층수"):           item["floor_label"]   = g("층수")
+    if g("방 수"):          item["rooms"]         = g("방 수")
+    if g("화장실"):         item["bathroom"]      = g("화장실")
+    if g("방향"):           item["direction"]     = g("방향")
+    if g("주차가능대수"):    item["parking_label"] = g("주차가능대수")
+    if g("입주가능일"):      item["move_in"]       = g("입주가능일")
+    if g("관리비") and g("관리비") != "-":
+        item["maintenance_fee"] = g("관리비")
+    if g("중개대상물종류"):  item["building_usage"] = g("중개대상물종류")
+    if g("소재지"):
+        item["location"] = g("소재지")
+        item["region"]   = extract_region(item["location"])
+    # 전화(대표/휴대) + 중개사
+    phone = g("_대표전화") or g("_휴대전화")
+    if phone:
+        item["phone"] = phone
+    owner = " / ".join([x for x in [g("_대표자"), g("_중개등록번호")] if x])
+    if owner:
+        item["owner"] = owner
+    # 메모(전 항목 + 상세내역 본문 전체)
+    memo = []
+    if item.get("location"):        memo.append(f"소재지: {item['location']}")
+    if item.get("area_full"):       memo.append(f"면적: {item['area_full']}")
+    if item.get("building_usage"):  memo.append(f"종류: {item['building_usage']}")
+    if item.get("approval_date"):   memo.append(f"사용승인일: {item['approval_date']}")
+    if item.get("floor_label"):     memo.append(f"층수: {item['floor_label']}")
+    if item.get("rooms"):           memo.append(f"방수: {item['rooms']}")
+    if item.get("bathroom"):        memo.append(f"화장실: {item['bathroom']}")
+    if item.get("direction"):       memo.append(f"방향: {item['direction']}")
+    if item.get("parking_label"):   memo.append(f"주차: {item['parking_label']}")
+    if item.get("move_in"):         memo.append(f"입주가능일: {item['move_in']}")
+    if item.get("maintenance_fee"): memo.append(f"관리비: {item['maintenance_fee']}")
+    if g("_부동산 주소"):           memo.append(f"중개사: {g('_대표자')} ({g('_부동산 주소')})")
+    if g("_연락가능시간"):          memo.append(f"연락가능시간: {g('_연락가능시간')}")
+    desc = g("상세내역") or g("상세설명")
+    if desc:
+        memo.append(f"상세: {desc}")
+    if memo:
+        item["memo"] = "\n".join(memo)
+    return True
+
+
 def crawl():
     """데일리팜 약국 매물 전체 수집 → {dp_id: item} dict
 
@@ -405,6 +501,15 @@ def crawl():
             log.info("[데일리팜] page=%d 신규 %d건 (누적 %d건)", page, new, len(items))
         page += 1
         time.sleep(REQUEST_DELAY)
+
+    # ── 상세 보강 (로그인 시에만 채워짐. 비로그인이면 빈 dict → 목록 데이터 유지) ──
+    enriched = 0
+    for it in items.values():
+        det = parse_detail(fetch_detail(session, it.get("dailypharm_id")))
+        if apply_detail(it, det):
+            enriched += 1
+        time.sleep(REQUEST_DELAY)
+    log.info("[데일리팜] 상세 보강: %d/%d건 (전화·면적·층·상세설명 등)", enriched, len(items))
 
     log.info("데일리팜 크롤링 완료: 총 %d건", len(items))
     return items
