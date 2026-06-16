@@ -131,20 +131,42 @@ def crawl():
     log.info(f"기존 항목: {len(items)}건 | 최대 idx: {max_idx}")
 
     log.info("── 약사공론 기존 항목 갱신 중...")
+    # [개선] 삭제 항목까지 모두 재조회 → 정상 매물 자동 복구.
+    #        + 일괄삭제 방지 안전장치: 실패율이 높으면(원본 장애로 판단) 삭제 처리를 보류한다.
+    kpa_results = {}
+    kpa_fail = 0
+    for idx in kpa_idxs:
+        d = fetch_detail(idx)
+        kpa_results[str(idx)] = d
+        if not d:
+            kpa_fail += 1
+        time.sleep(DELAY)
+    kpa_total = len(kpa_idxs)
+    # 안전장치: 절반 이상 실패하면 원본(svc.kpanews) 장애로 간주 → 삭제하지 않고 기존 데이터 유지
+    kpa_outage = (kpa_total > 0) and (kpa_fail / kpa_total > 0.5)
+    if kpa_outage:
+        log.warning(f"⚠️ 약사공론 응답 실패율 높음({kpa_fail}/{kpa_total}) → 원본 장애로 판단, 삭제 보류(기존 데이터 유지)")
     for idx in kpa_idxs:
         key = str(idx)
-        if items[key].get("status") == "삭제":
-            continue
-        d = fetch_detail(idx)
+        d = kpa_results.get(key)
         if d:
             items[key] = enrich(items[key], d)
             items[key]["source"] = "kpa"
-            log.info(f"  ✅ [{idx}] {items[key]['title']}")
+            # 정상 조회 → 활성으로 복구(과거에 잘못 삭제된 항목도 되살림)
+            if items[key].get("status") == "삭제":
+                log.info(f"  ♻️  [{idx}] 복구: {items[key].get('title','')}")
+                items[key].pop("deleted_at", None)
+            items[key]["status"] = "active"
+            log.info(f"  ✅ [{idx}] {items[key].get('title','')}")
+        elif kpa_outage:
+            # 장애 시: 아무 것도 하지 않고 기존 상태 유지(일괄삭제 방지)
+            pass
         else:
-            items[key]["status"] = "삭제"
-            items[key]["deleted_at"] = now_str
-            log.info(f"  🗑️  [{idx}] 삭제 감지")
-        time.sleep(DELAY)
+            # 개별 실패(원본에서 실제로 내려간 매물) → 삭제 처리
+            if items[key].get("status") != "삭제":
+                items[key]["status"] = "삭제"
+                items[key]["deleted_at"] = now_str
+                log.info(f"  🗑️  [{idx}] 삭제 감지")
 
     log.info(f"── 약사공론 신규 스캔: {max_idx+1} ~ {max_idx+SCAN_AHEAD}")
     for idx in range(max_idx + 1, max_idx + SCAN_AHEAD + 1):
