@@ -574,6 +574,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
             <div class="grid4" id="d-building-grid"></div>
             <div id="d-viewcount-row" style="margin-top:10px;font-size:13px;color:var(--muted)"></div>
           </div>
+          <a id="d-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none;margin:12px 0;padding:9px 14px;background:#1d468b;color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:600">🔗 원본 페이지 새 창으로 열기</a>
           <div class="memo" id="d-memo"></div>
         </div>
       </div>
@@ -608,7 +609,18 @@ function setDetail(item) {{
   document.getElementById('d-maint').textContent = txt(item.maintenance_fee) || '-';
   // 입주가능일: 팜올은 move_in, 약사공론은 move_date
   document.getElementById('d-move').textContent = txt(item.move_in || item.move_date) || '-';
-  document.getElementById('d-memo').textContent = txt(item.memo);
+  // 메모: HTML 이스케이프 후 URL을 새 창 하이퍼링크로 변환(+줄바꿈 유지)
+  (function(){{
+    var raw = txt(item.memo);
+    var esc = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var html = esc.replace(/(https?:\/\/[^\s<]+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#69a3ff;word-break:break-all">$1</a>').replace(/\n/g,'<br>');
+    document.getElementById('d-memo').innerHTML = html;
+    // 원본 페이지 버튼: item.link 있으면 표시
+    var dl = document.getElementById('d-link');
+    var url = txt(item.link) || (raw.match(/https?:\/\/[^\s]+/) || [''])[0];
+    if (url) {{ dl.href = url; dl.style.display = 'inline-block'; }} else {{ dl.style.display = 'none'; }}
+  }})();
   const img = document.getElementById('d-img');
   if (item.thumb_url) {{
     img.src = item.thumb_url; img.style.display = 'block';
