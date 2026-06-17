@@ -16,6 +16,7 @@ API:
   - 응답 크기 상한, 페이지 수 상한, 중복 페이지 감지로 무한루프/과대응답을 방지한다.
 """
 
+import os
 import re
 import time
 import base64
@@ -44,6 +45,9 @@ LIST_API     = "https://pharmple.co.kr/sale/getmaemullist"
 PREMIUM_API  = "https://pharmple.co.kr/sale/getPremiumMaemullist"
 BASE_URL     = "https://pharmple.co.kr"
 ALLOWED_HOST = "pharmple.co.kr"          # 보안: 허용 도메인
+DETAIL_URL   = "https://pharmple.co.kr/sale/view"          # 상세(로그인 필요, 일반 GET·XHR헤더 없이)
+LOGIN_PAGE   = "https://pharmple.co.kr/membership/login"
+LOGIN_PROC   = "https://pharmple.co.kr/membership/login_proc/"
 
 HEADERS = {
     "User-Agent": (
@@ -367,6 +371,144 @@ def fetch_page(session, api_url, page):
     return None
 
 
+def load_env():
+    """# .env 로드(로컬용). 실패해도 무시. GitHub Actions는 env 주입."""
+    try:
+        p = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+        if not os.path.exists(p):
+            return
+        for line in open(p, encoding="utf-8").read().splitlines():
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                k, _, v = line.partition("=")
+                os.environ.setdefault(k.strip(), v.strip())
+    except Exception as e:
+        log.warning("[팜플] .env 로드 실패(무시): %s", e)
+
+
+def login(session):
+    """# 팜플 로그인(평문 폼 POST). 성공 True / 미설정·실패 False(비로그인=상세 불가)."""
+    load_env()
+    userid = (os.environ.get("PHARMPLE_EMAIL", "").strip()
+              or os.environ.get("PHARMPLE_ID", "").strip())
+    passwd = os.environ.get("PHARMPLE_PASSWORD", "").strip()
+    if not userid or not passwd:
+        log.info("[팜플] 계정정보 없음 → 비로그인(상세 수집 불가, 목록만)")
+        return False
+    try:
+        session.get(LOGIN_PAGE, headers={"User-Agent": HEADERS["User-Agent"]}, timeout=20)
+        data = {
+            "mode": "LOGIN", "login_type": "1", "user_agent": "Chrome",
+            "login_go": "", "userid": userid, "passwd": passwd,
+            "isSaveId": "", "isSavePwd": "",
+        }
+        h = {"User-Agent": HEADERS["User-Agent"],
+             "Content-Type": "application/x-www-form-urlencoded",
+             "Referer": LOGIN_PAGE, "Origin": BASE_URL}
+        session.post(LOGIN_PROC, data=data, headers=h, timeout=20, allow_redirects=True)
+        # 성공 판정: 메인에 로그아웃 노출 (비밀번호는 로그 출력 금지)
+        m = session.get(BASE_URL + "/", headers={"User-Agent": HEADERS["User-Agent"]}, timeout=20)
+        if "로그아웃" in (m.text or ""):
+            log.info("[팜플] 로그인 성공 → 상세 수집 가능")
+            return True
+        log.warning("[팜플] 로그인 실패(자격증명 확인) → 비로그인 진행")
+        return False
+    except Exception as e:
+        log.error("[팜플] 로그인 오류 → 비로그인 진행: %s", e)
+        return False
+
+
+def fetch_detail(session, pharmple_id):
+    """# 팜플 상세 GET /sale/view?idx=base64(id). XHR헤더 없이 호출해야 전체 HTML이 옴."""
+    if not pharmple_id:
+        return None
+    try:
+        idx_b64 = base64.b64encode(str(pharmple_id).encode()).decode()
+        h = {"User-Agent": HEADERS["User-Agent"],
+             "Referer": "https://pharmple.co.kr/sale/list",
+             "Accept": "text/html,application/xhtml+xml,*/*;q=0.8"}
+        resp = session.get(DETAIL_URL, params={"idx": idx_b64}, headers=h, timeout=20)
+        resp.raise_for_status()
+        raw = resp.content or b""
+        if len(raw) > MAX_BYTES:
+            raw = raw[:MAX_BYTES]
+        resp.encoding = "utf-8"
+        html = raw.decode("utf-8", "ignore")
+        # 비로그인/접근불가/리다이렉트 stub(101바이트대)면 None
+        if len(html) < 2000 or "입점 중인 업체가 아니" in html or "찾을 수 없" in html:
+            return None
+        return html
+    except Exception as e:
+        log.warning("[팜플] 상세 %s 조회 실패: %s", pharmple_id, e)
+        return None
+
+
+def parse_detail(html):
+    """# 상세 HTML → {라벨:값} dict + 상세설명 본문. 비면 {}."""
+    out = {}
+    if not html:
+        return out
+    soup = BeautifulSoup(html, "html.parser")
+    for bad in soup(["script", "style", "iframe", "object", "embed", "link"]):
+        bad.decompose()
+    # dl dt/dd
+    for dl in soup.select("dl"):
+        dt = dl.find("dt"); dd = dl.find("dd")
+        if dt and dd:
+            label = clean_text(dt.get_text(), 20)
+            if label:
+                out[label] = clean_text(dd.get_text(), 200)
+    # 상세설명: <h5>상세설명</h5> 다음 .txt
+    for h in soup.select("h5, h4, h3, strong, .tit"):
+        if clean_text(h.get_text(), 12) == "상세설명":
+            nxt = h.find_next(class_="txt") or h.find_next_sibling()
+            if nxt:
+                out["상세설명"] = clean_text(nxt.get_text(separator="\n"), 2000)
+            break
+    return out
+
+
+def apply_detail(item, det):
+    """# 상세 dict를 스키마로 매핑(전화 + 메모 전문). 성공 True."""
+    if not det:
+        return False
+    g = lambda k: det.get(k, "")
+    if g("대표전화"):
+        item["phone"] = g("대표전화")
+    if g("상권"):
+        item["trade_area"] = g("상권")
+    if g("면적"):
+        item["area_full"] = g("면적"); item["area_label"] = g("면적")
+    if g("관리비"):
+        item["maintenance_fee"] = g("관리비")
+    if g("형태"):
+        item["form_type"] = g("형태")
+    # 수익구조: 조제료(월) / 일반매출(일)
+    profit = g("수익구조")
+    if profit:
+        m1 = re.search(r"조제료[^\d]*([\d,]+\s*만원)", profit)
+        m2 = re.search(r"일반매출[^\d]*([\d,]+\s*만원)", profit)
+        if m1: item["sale_count"]  = m1.group(1).replace(" ", "") + "/월"
+        if m2: item["sale_amount"] = m2.group(1).replace(" ", "") + "/일"
+    if g("거래유형"):
+        item["price"] = g("거래유형")
+    owner = " / ".join([x for x in [g("대표자"), g("등록번호")] if x])
+    if owner:
+        item["owner"] = owner
+    if g("광고게시일"):
+        item["date"] = g("광고게시일")
+    # 메모(전 항목 + 상세설명 본문)
+    memo = []
+    for k in ["거래유형","상권","면적","관리비","형태","수익구조","주소","대표자","대표전화","연락 가능시간","광고게시일"]:
+        if g(k):
+            memo.append(f"{k}: {g(k)}")
+    if g("상세설명"):
+        memo.append(f"상세: {g('상세설명')}")
+    if memo:
+        item["memo"] = "\n".join(memo)
+    return True
+
+
 def crawl_api(session, api_url, is_premium=False):
     """단일 엔드포인트 페이지네이션 수집 → {key: item}"""
     label = "프리미엄" if is_premium else "일반"
@@ -405,6 +547,8 @@ def crawl():
     session = requests.Session()
     session.headers.update({"User-Agent": HEADERS["User-Agent"],
                             "Referer": HEADERS["Referer"]})
+    logged_in = login(session)  # 상세 수집에 필요(계정 없으면 목록만)
+    log.info("[팜플] 로그인 상태: %s", "로그인" if logged_in else "비로그인")
     all_items = {}
 
     # 1) 일반 매물
@@ -427,6 +571,16 @@ def crawl():
         log.info("[팜플] 프리미엄 %d건", len(premium))
     except Exception as e:
         log.error("[팜플] 프리미엄 수집 실패: %s", e, exc_info=True)
+
+    # ── 상세 보강 (로그인 시) ──
+    if logged_in:
+        enriched = 0
+        for it in all_items.values():
+            det = parse_detail(fetch_detail(session, it.get("pharmple_id")))
+            if apply_detail(it, det):
+                enriched += 1
+            time.sleep(REQUEST_DELAY)
+        log.info("[팜플] 상세 보강: %d/%d건 (전화·면적·수익구조·상세설명 등)", enriched, len(all_items))
 
     log.info("팜플 크롤링 완료: 총 %d건", len(all_items))
     return all_items
