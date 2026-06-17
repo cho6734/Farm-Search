@@ -400,6 +400,9 @@ def login(session):
         data = {
             "mode": "LOGIN", "login_type": "1", "user_agent": "Chrome",
             "login_go": "", "userid": userid, "passwd": passwd,
+            # 서버가 어떤 필드명을 읽는지 불확실 → 화면 입력 필드명도 함께 전송(둘 다 커버)
+            "loginId1": userid, "loginPwd1": passwd,
+            "loginId": userid, "loginPwd": passwd,
             "isSaveId": "", "isSavePwd": "",
         }
         h = {"User-Agent": HEADERS["User-Agent"],
@@ -408,11 +411,15 @@ def login(session):
         session.post(LOGIN_PROC, data=data, headers=h, timeout=20, allow_redirects=True)
         # 성공 판정: 메인에 로그아웃 노출 (비밀번호는 로그 출력 금지)
         m = session.get(BASE_URL + "/", headers={"User-Agent": HEADERS["User-Agent"]}, timeout=20)
-        if "로그아웃" in (m.text or ""):
+        body = m.text or ""
+        ok = ("로그아웃" in body) or ("마이페이지" in body and "로그인" not in body)
+        log.info("[팜플] 로그인 후 메인 로그아웃표시=%s (len=%d)", ("로그아웃" in body), len(body))
+        if ok:
             log.info("[팜플] 로그인 성공 → 상세 수집 가능")
             return True
-        log.warning("[팜플] 로그인 실패(자격증명 확인) → 비로그인 진행")
-        return False
+        # 판정이 애매해도 쿠키가 있으면 상세를 시도해본다(상세가 stub이면 자동 스킵)
+        log.warning("[팜플] 로그인 판정 불확실 → 상세 시도(쿠키 기반)")
+        return True
     except Exception as e:
         log.error("[팜플] 로그인 오류 → 비로그인 진행: %s", e)
         return False
@@ -572,15 +579,24 @@ def crawl():
     except Exception as e:
         log.error("[팜플] 프리미엄 수집 실패: %s", e, exc_info=True)
 
-    # ── 상세 보강 (로그인 시) ──
-    if logged_in:
-        enriched = 0
-        for it in all_items.values():
-            det = parse_detail(fetch_detail(session, it.get("pharmple_id")))
-            if apply_detail(it, det):
-                enriched += 1
-            time.sleep(REQUEST_DELAY)
-        log.info("[팜플] 상세 보강: %d/%d건 (전화·면적·수익구조·상세설명 등)", enriched, len(all_items))
+    # ── 상세 보강 ── (로그인 쿠키로 상세 GET. 처음 몇 건이 모두 실패하면 접근불가로 보고 중단)
+    enriched = 0
+    consec_fail = 0
+    checked = 0
+    for it in all_items.values():
+        checked += 1
+        det = parse_detail(fetch_detail(session, it.get("pharmple_id")))
+        if apply_detail(it, det):
+            enriched += 1
+            consec_fail = 0
+        else:
+            consec_fail += 1
+        # 초반 5건 연속 실패 = 로그인/권한 문제 → 더 진행 안 하고 중단(시간 절약)
+        if checked >= 5 and enriched == 0 and consec_fail >= 5:
+            log.warning("[팜플] 상세 5건 연속 실패 → 접근불가로 판단, 상세보강 중단(목록 데이터 유지)")
+            break
+        time.sleep(REQUEST_DELAY)
+    log.info("[팜플] 상세 보강: %d/%d건 (전화·면적·수익구조·상세설명 등)", enriched, len(all_items))
 
     log.info("팜플 크롤링 완료: 총 %d건", len(all_items))
     return all_items
