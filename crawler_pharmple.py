@@ -408,18 +408,38 @@ def login(session):
         h = {"User-Agent": HEADERS["User-Agent"],
              "Content-Type": "application/x-www-form-urlencoded",
              "Referer": LOGIN_PAGE, "Origin": BASE_URL}
-        session.post(LOGIN_PROC, data=data, headers=h, timeout=20, allow_redirects=True)
-        # 성공 판정: 메인에 로그아웃 노출 (비밀번호는 로그 출력 금지)
-        m = session.get(BASE_URL + "/", headers={"User-Agent": HEADERS["User-Agent"]}, timeout=20)
-        body = m.text or ""
-        ok = ("로그아웃" in body) or ("마이페이지" in body and "로그인" not in body)
-        log.info("[팜플] 로그인 후 메인 로그아웃표시=%s (len=%d)", ("로그아웃" in body), len(body))
+        resp = session.post(LOGIN_PROC, data=data, headers=h, timeout=20, allow_redirects=True)
+        # login_proc 는 JSON {status, message} 반환 → status 로 직접 판정
+        status, message = "", ""
+        try:
+            jj = resp.json()
+            status = str(jj.get("status", "")); message = str(jj.get("message", ""))[:120]
+        except Exception:
+            message = "(non-json len=%d)" % len(resp.text or "")
+        # 진단 파일 기록 (비밀번호는 절대 기록하지 않음) → raw로 읽어 원인 파악
+        try:
+            import json as _json
+            _dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+            os.makedirs(_dir, exist_ok=True)
+            with open(os.path.join(_dir, "pharmple_login_status.json"), "w", encoding="utf-8") as _f:
+                _json.dump({"status": status, "message": message,
+                            "id_set": bool(userid), "ts": now_kst()}, _f, ensure_ascii=False)
+        except Exception as _e:
+            log.warning("[팜플] 진단파일 기록 실패: %s", _e)
+        ok = (status.lower() == "success")
+        if not ok:
+            # status 미확인 시 쿠키 기반 보조 판정(메인 로그아웃 노출)
+            try:
+                body = session.get(BASE_URL + "/", headers={"User-Agent": HEADERS["User-Agent"]}, timeout=20).text or ""
+                ok = "로그아웃" in body
+            except Exception:
+                pass
+        log.info("[팜플] 로그인 status=%s ok=%s msg=%s", status, ok, message)
         if ok:
             log.info("[팜플] 로그인 성공 → 상세 수집 가능")
             return True
-        # 판정이 애매해도 쿠키가 있으면 상세를 시도해본다(상세가 stub이면 자동 스킵)
-        log.warning("[팜플] 로그인 판정 불확실 → 상세 시도(쿠키 기반)")
-        return True
+        log.warning("[팜플] 로그인 실패 → 비로그인 진행 (msg=%s)", message)
+        return False
     except Exception as e:
         log.error("[팜플] 로그인 오류 → 비로그인 진행: %s", e)
         return False
