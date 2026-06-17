@@ -614,7 +614,7 @@ function setDetail(item) {{
     var raw = txt(item.memo);
     var esc = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     var html = esc.replace(/(https?:\/\/[^\s<]+)/g,
-      '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#69a3ff;word-break:break-all">$1</a>').replace(/\n/g,'<br>');
+      '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#69a3ff;word-break:break-all">$1</a>').replace(/\\n/g,'<br>');
     document.getElementById('d-memo').innerHTML = html;
     // 원본 페이지 버튼: item.link 있으면 표시
     var dl = document.getElementById('d-link');
