@@ -2,14 +2,14 @@
 """
 큐팜(qpharm) 매물 크롤러  ─  접두사 qp_
 
-[사이트 구조 - 실제 확인됨 2026-06-18]
+[사이트 구조 - 실제 확인됨 2026-06-19]
   - 플랫폼 : 아임웹(imweb). 매물 = 게시판 글(별도 XHR API 없음, 서버사이드 렌더).
   - 인코딩 : UTF-8
-  - 목록   : https://www.qpharm.co.kr/yakguk-listings/  (게시판 위젯 .li_body > li, 약 70건)
-  - 로그인 : ⚠️ 필수. 비로그인은 제목·idx조차 안 보이고 SITE_MEMBER.openLogin() 모달.
-             POST https://www.qpharm.co.kr/backpg/login.cm
-             파라미터: uid(이메일), passwd(비밀번호), used_login_btn=N, auto_login, back_url
-  - 상세   : 아임웹 표준 ?idx=<글번호>&bmode=view&t=board (로그인 세션 필요)
+  - 목록   : https://www.qpharm.co.kr/yakguk-listings/?q=BASE64&page=N
+             q 파라미터 = PHP 직렬화(keyword_type=all) base64 → 이 없으면 idx 0건 반환됨
+  - 로그인 : ✅ 불필요. 목록·상세 모두 공개(비로그인 접근 가능 확인됨 2026-06-19).
+             "로그인이 필요합니다" 텍스트는 헤더 내비게이션 버튼이며 본문 접근 차단 아님.
+  - 상세   : ?q=BASE64&bmode=view&idx=<글번호>&t=board
 
 [보안 설계] (팜플/약사공론과 동일 원칙)
   - 응답은 텍스트(HTML)로만 받아 BeautifulSoup(html.parser)로 파싱(스크립트 미실행).
@@ -19,9 +19,8 @@
   - 응답 크기 상한 / 페이지 수 상한 / 빈·중복 페이지 감지로 무한루프 방지.
 
 [로그인 정보]
-  - GitHub Secrets: QPHARM_EMAIL, QPHARM_PASSWORD (코드에 직접 쓰지 않음)
-  - env 없으면 비로그인 폴백 → 수집 0건(큐팜은 비로그인 열람 불가)
-  - 로그인 결과는 data/qpharm_login_status.json 에 기록(비밀번호 제외)
+  - GitHub Secrets 불필요. 사이트가 공개이므로 로그인 없이 전체 수집 가능.
+  - login() 함수는 호환성 유지용으로 남겨두지만 crawl()에서 호출 안 함.
 """
 
 import os
@@ -52,9 +51,12 @@ log = logging.getLogger(__name__)
 BASE_URL     = "https://www.qpharm.co.kr"
 ALLOWED_HOST = "qpharm.co.kr"                              # 보안: 허용 도메인
 LIST_URL     = "https://www.qpharm.co.kr/yakguk-listings/"  # 매물게시판
-LOGIN_PROC   = "https://www.qpharm.co.kr/backpg/login.cm"   # 로그인 처리(POST)
+LOGIN_PROC   = "https://www.qpharm.co.kr/backpg/login.cm"   # 로그인 처리(POST, 현재 불필요)
 PREFIX       = "qp_"                                        # 대시보드 출처 접두사
 SOURCE       = "qpharm"
+# 아임웹 게시판 q 파라미터 = base64(PHP serialize({keyword_type: "all"}))
+# 이 파라미터 없이 ?page=N만 넘기면 게시글 idx가 HTML에 포함되지 않음 → 필수
+Q_PARAM      = "YToxOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9"
 
 HEADERS = {
     "User-Agent": (
@@ -244,7 +246,7 @@ def empty_item():
 # 사이트 라벨이 조금 달라도 키워드 포함으로 대응(추측 셀렉터 의존도 최소화).
 LABEL_MAP = [
     ("phone",           ["전화", "연락처", "휴대", "핸드폰", "tel", "전화번호", "문의"]),
-    ("price",           ["매매", "권리금", "매매가", "양도금", "매도금", "매도가"]),
+    ("price",           ["매매", "권리금", "매매가", "양도금", "매도금", "매도가", "분양가격", "분양가"]),
     ("rent",            ["임대", "보증금", "월세", "임대료", "보증/월세"]),
     ("maintenance_fee", ["관리비"]),
     ("area_label",      ["면적", "전용면적", "전용", "평수", "분양면적", "계약면적"]),
@@ -314,8 +316,8 @@ def make_soup(html_text):
 
 
 def detail_url(idx):
-    """아임웹 게시판 상세 URL: 목록 경로 + ?idx=&bmode=view&t=board"""
-    return "%s?idx=%s&bmode=view&t=board" % (LIST_URL, idx)
+    """아임웹 게시판 상세 URL: q 파라미터 + bmode=view + idx"""
+    return "%s?q=%s&bmode=view&idx=%s&t=board" % (LIST_URL, Q_PARAM, idx)
 
 
 # ── 목록 파싱 ──────────────────────────────────────────────────────────────────
@@ -353,6 +355,7 @@ def parse_list(html_text):
 def _largest_text_block(soup):
     """게시판 본문(상세설명) 후보: 알려진 컨테이너 → 없으면 가장 긴 텍스트 블록."""
     candidates = [
+        ".board_txt_area",      # 큐팜 아임웹: 실제 확인된 셀렉터 (2026-06-19)
         ".board_view_content", ".view_content", ".bd_view", ".se-viewer",
         ".editor_view", ".board_text", ".content_view", "#contents .content",
         ".post_content", ".se-main-container",
@@ -473,20 +476,25 @@ def parse_detail(html_text, item):
 # ── 메인 크롤 ──────────────────────────────────────────────────────────────────
 
 def crawl():
-    """큐팜 매물 수집 → { 'qp_<idx>': item_dict }. 로그인 실패/미설정 시 빈 dict."""
+    """큐팜 매물 수집 → { 'qp_<idx>': item_dict }.
+    큐팜은 로그인 불필요(공개 사이트). q 파라미터 없으면 idx 미포함 → 필수.
+    """
     result = {}
     session = requests.Session()
     session.headers.update(HEADERS)
 
-    if not login(session):
-        log.warning("[큐팜] 로그인 불가 → 0건 반환(Secrets QPHARM_EMAIL/QPHARM_PASSWORD 확인)")
-        return result
+    # 사이트가 공개이므로 로그인 불필요 → 바로 수집 시작
+    # (login() 함수는 Cloudflare 세션쿠키 확보용으로 메인 페이지만 GET)
+    try:
+        session.get(BASE_URL + "/", headers=HEADERS, timeout=20)
+    except Exception as e:
+        log.warning("[큐팜] 메인 페이지 GET 실패(계속 진행): %s", e)
 
-    # 1) 목록 페이지 순회(아임웹 ?page=N), 빈/중복 감지로 종료
+    # 1) 목록 페이지 순회(아임웹 ?q=BASE64&page=N), 빈/중복 감지로 종료
     listings = {}
     empty_streak = 0
     for page in range(1, MAX_PAGES + 1):
-        url = "%s?page=%d" % (LIST_URL, page)
+        url = "%s?q=%s&page=%d" % (LIST_URL, Q_PARAM, page)
         html_text = fetch_html(session, url, referer=LIST_URL)
         rows = parse_list(html_text)
         new = [r for r in rows if r["idx"] not in listings]
