@@ -392,15 +392,55 @@ def parse_detail(html_text, item):
         for dt, dd in zip(dts, dds):
             map_label(item, dt.get_text(" ", strip=True), dd.get_text(" ", strip=True))
 
-    # 3) 본문(상세설명) → memo
+    # 3) 본문(상세설명) 추출
     body = _largest_text_block(soup)
     body = clean_multiline(body, 2000)
+    lines = [l.strip() for l in body.split("\n") if l.strip()] if body else []
 
-    # 4) 본문 안의 '라벨 : 값' 패턴도 매핑(테이블이 아닌 텍스트형 게시글 대응)
-    for line in (body.split("\n") if body else []):
+    # 3-1) 큐팜 게시판 본문 구조 파싱
+    #      [0]제목(지역ㅣ거래유형ㅣ특징) [1]글쓴이 [2]카테고리 [3]날짜 [4]조회수 [5+]본문
+    if lines:
+        if not item.get("title"):
+            item["title"] = clean_text(lines[0], 120)
+        # 제목을 'ㅣ/|/│' 로 분리 → 지역·거래유형 추출
+        seg = [p.strip() for p in re.split(r"[ㅣ|│/]+", lines[0]) if p.strip()]
+        if seg:
+            if not item.get("region"):
+                item["region"] = clean_text(seg[0], 10)
+            if len(seg) > 1 and not item.get("gubun_type"):
+                item["gubun_type"] = clean_text(seg[1], 20)
+        # 날짜 줄(YYYY-MM-DD / YYYY.MM.DD)
+        for l in lines[:8]:
+            if re.match(r"^20\d{2}[-.]\d{1,2}[-.]\d{1,2}$", l):
+                item["date"] = normalize_date(l)
+                break
+
+    # 4) 본문 '라벨 : 값' 패턴 매핑(텍스트형 게시글 대응)
+    for line in lines:
         mm = re.match(r"\s*([가-힣A-Za-z/ ]{2,12})\s*[:：]\s*(.+)$", line)
         if mm:
             map_label(item, mm.group(1), mm.group(2))
+
+    # 4-1) 면적 정규식 보조(본문에 ㎡/평 표기 시)
+    if not item.get("area_label") and body:
+        am = re.search(r"\d+(?:\.\d+)?\s*㎡(?:\s*\(?\s*\d+(?:\.\d+)?\s*평\)?)?|\d+(?:\.\d+)?\s*평", body)
+        if am:
+            item["area_label"] = clean_text(am.group(0), 40)
+            item["area_full"] = item["area_label"]
+
+    # 4-2) memo 정제: 헤더(제목줄/글쓴이/카테고리/조회수/날짜) 제거, 실제 본문만
+    if lines:
+        skip = ("관리자", "매물게시판", "조회수", "공지사항")
+        clean_lines = []
+        for i, l in enumerate(lines):
+            if i == 0:                                          # 제목 줄 → title로 분리
+                continue
+            if re.match(r"^20\d{2}[-.]\d{1,2}[-.]\d{1,2}$", l):  # 날짜 줄 제거
+                continue
+            if len(l) < 20 and any(k in l for k in skip):       # 헤더 잡음 제거
+                continue
+            clean_lines.append(l)
+        item["memo"] = "\n".join(clean_lines)[:2000]
 
     # 5) 전화번호 보조 추출(라벨 매핑 실패 시)
     if not item.get("phone"):
@@ -412,7 +452,7 @@ def parse_detail(html_text, item):
             item["phone"] = clean_text(pm.group(0), 20)
 
     # 6) 파생값 정리
-    if body:
+    if not item.get("memo") and body:   # 정제된 memo가 없을 때만 원문 사용
         item["memo"] = body
     if item.get("location") and not item.get("region"):
         item["region"] = extract_region(item["location"])
@@ -481,6 +521,13 @@ def crawl():
         # 제목/지역 보조
         if not item.get("region") and item.get("title"):
             item["region"] = extract_region(item["title"])
+        # 공지글 제외(매물 아님): 제목이 '공지'로 시작하거나 '*공지*' 포함
+        _ttl = item.get("title", "")
+        if _ttl.startswith("공지") or "*공지*" in (item.get("memo", "")[:30]) or "공지사항" in _ttl:
+            log.info("[큐팜] 공지글 제외 idx=%s", idx)
+            count += 1
+            time.sleep(REQUEST_DELAY)
+            continue
         result[PREFIX + idx] = item
         count += 1
         time.sleep(REQUEST_DELAY)
