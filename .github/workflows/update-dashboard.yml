@@ -35,6 +35,8 @@ jobs:
           DAILYPHARM_PASSWORD: ${{ secrets.DAILYPHARM_PASSWORD }}
           PHARMPLE_EMAIL: ${{ secrets.PHARMPLE_EMAIL }}
           PHARMPLE_PASSWORD: ${{ secrets.PHARMPLE_PASSWORD }}
+          QPHARM_EMAIL: ${{ secrets.QPHARM_EMAIL }}
+          QPHARM_PASSWORD: ${{ secrets.QPHARM_PASSWORD }}
 
       # 커밋 단계: 반드시 스테이징(add) → 커밋 → pull --rebase → push 순서
       - name: Commit changes
