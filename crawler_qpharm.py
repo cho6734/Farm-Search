@@ -7,7 +7,7 @@
   - 인코딩 : UTF-8
   - 목록   : https://www.qpharm.co.kr/yakguk-listings/?q=BASE64&page=N
              q 파라미터 = PHP 직렬화(keyword_type=all) base64 → 이 없으면 idx 0건 반환됨
-  - 로그인 : ✅ 불필요. 목록·상세 모두 공개(비로그인 접근 가능 확인됨 2026-06-19).
+  - 로그인 : ⚠️ 필수. 비로그인 시 매물이 openLogin으로 차단됨. login()으로 로그인 후 수집.
              "로그인이 필요합니다" 텍스트는 헤더 내비게이션 버튼이며 본문 접근 차단 아님.
   - 상세   : ?q=BASE64&bmode=view&idx=<글번호>&t=board
 
@@ -208,16 +208,19 @@ def login(session):
             message = ("code=%s msg=%s" % (jj.get("code"), jj.get("msg")))[:180]
         except Exception:
             message = "(non-json len=%d)" % len(resp.text or "")
-        # 성공 판정: 매물게시판 재요청 후 로그인 차단(openLogin)이 사라졌는지로 확인
+        # 성공 판정(엄격): 비로그인이면 매물 행이 openLogin()으로 막힘.
+        #   → openLogin 부재 + (로그아웃 노출 or 매물 view 링크 다수)일 때만 로그인 성공으로 본다.
         ok = False
+        view_cnt = 0
         try:
             body = session.get(LIST_URL, headers=HEADERS, timeout=20).text or ""
-            # 로그인 상태면 '로그아웃' 노출, 그리고 목록 행에 실제 view 링크(bmode=view)가 생김
-            ok = ("로그아웃" in body) or ("bmode=view" in body) or ("logout" in body.lower())
+            view_cnt = len(re.findall(r"bmode=view", body))
+            blocked = "openLogin" in body          # 비로그인 차단 마커
+            ok = (not blocked) and (("로그아웃" in body) or view_cnt >= 5)
         except Exception:
             pass
-        write_login_status(ok, message, True)
-        log.info("[큐팜] 로그인 ok=%s msg=%s", ok, message)
+        write_login_status(ok, "%s view=%d" % (message, view_cnt), True)
+        log.info("[큐팜] 로그인 ok=%s view링크=%d msg=%s", ok, view_cnt, message)
         return ok
     except Exception as e:
         log.error("[큐팜] 로그인 오류 → 비로그인 진행: %s", e)
@@ -483,12 +486,11 @@ def crawl():
     session = requests.Session()
     session.headers.update(HEADERS)
 
-    # 사이트가 공개이므로 로그인 불필요 → 바로 수집 시작
-    # (login() 함수는 Cloudflare 세션쿠키 확보용으로 메인 페이지만 GET)
-    try:
-        session.get(BASE_URL + "/", headers=HEADERS, timeout=20)
-    except Exception as e:
-        log.warning("[큐팜] 메인 페이지 GET 실패(계속 진행): %s", e)
+    # 큐팜은 로그인 필수(비로그인 시 매물이 openLogin으로 차단됨).
+    # 로그인 실패 시 0건 반환 → build_dashboard가 기존 큐팜 데이터를 보존(일괄 손실 방지).
+    if not login(session):
+        log.warning("[큐팜] 로그인 실패 → 0건 반환(기존 데이터는 보존)")
+        return result
 
     # 1) 목록 페이지 순회(아임웹 ?q=BASE64&page=N), 빈/중복 감지로 종료
     listings = {}

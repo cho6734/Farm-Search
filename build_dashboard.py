@@ -235,11 +235,14 @@ def crawl():
         log.info("── 큐팜 크롤링 시작...")
         try:
             qpharm_items = crawler_qpharm.crawl()
-            # 기존 큐팜 항목 제거 후 최신으로 교체
-            for k in [k for k in list(items.keys()) if str(k).startswith("qp_")]:
-                del items[k]
-            items.update(qpharm_items)
-            log.info(f"큐팜 {len(qpharm_items)}건 병합 완료")
+            # 안전장치: 0건(로그인 실패 추정)이면 기존 큐팜 데이터 보존(일괄 손실 방지)
+            if qpharm_items:
+                for k in [k for k in list(items.keys()) if str(k).startswith("qp_")]:
+                    del items[k]
+                items.update(qpharm_items)
+                log.info(f"큐팜 {len(qpharm_items)}건 병합 완료")
+            else:
+                log.warning("큐팜 0건(로그인 실패 추정) → 기존 큐팜 데이터 유지")
         except Exception as e:
             log.error(f"큐팜 크롤링 실패 (기존 데이터는 유지): {e}")
     else:
