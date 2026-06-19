@@ -93,6 +93,7 @@ def clean_multiline(s, max_len=2000):
         return ""
     s = str(s)
     s = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", s)
+    s = re.sub(r"<[^>]+>", " ", s)          # 남은 HTML/커스텀 태그 잔재 제거(콘솔 에러 방지)
     s = re.sub(r"[ \t]+", " ", s)
     s = re.sub(r"\n{3,}", "\n\n", s).strip()
     return s[:max_len]
@@ -114,6 +115,32 @@ def safe_url(raw):
     except Exception:
         return ""
     if host == ALLOWED_HOST or host.endswith("." + ALLOWED_HOST):
+        return u
+    return ""
+
+
+def safe_img_url(raw):
+    """매물 이미지 URL 살균: 실제 매물사진만 허용.
+    기본프로필/사이트 공통 디자인 이미지는 제외(깨진 이미지 방지). qpharm.co.kr 또는 cdn.imweb.me 업로드만."""
+    if not raw:
+        return ""
+    u = str(raw).strip()
+    if u.startswith("//"):
+        u = "https:" + u
+    elif u.startswith("/"):
+        u = BASE_URL + u
+    if not (u.startswith("https://") or u.startswith("http://")):
+        return ""
+    low = u.lower()
+    if "default_profile" in low or "/common/" in low or "/design-system/" in low or "noimage" in low:
+        return ""   # 기본 아바타/디자인 이미지 = 매물사진 아님
+    try:
+        host = urlparse(u).netloc.lower()
+    except Exception:
+        return ""
+    if host == ALLOWED_HOST or host.endswith("." + ALLOWED_HOST):
+        return u
+    if host == "cdn.imweb.me" and "/upload" in low:   # 아임웹 업로드 = 실제 매물사진
         return u
     return ""
 
@@ -315,6 +342,9 @@ def make_soup(html_text):
     soup = BeautifulSoup(html_text or "", "html.parser")
     for bad in soup(["script", "style", "iframe", "object", "embed", "link", "noscript"]):
         bad.decompose()
+    # 아임웹 커스텀 웹컴포넌트(<magnet-shell> 등 하이픈 포함 태그) 제거 → 대시보드 콘솔 에러/위젯 마크업 방지
+    for el in soup.find_all(lambda t: t.name and "-" in t.name):
+        el.decompose()
     return soup
 
 
@@ -379,99 +409,96 @@ def _largest_text_block(soup):
 
 
 def parse_detail(html_text, item):
-    """상세 HTML → item 채움. 테이블/정의리스트/'라벨:값' + 본문 + 전화번호 보조추출."""
+    """상세 HTML → item. 제목=<title>, 본문=.board_txt_area 라벨/수익 매핑, 이미지=실제 매물사진만."""
     if not html_text:
         return item
     soup = make_soup(html_text)
 
-    # 1) 표(th/td, td/td) 라벨-값 매핑
-    for tr in soup.find_all("tr"):
-        cells = tr.find_all(["th", "td"])
-        if len(cells) >= 2:
-            label = cells[0].get_text(" ", strip=True)
-            value = cells[1].get_text(" ", strip=True)
-            map_label(item, label, value)
-
-    # 2) 정의리스트(dt/dd) 매핑
-    for dl in soup.find_all("dl"):
-        dts = dl.find_all("dt"); dds = dl.find_all("dd")
-        for dt, dd in zip(dts, dds):
-            map_label(item, dt.get_text(" ", strip=True), dd.get_text(" ", strip=True))
-
-    # 3) 본문(상세설명) 추출
-    body = _largest_text_block(soup)
-    body = clean_multiline(body, 2000)
-    lines = [l.strip() for l in body.split("\n") if l.strip()] if body else []
-
-    # 3-1) 큐팜 게시판 본문 구조 파싱
-    #      [0]제목(지역ㅣ거래유형ㅣ특징) [1]글쓴이 [2]카테고리 [3]날짜 [4]조회수 [5+]본문
-    if lines:
-        if not item.get("title"):
-            item["title"] = clean_text(lines[0], 120)
-        # 제목을 'ㅣ/|/│' 로 분리 → 지역·거래유형 추출
-        seg = [p.strip() for p in re.split(r"[ㅣ|│/]+", lines[0]) if p.strip()]
+    # 1) 제목: 페이지 <title> "<매물제목> : 실시간 약국..." → ':' 앞부분 사용
+    if soup.title:
+        raw = soup.title.get_text(" ", strip=True)
+        raw = re.split(r"\s*:\s*", raw)[0].strip()
+        if raw and "큐팜" not in raw and 1 < len(raw) <= 120:
+            item["title"] = clean_text(raw, 120)
+    # 제목 'ㅣ/|/│' 분리 → 지역·거래유형
+    if item.get("title"):
+        seg = [p.strip() for p in re.split(r"[ㅣ|│]+", item["title"]) if p.strip()]
         if seg:
             if not item.get("region"):
                 item["region"] = clean_text(seg[0], 10)
             if len(seg) > 1 and not item.get("gubun_type"):
                 item["gubun_type"] = clean_text(seg[1], 20)
-        # 날짜 줄(YYYY-MM-DD / YYYY.MM.DD)
-        for l in lines[:8]:
-            if re.match(r"^20\d{2}[-.]\d{1,2}[-.]\d{1,2}$", l):
-                item["date"] = normalize_date(l)
-                break
 
-    # 4) 본문 '라벨 : 값' 패턴 매핑(텍스트형 게시글 대응)
+    # 2) 표(th/td)/정의리스트(dt/dd) 라벨 매핑
+    for tr in soup.find_all("tr"):
+        cells = tr.find_all(["th", "td"])
+        if len(cells) >= 2:
+            map_label(item, cells[0].get_text(" ", strip=True), cells[1].get_text(" ", strip=True))
+    for dl in soup.find_all("dl"):
+        for dt, dd in zip(dl.find_all("dt"), dl.find_all("dd")):
+            map_label(item, dt.get_text(" ", strip=True), dd.get_text(" ", strip=True))
+
+    # 3) 본문(.board_txt_area 우선) 추출
+    body = clean_multiline(_largest_text_block(soup), 2000)
+    lines = [l.strip() for l in body.split("\n") if l.strip()] if body else []
+
+    # 3-1) '라벨: 값' 매핑(지역/보증금/임대료/관리비/면적 등)
     for line in lines:
         mm = re.match(r"\s*([가-힣A-Za-z/ ]{2,12})\s*[:：]\s*(.+)$", line)
         if mm:
             map_label(item, mm.group(1), mm.group(2))
 
-    # 4-1) 면적 정규식 보조(본문에 ㎡/평 표기 시)
-    if not item.get("area_label") and body:
+    # 3-2) 자유 텍스트형 수익/권리금/면적 정규식(큐팜 본문 특성)
+    if not item.get("sale_amount"):
+        sm = re.search(r"조제[^\n]*?월\s*([\d,~\-]+\s*만원)", body) or re.search(r"매출[^\n]*?([\d,~\-]+\s*만원)", body)
+        if sm:
+            item["sale_amount"] = clean_text(sm.group(1), 30)
+    if not item.get("sale_count"):
+        ds = re.search(r"일\s*매(?:출)?\s*([\d,~\-]+)", body)
+        if ds:
+            item["sale_count"] = clean_text("일매 " + ds.group(1), 30)
+    if not item.get("price"):
+        pm2 = re.search(r"권리금\s*(조정\s*가능|협의|없음|[\d,~억만원\s]{1,12})", body)
+        if pm2:
+            item["price"] = clean_text("권리금 " + pm2.group(1).strip(), 40)
+    if not item.get("area_label"):
         am = re.search(r"\d+(?:\.\d+)?\s*㎡(?:\s*\(?\s*\d+(?:\.\d+)?\s*평\)?)?|\d+(?:\.\d+)?\s*평", body)
         if am:
             item["area_label"] = clean_text(am.group(0), 40)
             item["area_full"] = item["area_label"]
 
-    # 4-2) memo 정제: 헤더(제목줄/글쓴이/카테고리/조회수/날짜) 제거, 실제 본문만
+    # 3-3) memo = 본문(날짜/헤더/빈줄 정리)
     if lines:
         skip = ("관리자", "매물게시판", "조회수", "공지사항")
-        clean_lines = []
-        for i, l in enumerate(lines):
-            if i == 0:                                          # 제목 줄 → title로 분리
-                continue
-            if re.match(r"^20\d{2}[-.]\d{1,2}[-.]\d{1,2}$", l):  # 날짜 줄 제거
-                continue
-            if len(l) < 20 and any(k in l for k in skip):       # 헤더 잡음 제거
-                continue
-            clean_lines.append(l)
-        item["memo"] = "\n".join(clean_lines)[:2000]
+        cl = [l for l in lines if not (re.match(r"^20\d{2}[-.]\d{1,2}[-.]\d{1,2}$", l)
+                                       or (len(l) < 20 and any(k in l for k in skip)))]
+        item["memo"] = "\n".join(cl)[:2000]
+    elif body:
+        item["memo"] = body
 
-    # 5) 전화번호 보조 추출(라벨 매핑 실패 시)
+    # 4) 전화번호 보조 추출
     if not item.get("phone"):
         whole = soup.get_text(" ", strip=True)
-        pm = re.search(r"01[016789][-\s.]?\d{3,4}[-\s.]?\d{4}", whole)
-        if not pm:
-            pm = re.search(r"0\d{1,2}[-\s.]?\d{3,4}[-\s.]?\d{4}", whole)
+        pm = re.search(r"01[016789][-\s.]?\d{3,4}[-\s.]?\d{4}", whole) or re.search(r"0\d{1,2}[-\s.]?\d{3,4}[-\s.]?\d{4}", whole)
         if pm:
             item["phone"] = clean_text(pm.group(0), 20)
 
+    # 5) 이미지: 본문 내 실제 매물 사진만(기본 프로필/디자인 제외 → 없으면 빈값)
+    item["thumb_url"] = ""
+    bt = soup.select_one(".board_txt_area") or soup
+    for img in bt.find_all("img", src=True):
+        u = safe_img_url(img.get("src", ""))
+        if u:
+            item["thumb_url"] = u
+            break
+
     # 6) 파생값 정리
-    if not item.get("memo") and body:   # 정제된 memo가 없을 때만 원문 사용
-        item["memo"] = body
     if item.get("location") and not item.get("region"):
         item["region"] = extract_region(item["location"])
     if item.get("date"):
         item["date"] = normalize_date(item["date"]) or item["date"]
     if item.get("approval_date"):
         item["approval_date"] = normalize_date(item["approval_date"]) or item["approval_date"]
-
-    # 7) 썸네일(있으면)
-    if not item.get("thumb_url"):
-        img = soup.find("img", src=True)
-        if img:
-            item["thumb_url"] = safe_url(img["src"])
 
     return item
 
@@ -533,7 +560,9 @@ def crawl():
             item["region"] = extract_region(item["title"])
         # 공지글 제외(매물 아님): 제목이 '공지'로 시작하거나 '*공지*' 포함
         _ttl = item.get("title", "")
-        if _ttl.startswith("공지") or "*공지*" in (item.get("memo", "")[:30]) or "공지사항" in _ttl:
+        _memo30 = item.get("memo", "")[:40]
+        if (_ttl.startswith("공지") or "*공지*" in _memo30 or "공지사항" in _ttl
+                or "부동산컨설팅입니다" in _ttl or "필독" in _ttl or "필독" in _memo30):
             log.info("[큐팜] 공지글 제외 idx=%s", idx)
             count += 1
             time.sleep(REQUEST_DELAY)
