@@ -372,15 +372,19 @@ def parse_list(html_text):
     seen = set()
 
     for tr in soup.find_all("tr"):
-        # 제목 링크 /sale/<num>
+        # 제목 링크: 실제 목록은 index.php?...document_srl=<num> 형식.
+        #   (정규화 표기 /sale/<num> 도 함께 허용. 카테고리 링크는 제외.)
         title_a = None
         for a in tr.find_all("a", href=True):
-            if re.search(r"/sale/(\d+)(?:$|[?#])", a["href"]) and "category" not in a["href"]:
+            href = a["href"]
+            if "category" in href:
+                continue
+            if re.search(r"document_srl=(\d+)", href) or re.search(r"/sale/(\d+)(?:$|[?#])", href):
                 title_a = a
                 break
         if not title_a:
             continue
-        m = re.search(r"/sale/(\d+)", title_a["href"])
+        m = re.search(r"document_srl=(\d+)", title_a["href"]) or re.search(r"/sale/(\d+)", title_a["href"])
         if not m:
             continue
         num = m.group(1)
