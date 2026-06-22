@@ -51,6 +51,13 @@ try:
 except ImportError:
     HAS_SELLPHARM = False
 
+# 약준모 크롤러 임포트 (없으면 경고만)
+try:
+    import crawler_yakjunmo
+    HAS_YAKJUNMO = True
+except ImportError:
+    HAS_YAKJUNMO = False
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
@@ -298,6 +305,24 @@ def crawl():
     else:
         log.warning("crawler_sellpharm.py 없음 - 셀팜 크롤링 스킵")
 
+    # ── 약준모 크롤링 ──
+    if HAS_YAKJUNMO:
+        log.info("── 약준모 크롤링 시작...")
+        try:
+            yakjunmo_items = crawler_yakjunmo.crawl()
+            # 안전장치: 0건(사이트 다운 등)이면 기존 약준모 데이터 보존(일괄 손실 방지)
+            if yakjunmo_items:
+                for k in [k for k in list(items.keys()) if str(k).startswith("yj_")]:
+                    del items[k]
+                items.update(yakjunmo_items)
+                log.info(f"약준모 {len(yakjunmo_items)}건 병합 완료")
+            else:
+                log.warning("약준모 0건 → 기존 약준모 데이터 유지")
+        except Exception as e:
+            log.error(f"약준모 크롤링 실패 (기존 데이터는 유지): {e}")
+    else:
+        log.warning("crawler_yakjunmo.py 없음 - 약준모 크롤링 스킵")
+
     # ── 중복 감지 ──
     # 기준 1 (교차중복): 전화번호 동일 (KPA↔팜올 등)
     # 기준 2 (내부중복): 같은 사이트 내 전화번호+지역 동일
@@ -336,6 +361,23 @@ def crawl():
         return 'pm' if kk.startswith('pm_') else ('pp' if kk.startswith('pp_') else ('dp' if kk.startswith('dp_') else 'kpa'))
 
     active_list = [(k, v) for k, v in items.items() if v.get("status") != "삭제"]
+    # ── 중개/사이트 대표번호 보정 ──
+    #   하나의 번호가 여러 매물에 공유되면(대표번호) 전화동일 기준 중복에서 제외(오탐 방지).
+    #   땡큐팜 등 중개사가 같은 대표번호로 서로 다른 매물을 다수 올리는 경우 오탐을 막는다.
+    BROKER_PHONE_MIN = 3   # 동일 번호가 3건 이상이면 대표번호로 간주
+    _phone_freq = {}
+    _phone_broker = set()
+    for _k, _v in active_list:
+        _p = _norm_phone(_v.get("phone"))
+        if len(_p) >= 8:
+            _phone_freq[_p] = _phone_freq.get(_p, 0) + 1
+            if str(_v.get("seller_type") or "") == "중개매물":
+                _phone_broker.add(_p)
+
+    def _is_rep_phone(p):
+        """대표번호(중개/사이트 공용): 3건 이상 공유되거나 중개매물로 표기된 번호."""
+        return bool(p) and len(p) >= 8 and (
+            _phone_freq.get(p, 0) >= BROKER_PHONE_MIN or p in _phone_broker)
     # 교차중복용 키 사전 계산 (지역구 + 면적평)
     _rk = {k: _region_key(v) for k, v in active_list}
     _pa = {k: _area_pyeong(v) for k, v in active_list}
@@ -366,11 +408,11 @@ def crawl():
             ph2  = _norm_phone(v2.get("phone"))
             reg2 = str(v2.get("region") or '').strip()
             # 기준 1: 교차중복 - 서로 다른 사이트, 같은 시/군 주소
-            if is_pm1 != is_pm2 and len(ph1) >= 8 and ph1 == ph2:
+            if is_pm1 != is_pm2 and len(ph1) >= 8 and ph1 == ph2 and not _is_rep_phone(ph1):
                 _union(k1, k2)
                 continue
             # 기준 2: 내부중복 - 같은 사이트, 전화번호+지역 동일
-            if src1 == src2 and len(ph1) >= 8 and ph1 == ph2 and loc1 and loc1 == loc2:
+            if src1 == src2 and len(ph1) >= 8 and ph1 == ph2 and loc1 and loc1 == loc2 and not _is_rep_phone(ph1):
                 _union(k1, k2)
                 continue
             # 기준 3: 교차중복(4사 전체) - 다른 사이트 + 같은 지역(구)+면적(평)
@@ -437,6 +479,7 @@ def build(items):
     qpharm_count   = sum(1 for x in active if x.get("source") == "qpharm")
     thankyoupharm_count = sum(1 for x in active if x.get("source") == "thankyoupharm")
     sellpharm_count = sum(1 for x in active if x.get("source") == "sellpharm")
+    yakjunmo_count = sum(1 for x in active if x.get("source") == "yakjunmo")
     dup_count      = sum(1 for x in active if x.get("possible_duplicate"))
     non_dup_count  = len(active) - dup_count
     broker_count   = sum(1 for x in active if x.get("seller_type") == "중개매물")
@@ -463,6 +506,8 @@ def build(items):
             src_badge = '<span class="src-badge src-thankyoupharm">땡큐팜</span>'
         elif src == "sellpharm":
             src_badge = '<span class="src-badge src-sellpharm">셀팜</span>'
+        elif src == "yakjunmo":
+            src_badge = '<span class="src-badge src-yakjunmo">약준모</span>'
         else:
             src_badge = '<span class="src-badge src-kpa">약사공론</span>'
 
@@ -548,6 +593,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 .src-qpharm{{background:#4a3a0a;color:#e0c25a;border:1px solid rgba(230,200,90,.4)}}
 .src-thankyoupharm{{background:#0a3a1a;color:#5ae08a;border:1px solid rgba(90,224,138,.4)}}
 .src-sellpharm{{background:#1a2350;color:#8aa0ff;border:1px solid rgba(138,160,255,.4)}}
+.src-yakjunmo{{background:#4a1a3a;color:#ff9ad6;border:1px solid rgba(255,150,210,.4)}}
 .src-dup{{background:#4a2a00;color:#ffb84d;border:1px solid rgba(255,180,60,.4)}}
 .src-broker{{background:#3a1a00;color:#ffaa55;border:1px solid rgba(255,150,50,.4)}}
 .src-direct{{background:#0a2a4a;color:#55aaff;border:1px solid rgba(60,150,255,.4)}}
@@ -585,6 +631,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
         <button class="chip src-btn" data-src="qpharm" type="button">큐팜 ({qpharm_count})</button>
         <button class="chip src-btn" data-src="thankyoupharm" type="button">땡큐팜 ({thankyoupharm_count})</button>
         <button class="chip src-btn" data-src="sellpharm" type="button">셀팜 ({sellpharm_count})</button>
+        <button class="chip src-btn" data-src="yakjunmo" type="button">약준모 ({yakjunmo_count})</button>
       </div>
       <h2>거래 유형</h2>
       <div class="row">
