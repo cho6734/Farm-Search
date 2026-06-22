@@ -44,6 +44,13 @@ try:
 except ImportError:
     HAS_THANKYOUPHARM = False
 
+# 셀팜 크롤러 임포트 (없으면 경고만)
+try:
+    import crawler_sellpharm
+    HAS_SELLPHARM = True
+except ImportError:
+    HAS_SELLPHARM = False
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
@@ -273,6 +280,24 @@ def crawl():
     else:
         log.warning("crawler_thankyoupharm.py 없음 - 땡큐팜 크롤링 스킵")
 
+    # ── 셀팜 크롤링 ──
+    if HAS_SELLPHARM:
+        log.info("── 셀팜 크롤링 시작...")
+        try:
+            sellpharm_items = crawler_sellpharm.crawl()
+            # 안전장치: 0건(사이트 다운 등)이면 기존 셀팜 데이터 보존(일괄 손실 방지)
+            if sellpharm_items:
+                for k in [k for k in list(items.keys()) if str(k).startswith("sp_")]:
+                    del items[k]
+                items.update(sellpharm_items)
+                log.info(f"셀팜 {len(sellpharm_items)}건 병합 완료")
+            else:
+                log.warning("셀팜 0건 → 기존 셀팜 데이터 유지")
+        except Exception as e:
+            log.error(f"셀팜 크롤링 실패 (기존 데이터는 유지): {e}")
+    else:
+        log.warning("crawler_sellpharm.py 없음 - 셀팜 크롤링 스킵")
+
     # ── 중복 감지 ──
     # 기준 1 (교차중복): 전화번호 동일 (KPA↔팜올 등)
     # 기준 2 (내부중복): 같은 사이트 내 전화번호+지역 동일
@@ -411,6 +436,7 @@ def build(items):
     dailypharm_count = sum(1 for x in active if x.get("source") == "dailypharm")
     qpharm_count   = sum(1 for x in active if x.get("source") == "qpharm")
     thankyoupharm_count = sum(1 for x in active if x.get("source") == "thankyoupharm")
+    sellpharm_count = sum(1 for x in active if x.get("source") == "sellpharm")
     dup_count      = sum(1 for x in active if x.get("possible_duplicate"))
     non_dup_count  = len(active) - dup_count
     broker_count   = sum(1 for x in active if x.get("seller_type") == "중개매물")
@@ -435,6 +461,8 @@ def build(items):
             src_badge = '<span class="src-badge src-qpharm">큐팜</span>'
         elif src == "thankyoupharm":
             src_badge = '<span class="src-badge src-thankyoupharm">땡큐팜</span>'
+        elif src == "sellpharm":
+            src_badge = '<span class="src-badge src-sellpharm">셀팜</span>'
         else:
             src_badge = '<span class="src-badge src-kpa">약사공론</span>'
 
@@ -519,6 +547,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 .src-dailypharm{{background:#0a3a4a;color:#5ad6e0;border:1px solid rgba(90,210,230,.4)}}
 .src-qpharm{{background:#4a3a0a;color:#e0c25a;border:1px solid rgba(230,200,90,.4)}}
 .src-thankyoupharm{{background:#0a3a1a;color:#5ae08a;border:1px solid rgba(90,224,138,.4)}}
+.src-sellpharm{{background:#1a2350;color:#8aa0ff;border:1px solid rgba(138,160,255,.4)}}
 .src-dup{{background:#4a2a00;color:#ffb84d;border:1px solid rgba(255,180,60,.4)}}
 .src-broker{{background:#3a1a00;color:#ffaa55;border:1px solid rgba(255,150,50,.4)}}
 .src-direct{{background:#0a2a4a;color:#55aaff;border:1px solid rgba(60,150,255,.4)}}
@@ -555,6 +584,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
         <button class="chip src-btn" data-src="dailypharm" type="button">데일리팜 ({dailypharm_count})</button>
         <button class="chip src-btn" data-src="qpharm" type="button">큐팜 ({qpharm_count})</button>
         <button class="chip src-btn" data-src="thankyoupharm" type="button">땡큐팜 ({thankyoupharm_count})</button>
+        <button class="chip src-btn" data-src="sellpharm" type="button">셀팜 ({sellpharm_count})</button>
       </div>
       <h2>거래 유형</h2>
       <div class="row">
