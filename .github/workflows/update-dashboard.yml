@@ -8,6 +8,11 @@ on:
 permissions:
   contents: write
 
+# 동시 실행 방지: 같은 워크플로가 겹쳐 돌면 생성파일 충돌로 실패 → 한 번에 하나만 실행(뒤 실행은 대기)
+concurrency:
+  group: update-dashboard
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -54,8 +59,8 @@ jobs:
             # 동시 실행(경합)으로 push가 거부될 수 있어 최대 5회 재시도
             pushed=0
             for i in 1 2 3 4 5; do
-              git pull --rebase --autostash origin main && git push origin main && { pushed=1; break; }
-              echo "push 충돌 재시도 $i/5"; sleep 7
+              git pull --rebase -X theirs --autostash origin main && git push origin main && { pushed=1; break; }
+              echo "push 충돌 재시도 $i/5"; git rebase --abort 2>/dev/null || true; sleep 7
             done
             if [ "$pushed" != "1" ]; then echo "push 최종 실패"; exit 1; fi
           fi
