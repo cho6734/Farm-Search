@@ -435,7 +435,10 @@ def parse_detail(html_text, item):
     soup = make_soup(html_text)
 
     # 본문 컨테이너(.con01) 우선, 없으면 .con
-    con = soup.select_one(".con01") or soup.select_one(".con") or soup
+    # 본문 컨테이너: .sub0401_view_wrap 이 실제 본문(.con01 은 메타행/푸터)
+    con = (soup.select_one(".sub0401_view_wrap")
+           or soup.select_one(".basic_board_view")
+           or soup.select_one(".con01") or soup.select_one(".con") or soup)
     text = con.get_text("\n", strip=True) if con else ""
     lines = [l.strip() for l in text.split("\n") if l.strip()]
 
@@ -455,12 +458,18 @@ def parse_detail(html_text, item):
 
     # 3) memo = 본문(라벨 메타행 제거 후 설명 위주)
     if lines:
-        skip_kw = ("작성자", "연락처", "날짜", "조회", "이전글", "다음글", "목록")
+        skip_kw = ("작성자", "연락처", "날짜", "조회", "이전글", "다음글", "목록",
+                   "공유하기", "수정", "삭제", "글쓰기", "부동산 담당자 연락처로")
         body_lines = [l for l in lines
                       if not (len(l) < 30 and any(k in l for k in skip_kw))]
         memo = clean_multiline("\n".join(body_lines), 2000)
         if memo:
             item["memo"] = memo
+
+    # 상세 본문이 비면 페이지 구조 변경 가능성 -> 조기 감지용 경고
+    if len(item.get("memo", "")) < 60:
+        log.warning("[땡큐팜] 상세 본문 미수집(구조 변경 의심): %s",
+                    (item.get("title") or "")[:30])
 
     # 4) 이미지: 본문 내 실제 매물 사진만(로고/배너 제외)
     if not item.get("thumb_url") and con:
