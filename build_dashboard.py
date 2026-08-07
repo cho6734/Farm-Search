@@ -257,23 +257,17 @@ def crawl():
     else:
         log.warning("crawler_dailypharm.py 없음 - 데일리팜 크롤링 스킵")
 
-    # ── 큐팜 크롤링 ──
-    if HAS_QPHARM:
-        log.info("── 큐팜 크롤링 시작...")
-        try:
-            qpharm_items = crawler_qpharm.crawl()
-            # 안전장치: 0건(로그인 실패 추정)이면 기존 큐팜 데이터 보존(일괄 손실 방지)
-            if qpharm_items:
-                for k in [k for k in list(items.keys()) if str(k).startswith("qp_")]:
-                    del items[k]
-                items.update(qpharm_items)
-                log.info(f"큐팜 {len(qpharm_items)}건 병합 완료")
-            else:
-                log.warning("큐팜 0건(로그인 실패 추정) → 기존 큐팜 데이터 유지")
-        except Exception as e:
-            log.error(f"큐팜 크롤링 실패 (기존 데이터는 유지): {e}")
-    else:
-        log.warning("crawler_qpharm.py 없음 - 큐팜 크롤링 스킵")
+    # ── 큐팜: 수집 중단 (2026-08-07) ──
+    # 2026-01-30 이후 신규 매물이 없어 수집을 중단하고 기존 항목은 삭제 처리한다.
+    # 재개하려면 이 블록을 지우고 crawler_qpharm.crawl() 호출부를 되살리면 된다.
+    _qp_removed = 0
+    for _k, _v in items.items():
+        if str(_k).startswith("qp_") and _v.get("status") != "삭제":
+            _v["status"] = "삭제"
+            _v["deleted_at"] = now_str
+            _qp_removed += 1
+    if _qp_removed:
+        log.info(f"── 큐팜 수집 중단: 기존 {_qp_removed}건 삭제 처리")
 
     # ── 땡큐팜 크롤링 ──
     if HAS_THANKYOUPHARM:
@@ -634,7 +628,6 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
         <button class="chip src-btn" data-src="pharmall" type="button">팜올 ({pharmall_count})</button>
         <button class="chip src-btn" data-src="pharmple" type="button">팜플 ({pharmple_count})</button>
         <button class="chip src-btn" data-src="dailypharm" type="button">데일리팜 ({dailypharm_count})</button>
-        <button class="chip src-btn" data-src="qpharm" type="button">큐팜 ({qpharm_count})</button>
         <button class="chip src-btn" data-src="thankyoupharm" type="button">땡큐팜 ({thankyoupharm_count})</button>
         <button class="chip src-btn" data-src="sellpharm" type="button">셀팜 ({sellpharm_count})</button>
         <button class="chip src-btn" data-src="yakjunmo" type="button">약준모 ({yakjunmo_count})</button>
