@@ -65,6 +65,7 @@ ROOT       = pathlib.Path(__file__).resolve().parent
 ITEMS_PATH = ROOT / "data" / "items.json"
 DOCS_PATH  = ROOT / "docs" / "index.html"
 BASE_URL   = "https://svc.kpanews.co.kr/jobs/estate/detail?idx={idx}"
+KPA_LIST_URL = "https://svc.kpanews.co.kr/jobs/estate/list"
 SCAN_AHEAD = 100
 DELAY      = 0.35
 
@@ -109,6 +110,27 @@ def fetch_detail(idx):
     except Exception as e:
         log.warning(f"  idx={idx} 요청 실패: {e}")
     return None  # 통신·서버 오류
+
+def fetch_kpa_live_idxs():
+    """현재 약사공론에 게시 중인 매물 idx 집합을 반환. 실패 시 None."""
+    try:
+        r = requests.get(KPA_LIST_URL, timeout=20,
+                         headers={"User-Agent": "Mozilla/5.0"})
+        r.raise_for_status()
+        idxs = {int(x) for x in re.findall(r'data-idx="(\d+)"', r.text)}
+        m = re.search(r"\uBD80\uB3D9\uC0B0\s*\((\d+)\)", r.text)
+        total = int(m.group(1)) if m else None
+        if not idxs:
+            log.warning("  목록에서 매물을 찾지 못함")
+            return None
+        # 표기 건수보다 적게 파싱되면 일부만 읽힌 것 -> 삭제 판정 보류
+        if total is not None and len(idxs) < total:
+            log.warning(f"  목록 건수 불일치(표기 {total} / 추출 {len(idxs)}) -> 보류")
+            return None
+        return idxs
+    except Exception as e:
+        log.warning(f"  약사공론 목록 조회 실패: {e}")
+        return None
 
 def enrich(item, d):
     item["title"]        = d.get("title") or item.get("title") or ""
@@ -160,58 +182,37 @@ def crawl():
     max_idx = kpa_idxs[-1] if kpa_idxs else 9792
     log.info(f"기존 항목: {len(items)}건 | 최대 idx: {max_idx}")
 
-    log.info("── 약사공론 기존 항목 갱신 중...")
-    # [개선] 삭제 항목까지 모두 재조회 → 정상 매물 자동 복구.
-    #        + 일괄삭제 방지 안전장치: 실패율이 높으면(원본 장애로 판단) 삭제 처리를 보류한다.
-    kpa_results = {}
-    kpa_error = 0  # 통신·서버 오류 건수 ("GONE"은 오류가 아니므로 제외)
-    for idx in kpa_idxs:
-        d = fetch_detail(idx)
-        kpa_results[str(idx)] = d
-        if d is None:
-            kpa_error += 1
-        time.sleep(DELAY)
-    kpa_total = len(kpa_idxs)
-    # 안전장치: 절반 이상 실패하면 원본(svc.kpanews) 장애로 간주 → 삭제하지 않고 기존 데이터 유지
-    kpa_outage = (kpa_total > 0) and (kpa_error / kpa_total > 0.5)
-    if kpa_outage:
-        log.warning(f"⚠️ 약사공론 통신오류 과다({kpa_error}/{kpa_total}) → 원본 장애로 판단, 삭제 보류(기존 데이터 유지)")
-    for idx in kpa_idxs:
-        key = str(idx)
-        d = kpa_results.get(key)
-        if isinstance(d, dict):
-            items[key] = enrich(items[key], d)
-            items[key]["source"] = "kpa"
-            # 정상 조회 → 활성으로 복구(과거에 잘못 삭제된 항목도 되살림)
-            if items[key].get("status") == "삭제":
-                log.info(f"  ♻️  [{idx}] 복구: {items[key].get('title','')}")
+    log.info("── 약사공론 목록 조회 중...")
+    live = fetch_kpa_live_idxs()
+
+    if live is None:
+        # 판단 근거가 없으므로 아무것도 바꾸지 않음(일괄삭제 방지)
+        log.warning("⚠️ 목록 조회 실패 → 약사공론 갱신 건너뜀(기존 데이터 유지)")
+    else:
+        log.info(f"현재 게시 중: {len(live)}건")
+
+        # 1) 목록에 있는 매물 → 상세 조회 후 활성 등록 (신규·복구 포함)
+        for idx in sorted(live):
+            key = str(idx)
+            d = fetch_detail(idx)
+            if isinstance(d, dict):
+                is_new = key not in items
+                items[key] = enrich(items.get(key, {"idx": idx}), d)
+                items[key]["source"] = "kpa"
                 items[key].pop("deleted_at", None)
-            items[key]["status"] = "active"
-            log.info(f"  ✅ [{idx}] {items[key].get('title','')}")
-        elif d == "GONE":
-            # 원본에서 실제로 내려감 → 장애 여부와 무관하게 삭제 처리
-            if items[key].get("status") != "삭제":
+                items[key]["status"] = "active"
+                mark = "🆕" if is_new else "✅"
+                log.info(f"  {mark} [{idx}] {items[key].get('title','')}")
+            else:
+                log.info(f"  ⏸  [{idx}] 상세 조회 실패 - 건너뜀")
+            time.sleep(DELAY)
+
+        # 2) 목록에 없는 기존 매물 → 내려간 것으로 삭제 처리
+        for key in [k for k in items.keys() if str(k).isdigit()]:
+            if int(key) not in live and items[key].get("status") != "삭제":
                 items[key]["status"] = "삭제"
                 items[key]["deleted_at"] = now_str
-                log.info(f"  🗑️  [{idx}] 삭제 감지")
-        elif kpa_outage:
-            # 원본 장애 + 통신 오류 → 기존 상태 유지(일괄삭제 방지)
-            pass
-        else:
-            # 산발적 통신 오류 → 삭제하지 않고 다음 회차에 재확인
-            log.info(f"  ⏸  [{idx}] 통신 오류 - 판단 보류")
-
-    log.info(f"── 약사공론 신규 스캔: {max_idx+1} ~ {max_idx+SCAN_AHEAD}")
-    for idx in range(max_idx + 1, max_idx + SCAN_AHEAD + 1):
-        key = str(idx)
-        if key in items:
-            continue
-        d = fetch_detail(idx)
-        if isinstance(d, dict):
-            items[key] = enrich({"idx": idx}, d)
-            items[key]["source"] = "kpa"
-            log.info(f"  🆕 [{idx}] {items[key]['title']} 신규 추가!")
-        time.sleep(DELAY)
+                log.info(f"  🗑️  [{key}] 삭제: {items[key].get('title','')}")
 
     # ── 팜올 크롤링 ──
     if HAS_PHARMALL:
