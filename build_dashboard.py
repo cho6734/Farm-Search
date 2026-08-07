@@ -65,7 +65,6 @@ ROOT       = pathlib.Path(__file__).resolve().parent
 ITEMS_PATH = ROOT / "data" / "items.json"
 DOCS_PATH  = ROOT / "docs" / "index.html"
 BASE_URL   = "https://svc.kpanews.co.kr/jobs/estate/detail?idx={idx}"
-KPA_LIST_URL = "https://svc.kpanews.co.kr/jobs/estate/list"
 SCAN_AHEAD = 100
 DELAY      = 0.35
 
@@ -105,32 +104,9 @@ def fetch_detail(idx):
         j = r.json()
         if j.get("rs_code") == "succ" and j.get("data") and j["data"].get("idx"):
             return j["data"]
-        # 서버는 정상 응답했으나 매물 없음 -> 원본에서 내려간 매물
-        return "GONE"
     except Exception as e:
         log.warning(f"  idx={idx} 요청 실패: {e}")
-    return None  # 통신·서버 오류
-
-def fetch_kpa_live_idxs():
-    """현재 약사공론에 게시 중인 매물 idx 집합을 반환. 실패 시 None."""
-    try:
-        r = requests.get(KPA_LIST_URL, timeout=20,
-                         headers={"User-Agent": "Mozilla/5.0"})
-        r.raise_for_status()
-        idxs = {int(x) for x in re.findall(r'data-idx="(\d+)"', r.text)}
-        m = re.search(r"\uBD80\uB3D9\uC0B0\s*\((\d+)\)", r.text)
-        total = int(m.group(1)) if m else None
-        if not idxs:
-            log.warning("  목록에서 매물을 찾지 못함")
-            return None
-        # 표기 건수보다 적게 파싱되면 일부만 읽힌 것 -> 삭제 판정 보류
-        if total is not None and len(idxs) < total:
-            log.warning(f"  목록 건수 불일치(표기 {total} / 추출 {len(idxs)}) -> 보류")
-            return None
-        return idxs
-    except Exception as e:
-        log.warning(f"  약사공론 목록 조회 실패: {e}")
-        return None
+    return None
 
 def enrich(item, d):
     item["title"]        = d.get("title") or item.get("title") or ""
@@ -182,37 +158,55 @@ def crawl():
     max_idx = kpa_idxs[-1] if kpa_idxs else 9792
     log.info(f"기존 항목: {len(items)}건 | 최대 idx: {max_idx}")
 
-    log.info("── 약사공론 목록 조회 중...")
-    live = fetch_kpa_live_idxs()
-
-    if live is None:
-        # 판단 근거가 없으므로 아무것도 바꾸지 않음(일괄삭제 방지)
-        log.warning("⚠️ 목록 조회 실패 → 약사공론 갱신 건너뜀(기존 데이터 유지)")
-    else:
-        log.info(f"현재 게시 중: {len(live)}건")
-
-        # 1) 목록에 있는 매물 → 상세 조회 후 활성 등록 (신규·복구 포함)
-        for idx in sorted(live):
-            key = str(idx)
-            d = fetch_detail(idx)
-            if isinstance(d, dict):
-                is_new = key not in items
-                items[key] = enrich(items.get(key, {"idx": idx}), d)
-                items[key]["source"] = "kpa"
+    log.info("── 약사공론 기존 항목 갱신 중...")
+    # [개선] 삭제 항목까지 모두 재조회 → 정상 매물 자동 복구.
+    #        + 일괄삭제 방지 안전장치: 실패율이 높으면(원본 장애로 판단) 삭제 처리를 보류한다.
+    kpa_results = {}
+    kpa_fail = 0
+    for idx in kpa_idxs:
+        d = fetch_detail(idx)
+        kpa_results[str(idx)] = d
+        if not d:
+            kpa_fail += 1
+        time.sleep(DELAY)
+    kpa_total = len(kpa_idxs)
+    # 안전장치: 절반 이상 실패하면 원본(svc.kpanews) 장애로 간주 → 삭제하지 않고 기존 데이터 유지
+    kpa_outage = (kpa_total > 0) and (kpa_fail / kpa_total > 0.5)
+    if kpa_outage:
+        log.warning(f"⚠️ 약사공론 응답 실패율 높음({kpa_fail}/{kpa_total}) → 원본 장애로 판단, 삭제 보류(기존 데이터 유지)")
+    for idx in kpa_idxs:
+        key = str(idx)
+        d = kpa_results.get(key)
+        if d:
+            items[key] = enrich(items[key], d)
+            items[key]["source"] = "kpa"
+            # 정상 조회 → 활성으로 복구(과거에 잘못 삭제된 항목도 되살림)
+            if items[key].get("status") == "삭제":
+                log.info(f"  ♻️  [{idx}] 복구: {items[key].get('title','')}")
                 items[key].pop("deleted_at", None)
-                items[key]["status"] = "active"
-                mark = "🆕" if is_new else "✅"
-                log.info(f"  {mark} [{idx}] {items[key].get('title','')}")
-            else:
-                log.info(f"  ⏸  [{idx}] 상세 조회 실패 - 건너뜀")
-            time.sleep(DELAY)
-
-        # 2) 목록에 없는 기존 매물 → 내려간 것으로 삭제 처리
-        for key in [k for k in items.keys() if str(k).isdigit()]:
-            if int(key) not in live and items[key].get("status") != "삭제":
+            items[key]["status"] = "active"
+            log.info(f"  ✅ [{idx}] {items[key].get('title','')}")
+        elif kpa_outage:
+            # 장애 시: 아무 것도 하지 않고 기존 상태 유지(일괄삭제 방지)
+            pass
+        else:
+            # 개별 실패(원본에서 실제로 내려간 매물) → 삭제 처리
+            if items[key].get("status") != "삭제":
                 items[key]["status"] = "삭제"
                 items[key]["deleted_at"] = now_str
-                log.info(f"  🗑️  [{key}] 삭제: {items[key].get('title','')}")
+                log.info(f"  🗑️  [{idx}] 삭제 감지")
+
+    log.info(f"── 약사공론 신규 스캔: {max_idx+1} ~ {max_idx+SCAN_AHEAD}")
+    for idx in range(max_idx + 1, max_idx + SCAN_AHEAD + 1):
+        key = str(idx)
+        if key in items:
+            continue
+        d = fetch_detail(idx)
+        if d:
+            items[key] = enrich({"idx": idx}, d)
+            items[key]["source"] = "kpa"
+            log.info(f"  🆕 [{idx}] {items[key]['title']} 신규 추가!")
+        time.sleep(DELAY)
 
     # ── 팜올 크롤링 ──
     if HAS_PHARMALL:
@@ -257,17 +251,23 @@ def crawl():
     else:
         log.warning("crawler_dailypharm.py 없음 - 데일리팜 크롤링 스킵")
 
-    # ── 큐팜: 수집 중단 (2026-08-07) ──
-    # 2026-01-30 이후 신규 매물이 없어 수집을 중단하고 기존 항목은 삭제 처리한다.
-    # 재개하려면 이 블록을 지우고 crawler_qpharm.crawl() 호출부를 되살리면 된다.
-    _qp_removed = 0
-    for _k, _v in items.items():
-        if str(_k).startswith("qp_") and _v.get("status") != "삭제":
-            _v["status"] = "삭제"
-            _v["deleted_at"] = now_str
-            _qp_removed += 1
-    if _qp_removed:
-        log.info(f"── 큐팜 수집 중단: 기존 {_qp_removed}건 삭제 처리")
+    # ── 큐팜 크롤링 ──
+    if HAS_QPHARM:
+        log.info("── 큐팜 크롤링 시작...")
+        try:
+            qpharm_items = crawler_qpharm.crawl()
+            # 안전장치: 0건(로그인 실패 추정)이면 기존 큐팜 데이터 보존(일괄 손실 방지)
+            if qpharm_items:
+                for k in [k for k in list(items.keys()) if str(k).startswith("qp_")]:
+                    del items[k]
+                items.update(qpharm_items)
+                log.info(f"큐팜 {len(qpharm_items)}건 병합 완료")
+            else:
+                log.warning("큐팜 0건(로그인 실패 추정) → 기존 큐팜 데이터 유지")
+        except Exception as e:
+            log.error(f"큐팜 크롤링 실패 (기존 데이터는 유지): {e}")
+    else:
+        log.warning("crawler_qpharm.py 없음 - 큐팜 크롤링 스킵")
 
     # ── 땡큐팜 크롤링 ──
     if HAS_THANKYOUPHARM:
@@ -378,7 +378,7 @@ def crawl():
         """대표번호(중개/사이트 공용): 3건 이상 공유되거나 중개매물로 표기된 번호."""
         return bool(p) and len(p) >= 8 and (
             _phone_freq.get(p, 0) >= BROKER_PHONE_MIN or p in _phone_broker)
-    # 교차중복용 키 사전 계산 (지역구 + 면적평)
+    # 교차중복용 키 사전 계산 (지역(시도+시군구) 키 / 면적(평) 추출
     _rk = {k: _region_key(v) for k, v in active_list}
     _pa = {k: _area_pyeong(v) for k, v in active_list}
     uf = {}
@@ -575,7 +575,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 .item-price{{margin-top:5px;font-size:14px;color:#69d4ff}}
 .item-phone{{margin-top:3px;font-size:13px;color:var(--muted)}}
 .badges{{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 14px}}
-.badge{{padding:6px 12px;border-radius:999px;background:#183979;border:1px solid rgba(120,160,255,.35);font-size:13px}}
+.badge{{padding:6px 12px;border-radius:999px;background:#183979;border:1px solid rgba(120,160,255,.35);font-size:13py}}
 .badge.tag{{background:#1a4a1a;border-color:rgba(100,220,100,.4);color:#90ee90}}
 .grid4{{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}}
 .info{{padding:14px;border-radius:16px;background:#0b163d;border:1px solid rgba(255,255,255,.12)}}
@@ -628,6 +628,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
         <button class="chip src-btn" data-src="pharmall" type="button">팜올 ({pharmall_count})</button>
         <button class="chip src-btn" data-src="pharmple" type="button">팜플 ({pharmple_count})</button>
         <button class="chip src-btn" data-src="dailypharm" type="button">데일리팜 ({dailypharm_count})</button>
+        <button class="chip src-btn" data-src="qpharm" type="button">큐팜 ({qpharm_count})</button>
         <button class="chip src-btn" data-src="thankyoupharm" type="button">땡큐팜 ({thankyoupharm_count})</button>
         <button class="chip src-btn" data-src="sellpharm" type="button">셀팜 ({sellpharm_count})</button>
         <button class="chip src-btn" data-src="yakjunmo" type="button">약준모 ({yakjunmo_count})</button>
