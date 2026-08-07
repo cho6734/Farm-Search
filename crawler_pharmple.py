@@ -104,7 +104,6 @@ def safe_url(raw):
         return u
     return ""
 
-
 def now_kst():
     """현재 한국시간 문자열"""
     return datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M KST")
@@ -242,7 +241,6 @@ def parse_item_card(card, is_premium=False):
             raw_reg    = dm.get("등록일", "")
             date_str   = normalize_date(raw_reg)
             is_new     = ("NEW" in raw_reg.upper())
-            # 등록일이 'NEW'(날짜 없음)면 최근 등록이므로 오늘 날짜로 보정(정렬 안정화)
             if not date_str and is_new:
                 date_str = today_kst()
             if not gubun_type:
