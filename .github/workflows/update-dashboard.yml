@@ -5,10 +5,13 @@ on:
   schedule:
     - cron: '0 * * * *'
 
+# Pages 배포 권한 추가 (pages/id-token) - Actions 방식 배포에 필요
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
-# 동시 실행 방지: 같은 워크플로가 겹쳐 돌면 생성파일 충돌로 실패 → 한 번에 하나만 실행(뒤 실행은 대기)
+# 동시 실행 방지: 같은 워크플로가 겹쳐 돌면 생성파일 충돌로 실패 -> 한 번에 하나만 실행(뒤 실행은 대기)
 concurrency:
   group: update-dashboard
   cancel-in-progress: false
@@ -45,7 +48,7 @@ jobs:
           THANKYOUPHARM_ID: ${{ secrets.THANKYOUPHARM_ID }}
           THANKYOUPHARM_PASSWORD: ${{ secrets.THANKYOUPHARM_PASSWORD }}
 
-      # 커밋 단계: 반드시 스테이징(add) → 커밋 → pull --rebase → push 순서
+      # 커밋 단계: 반드시 스테이징(add) -> 커밋 -> pull --rebase -> push 순서
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
@@ -64,3 +67,21 @@ jobs:
             done
             if [ "$pushed" != "1" ]; then echo "push 최종 실패"; exit 1; fi
           fi
+
+      # docs 폴더를 Pages 배포용 아티팩트로 포장
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  # Pages 배포 (Actions 방식 - 레거시 Jekyll 경로 대체)
+  deploy:
+    needs: update
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
