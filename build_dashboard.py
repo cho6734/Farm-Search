@@ -597,6 +597,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
 .src-dup{{background:#4a2a00;color:#ffb84d;border:1px solid rgba(255,180,60,.4)}}
 .src-broker{{background:#3a1a00;color:#ffaa55;border:1px solid rgba(255,150,50,.4)}}
 .src-direct{{background:#0a2a4a;color:#55aaff;border:1px solid rgba(60,150,255,.4)}}
+.detail-close{{display:none;position:sticky;top:0;float:right;z-index:2;background:#183979;border:1px solid rgba(120,160,255,.5);color:var(--text);border-radius:999px;padding:8px 16px;font-size:15px;cursor:pointer}}
 @media(max-width:1100px){{
   .wrap{{grid-template-columns:1fr}}
   .sidebar{{position:relative;top:auto;height:auto}}
@@ -605,6 +606,9 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
   .list{{max-height:none}}
   .grid4{{grid-template-columns:1fr 1fr}}
   .hero-main h1{{font-size:36px}}
+  #detail-panel{{position:fixed;inset:0;z-index:200;display:none;overflow-y:auto;border-radius:0;padding:16px}}
+  #detail-panel.open{{display:block}}
+  .detail-close{{display:block}}
 }}
 </style>
 </head>
@@ -686,6 +690,7 @@ html,body{{margin:0;padding:0;background:linear-gradient(180deg,#071127 0%,#0918
         {"".join(list_html) if list_html else '<div class="empty">데이터 없음</div>'}
       </div>
       <div class="panel detail" id="detail-panel">
+        <button class="detail-close" id="d-close" type="button">✕ 닫기</button>
         <div class="empty" id="detail-empty">← 왼쪽 목록에서 매물을 선택하세요</div>
         <div id="detail-content" style="display:none">
           <img id="d-img" class="detail-img" src="" alt="" style="display:none">
@@ -893,6 +898,22 @@ if (saleReset) saleReset.addEventListener('click', () => {{
   document.getElementById('sale-max').value = '';
   applyFilters();
 }});
+// ── 모바일: 매물 탭 시 상세를 전체화면으로 표시 ──
+const MOBILE_Q = window.matchMedia('(max-width:1100px)');
+const dPanel = document.getElementById('detail-panel');
+function closeDetail() {{
+  dPanel.classList.remove('open');
+  document.body.style.overflow = '';
+}}
+listEl.addEventListener('click', e => {{
+  if (!MOBILE_Q.matches) return;
+  if (!e.target.closest('.item-card')) return;
+  dPanel.classList.add('open');
+  dPanel.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}});
+document.getElementById('d-close').addEventListener('click', closeDetail);
+MOBILE_Q.addEventListener('change', closeDetail);
 applyFilters();
 </script>
 </body>
