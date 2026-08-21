@@ -47,6 +47,8 @@ jobs:
           QPHARM_PASSWORD: ${{ secrets.QPHARM_PASSWORD }}
           THANKYOUPHARM_ID: ${{ secrets.THANKYOUPHARM_ID }}
           THANKYOUPHARM_PASSWORD: ${{ secrets.THANKYOUPHARM_PASSWORD }}
+          SELLPHARM_EMAIL: ${{ secrets.SELLPHARM_EMAIL }}
+          SELLPHARM_PASSWORD: ${{ secrets.SELLPHARM_PASSWORD }}
 
       # 커밋 단계: 반드시 스테이징(add) -> 커밋 -> pull --rebase -> push 순서
       - name: Commit changes
