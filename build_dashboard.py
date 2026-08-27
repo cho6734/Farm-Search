@@ -454,10 +454,11 @@ def crawl():
 def build(items):
     active = [v for v in items.values() if v.get("status") != "삭제"]
 
-    # 날짜 기준 정렬 (두 소스 통합)
+    # 날짜 기준 정렬 (소스마다 "2026-08-21" / "2026.08.21" 형식이 섞여 있어
+    # 글자 그대로 비교하면 점(.) 형식이 무조건 위로 올라간다. 숫자만 뽑아 비교한다.)
     def sort_key(x):
-        d = str(x.get("date") or "")
-        return d if d else "0000.00.00"
+        d = re.sub(r"[^0-9]", "", str(x.get("date") or ""))
+        return d.ljust(8, "0") if d else "00000000"
     active = sorted(active, key=sort_key, reverse=True)
 
     regions = sorted({str(x.get("region") or "").strip() for x in active if str(x.get("region") or "").strip()})
@@ -836,7 +837,9 @@ function applyFilters() {{
   }});
   visible.sort((a,b) => {{
     const ai = JSON.parse(a.dataset.item), bi = JSON.parse(b.dataset.item);
-    const ad = txt(ai.date) || '0000.00.00', bd = txt(bi.date) || '0000.00.00';
+    // 날짜 형식(하이픈/점) 혼재 대응: 숫자만 뽑아서 비교
+    const ad = txt(ai.date).replace(/[^0-9]/g, '').padEnd(8, '0') || '00000000';
+    const bd = txt(bi.date).replace(/[^0-9]/g, '').padEnd(8, '0') || '00000000';
     const cmp = sortDir === 'desc' ? bd.localeCompare(ad) : ad.localeCompare(bd);
     if (cmp !== 0) return cmp;
     const aidx = parseInt(ai.idx) || 0, bidx = parseInt(bi.idx) || 0;

@@ -1,0 +1,70 @@
+# 크롤링 없이 docs/index.html 만 다시 만들어 배포하는 워크플로 (1~2분)
+# 화면(정렬·디자인·표시 항목)만 고쳤을 때 사용합니다.
+name: rebuild-pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# update-dashboard 와 같은 그룹: 크롤링이 도는 중에는 겹치지 않고 순서대로 실행됨
+concurrency:
+  group: update-dashboard
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests cryptography beautifulsoup4
+
+      # 크롤링을 건너뛰고 기존 data/items.json 으로 화면만 다시 생성
+      - name: Rebuild pages only
+        run: python build_dashboard.py --build-only
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          if git diff --cached --quiet; then
+            echo "변경사항 없음 - 커밋 건너뜀"
+          else
+            git commit -m "chore: rebuild pages only"
+            pushed=0
+            for i in 1 2 3; do
+              git pull --rebase -X theirs --autostash origin main && git push origin main && { pushed=1; break; }
+              echo "push 충돌 재시도 $i/3"; git rebase --abort 2>/dev/null || true; sleep 5
+            done
+            if [ "$pushed" != "1" ]; then echo "push 최종 실패"; exit 1; fi
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    needs: rebuild
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
